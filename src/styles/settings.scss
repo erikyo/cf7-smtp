@@ -1,0 +1,32 @@
+// This stylesheet is used to style the settings page of the plugin.
+#cf7-smtp-settings {
+
+  button[type='submit'] {
+	float: right;
+  }
+}
+
+
+#sendmail-testform {
+  form {
+	clear: both;
+  }
+  form label,
+  form input,
+  form textarea {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: .4rem;
+  }
+
+  form button {
+	margin: 1rem 1rem 1rem auto;
+	display: flex;
+  }
+
+  pre code {
+  	white-space: break-spaces;
+	font-size: .8rem;
+  }
+}

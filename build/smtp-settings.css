@@ -1,0 +1,28 @@
+/*!*************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/styles/settings.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************************/
+#cf7-smtp-settings button[type=submit] {
+  float: right;
+}
+
+#sendmail-testform form {
+  clear: both;
+}
+#sendmail-testform form label,
+#sendmail-testform form input,
+#sendmail-testform form textarea {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.4rem;
+}
+#sendmail-testform form button {
+  margin: 1rem 1rem 1rem auto;
+  display: flex;
+}
+#sendmail-testform pre code {
+  white-space: break-spaces;
+  font-size: 0.8rem;
+}
+
+/*# sourceMappingURL=smtp-settings.css.map*/
