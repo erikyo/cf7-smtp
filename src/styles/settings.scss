@@ -8,25 +8,33 @@
 
 
 #sendmail-testform {
+  // the test form style
   form {
 	clear: both;
-  }
-  form label,
-  form input,
-  form textarea {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	margin-bottom: .4rem;
+	label,
+	input,
+	textarea {
+	  display: flex;
+	  justify-content: space-between;
+	  width: 100%;
+	  margin-bottom: .4rem;
+	}
+	button {
+	  margin: 1rem 1rem 1rem auto;
+	  display: flex;
+	}
   }
 
-  form button {
-	margin: 1rem 1rem 1rem auto;
-	display: flex;
-  }
+  // the test form output box
+  pre {
+	padding: 30px 20px;
+	box-sizing: border-box;
+	border: 1px solid #f3f3f3;
+	border-radius: 8px;
 
-  pre code {
-  	white-space: break-spaces;
-	font-size: .8rem;
+	code {
+	  white-space: break-spaces;
+	  font-size: .8rem;
+	}
   }
 }
