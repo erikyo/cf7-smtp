@@ -66,10 +66,7 @@ $cf7_smtp_libraries = require C_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ign
 
 require_once C_PLUGIN_ROOT . 'functions/functions.php';
 
-// Add your new plugin on the wiki: https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate
-
-
-
+// TODO: Add your new plugin on the wiki: https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate
 
 if ( ! wp_installing() ) {
 	register_activation_hook( C_TEXTDOMAIN . '/' . C_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'activate' ) );

@@ -74,6 +74,9 @@ class Rest_SendMail extends Base {
 	function cf7_smtp_testmailer( $mail_data ) {
 		$headers = "From: {$mail_data['from_user']} <{$mail_data['from_mail']}>" . "\r\n";
 
+		// store the testing flag temporally
+		set_transient( 'cf7_smtp_testing', true, MINUTE_IN_SECONDS );
+
 		ob_start();
 		wp_mail(
 			$mail_data['email'],
