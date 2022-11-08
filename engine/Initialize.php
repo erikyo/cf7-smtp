@@ -47,7 +47,7 @@ class Initialize {
 	 * @since 0.0.1
 	 */
 	public function __construct( \Composer\Autoload\ClassLoader $composer ) {
-		$this->content  = new Engine\Context;
+		$this->content  = new Engine\Context();
 		$this->composer = $composer;
 
 		if ( $this->content->request( 'rest' ) ) {
@@ -77,7 +77,7 @@ class Initialize {
 
 		foreach ( $this->classes as $class ) {
 			try {
-				$temp = new $class;
+				$temp = new $class();
 
 				if ( \method_exists( $temp, 'initialize' ) ) {
 					$temp->initialize();
@@ -105,7 +105,7 @@ class Initialize {
 		$namespace = 'cf7_smtp\\' . $namespace;
 
 		// In case composer has autoload optimized
-		if ( isset( $classmap[ 'cf7_smtp\\Engine\\Initialize' ] ) ) {
+		if ( isset( $classmap['cf7_smtp\\Engine\\Initialize'] ) ) {
 			$classes = \array_keys( $classmap );
 
 			foreach ( $classes as $class ) {
@@ -127,7 +127,7 @@ class Initialize {
 			$php_files = $this->scandir( $folder );
 			$this->find_classes( $php_files, $folder, $namespace );
 
-			if ( !WP_DEBUG ) {
+			if ( ! WP_DEBUG ) {
 				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', C_TEXTDOMAIN ) );
 			}
 
@@ -181,7 +181,7 @@ class Initialize {
 				continue;
 			}
 
-			if ( !\is_dir( $path ) || \strtolower( $php_file ) === $php_file ) {
+			if ( ! \is_dir( $path ) || \strtolower( $php_file ) === $php_file ) {
 				continue;
 			}
 

@@ -16,26 +16,26 @@
 <div class="wrap">
 
 	<div class="card" id="sendmail-testform">
-		<h3><?php echo esc_html__( 'Send A test Mail', C_TEXTDOMAIN ) ?></h3>
+		<h3><?php echo esc_html__( 'Send A test Mail', C_TEXTDOMAIN ); ?></h3>
 
 		<form action="">
 			<label for="name-from">Name: </label>
-			<input type="text" name="name-from" id="name-from" value="name">
+			<input type="text" name="name-from" id="name-from" placeholder="<?php echo sanitize_text_field($this->options['from_name']); ?>">
 
 			<label for="subject">Subject:</label>
-			<input type="text" id="subject" name="subject" value="subject" required>
+			<input type="text" id="subject" name="subject" placeholder="Add here something like: this is a test mail!">
 
 			<label for="email-from">From: </label>
-			<input type="email" name="email-from" id="email-from" value="me@asdsd.com">
+			<input type="email" name="email-from" id="email-from" placeholder="<?php echo sanitize_email($this->options['from_mail']) ;?>">
 
-			<label for="email">To: </label>
-			<input type="text" name="email" id="email" value="you@asdsd.com" required>
+			<label for="email">To*: </label>
+			<input type="email" name="email" id="email" value="<?php echo sanitize_email(get_option( 'admin_email' )) ;?>" required>
 
-			<label for="message">Message:</label>
-			<textarea id="message" name="message" rows="6" required >message</textarea>
+			<label for="body">Message:</label>
+			<textarea id="body" name="body" rows="6" placeholder="add here your custom mail body for the test mail"></textarea>
 
 			<div class="button-wrap">
-				<button type="submit" value="Send" class="button button-primary">Submit</button>
+				<button value="Send" class="button button-primary">Submit</button>
 			</div>
 		</form>
 

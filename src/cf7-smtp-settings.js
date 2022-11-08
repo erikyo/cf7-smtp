@@ -18,8 +18,12 @@ const smtpAdmin = () => {
 	}
 
 	function enableAdvanced(formElem, enabled) {
-		formElem.querySelector('tr:nth-child(3)').style.display = enabled ? 'table-row' : 'none';
-		formElem.querySelector('tr:nth-child(4)').style.display = enabled ? 'table-row' : 'none';
+		formElem.querySelector('tr:nth-child(3)').style.display = enabled
+			? 'table-row'
+			: 'none';
+		formElem.querySelector('tr:nth-child(4)').style.display = enabled
+			? 'table-row'
+			: 'none';
 	}
 
 	const smtpAdvancedOptions = document.querySelector('#cf7_smtp_advanced');
@@ -53,11 +57,29 @@ const smtpAdmin = () => {
 		}).then((r) => {
 			if (r.message) {
 				console.log(r.message);
+
 				responseBox.innerHTML = r.message;
 			} else {
 				console.log(r);
 			}
 		});
+	});
+
+	const formSelectDefault = document.getElementById('cf7_smtp_preset');
+	const formSelectAuth = document.getElementById('cf7-smtp-auth');
+	const formSelectHost = document.getElementById('cf7_smtp_host');
+	const formSelectPort = document.getElementById('cf7_smtp_port');
+
+	formSelectDefault.addEventListener('change', (e) => {
+		const selectedEl = e.target[e.target.selectedIndex];
+		if (selectedEl) {
+			const authRadio = document.querySelector(
+				'.auth-' + selectedEl.dataset.auth
+			);
+			authRadio.checked = true;
+			formSelectHost.value = selectedEl.dataset.host;
+			formSelectPort.value = selectedEl.dataset.port;
+		}
 	});
 };
 

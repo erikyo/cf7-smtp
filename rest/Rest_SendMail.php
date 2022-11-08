@@ -11,6 +11,7 @@
 
 namespace cf7_smtp\Rest;
 
+use cf7_smtp\Core\Mailer;
 use cf7_smtp\Engine\Base;
 
 use WP_REST_Request;
@@ -35,8 +36,8 @@ class Rest_SendMail extends Base {
 	/**
 	 * Examples
 	 *
-	 * @since 0.0.1
 	 * @return void
+	 * @since 0.0.1
 	 */
 	public function add_sendmail_api() {
 		$this->add_smtp_mail_route();
@@ -45,12 +46,12 @@ class Rest_SendMail extends Base {
 	/**
 	 * Examples
 	 *
+	 * @return void
 	 * @since 0.0.1
 	 *
 	 *  Make an instance of this class somewhere, then
 	 *  call this method and test on the command line with
 	 * `curl http://example.com/wp-json/wp/v2/calc?first=1&second=2`
-	 * @return void
 	 */
 	public function add_smtp_mail_route() {
 		\register_rest_route(
@@ -58,8 +59,8 @@ class Rest_SendMail extends Base {
 			'/sendmail/',
 			[
 				'methods'             => 'POST',
-				'permission_callback' => function(){
-					return current_user_can('manage_options');
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
 				},
 				'callback'            => [ $this, 'smtp_sendmail' ],
 				'args'                => [
@@ -71,17 +72,41 @@ class Rest_SendMail extends Base {
 		);
 	}
 
-	function cf7_smtp_testmailer( $mail_data ) {
-		$headers = "From: {$mail_data['from_user']} <{$mail_data['from_mail']}>" . "\r\n";
+	private function cf7_smtp_testmailer( $mail_data, $mail_headers ) {
 
-		// store the testing flag temporally
+		/* the destination mail is mandatory */
+		if ( empty( $mail_data['email'] ) ) {
+			error_log(print_r("email missing ", true));
+			return false;
+		}
+
+		/* allows to change the "from" */
+		$headers = '';
+		if ( ! empty( $mail_headers ) ) {
+			$headers = "From: {$mail_headers['from_user']} <{$mail_headers['from_mail']}>" . "\r\n";
+		}
+
+		/* store the testing flag temporally */
 		set_transient( 'cf7_smtp_testing', true, MINUTE_IN_SECONDS );
+
+		/* adds the mail template (if enabled) */
+		if ( ! empty( $this->options['custom_template'] ) ) {
+			$smtp_mailer       = new Mailer();
+			$mail_data['body'] = $smtp_mailer->cf7_smtp_form_template(
+				[
+					'body'     => $mail_data['body'] ?? 'mail body missing',
+					'subject'  => $mail_data['subject'] ?? false,
+					'language' => 'en',
+				],
+				'test.html'
+			);
+		}
 
 		ob_start();
 		wp_mail(
 			$mail_data['email'],
 			$mail_data['subject'],
-			$mail_data['message'],
+			$mail_data['body'],
 			$headers
 		);
 		$mail_result = ob_get_contents();
@@ -96,7 +121,7 @@ class Rest_SendMail extends Base {
 	 *
 	 * @param WP_REST_Request $request Values.
 	 *
-	 * @return WP_REST_Response|WP_REST_Request
+	 * @return WP_REST_Response|WP_REST_Request - the rest request to send a mail
 	 *
 	 * @since 0.0.1
 	 */
@@ -108,24 +133,32 @@ class Rest_SendMail extends Base {
 		// $from_email = apply_filters( 'wp_mail_from', $from_email );
 		// $from_name = apply_filters( 'wp_mail_from_name', $from_name );
 
-		$r = self::cf7_smtp_testmailer( [
-			'email' => $json_params['email'],
-			'subject' => $json_params['subject'],
-			'message' => $json_params['message'],
-			'from_user' => $json_params['name-from'],
-			'from_mail' => $json_params['email-from']
-		] );
+		if ( ! empty( $json_params['email'] ) ) {
 
-		if ( !empty( $r ) ) {
-			$response =  \rest_ensure_response( [
-				'message' => $r
-			] );
-		} else {
-			$response =  \rest_ensure_response( [
-				'message' => "error"
-			] );
-			$response->set_status( 500 );
+			$r = self::cf7_smtp_testmailer(
+				[
+					'email'   => $json_params['email'],
+					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message delivered! 🎉',
+					'body'    => ! empty( $json_params["body'"] ) ? $json_params["body'"] : '',
+				],
+				[
+					'from_user' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $this->options['from_name'],
+					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $this->options['from_email'],
+				]
+			);
+
+			if ( ! empty( $r ) ) {
+				return \rest_ensure_response(
+					[ 'message' => $r, ]
+				);
+			}
 		}
+
+		$response = \rest_ensure_response(
+			[ 'message' => 'error', ]
+		);
+
+		$response->set_status( 500 );
 
 		return $response;
 

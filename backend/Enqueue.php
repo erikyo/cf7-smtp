@@ -26,12 +26,12 @@ class Enqueue extends Base {
 	 */
 	public function initialize() {
 
-		if ( !parent::initialize() ) {
+		if ( ! parent::initialize() ) {
 			return;
 		}
 
-		\add_action('admin_enqueue_scripts' , [ $this, 'enqueue_admin_styles' ] );
-		\add_action('admin_enqueue_scripts' , [ $this, 'enqueue_admin_scripts' ] );
+		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
+		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
 	/**
@@ -44,9 +44,9 @@ class Enqueue extends Base {
 		$admin_page = \get_current_screen();
 		$styles     = array();
 
-		if ( !\is_null( $admin_page ) && false !== strpos($admin_page->id, 'cf7-smtp') ) {
+		if ( ! \is_null( $admin_page ) && false !== strpos( $admin_page->id, 'cf7-smtp' ) ) {
 			$asset = include C_PLUGIN_ROOT . 'build/smtp-settings.asset.php';
-			\wp_enqueue_style( C_TEXTDOMAIN . '-settings-style', C_PLUGIN_URL . 'build/smtp-settings.css', [], $asset['version'] );
+			\wp_enqueue_style( C_TEXTDOMAIN . '-settings-style', C_PLUGIN_URL . 'build/smtp-settings.css', array(), $asset['version'] );
 		}
 	}
 
@@ -60,16 +60,16 @@ class Enqueue extends Base {
 		$admin_page = \get_current_screen();
 		$scripts    = array();
 
-		if ( !\is_null( $admin_page ) && false !== strpos($admin_page->id, 'cf7-smtp') ) {
+		if ( ! \is_null( $admin_page ) && false !== strpos( $admin_page->id, 'cf7-smtp' ) ) {
 
 			$asset = include C_PLUGIN_ROOT . 'build/smtp-settings.asset.php';
-			\wp_enqueue_script( C_TEXTDOMAIN . '-settings-script', C_PLUGIN_URL .'build/smtp-settings.js', $asset['dependencies'], $asset['version'], true );
+			\wp_enqueue_script( C_TEXTDOMAIN . '-settings-script', C_PLUGIN_URL . 'build/smtp-settings.js', $asset['dependencies'], $asset['version'], true );
 
 			\wp_localize_script(
 				C_TEXTDOMAIN . '-settings-script',
 				'smtp_settings',
 				array(
-					'nonce' => wp_create_nonce( 'cf7-smtp' )
+					'nonce' => wp_create_nonce( 'cf7-smtp' ),
 				)
 			);
 		}

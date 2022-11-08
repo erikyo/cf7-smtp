@@ -1,8 +1,24 @@
+%button {
+  margin: 1rem 1rem 1rem auto;
+  display: flex;
+}
+
 // This stylesheet is used to style the settings page of the plugin.
 #cf7-smtp-settings {
+  div#cf7-smtp-auth label {
+	display: block;
+	margin-bottom: 10px;
+  }
 
-  button[type='submit'] {
-	float: right;
+  select,
+  input[type="email"],
+  input[type="text"],
+  input[type="number"]{
+	width: 100%
+  }
+
+  input[type='submit'] {
+	@extend %button
   }
 }
 
@@ -20,8 +36,7 @@
 	  margin-bottom: .4rem;
 	}
 	button {
-	  margin: 1rem 1rem 1rem auto;
-	  display: flex;
+	  @extend %button
 	}
   }
 

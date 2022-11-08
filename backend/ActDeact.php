@@ -114,7 +114,7 @@ class ActDeact extends Base {
 	 */
 	public static function default_options() {
 
-		return [
+		return array(
 			'version'         => 1,
 			'enabled'         => false,
 			'custom_template' => false,
@@ -127,7 +127,7 @@ class ActDeact extends Base {
 			'user_pass'       => '',
 			'from_mail'       => '',
 			'from_name'       => '',
-		];
+		);
 
 	}
 

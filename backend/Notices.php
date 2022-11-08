@@ -25,10 +25,9 @@ class Notices extends Base {
 	 * @return void|bool
 	 */
 	public function initialize() {
-		if ( !parent::initialize() ) {
+		if ( ! parent::initialize() ) {
 			return;
 		}
-
 
 		/*
 		 * Alert after few days to suggest to contribute to the localization if it is incomplete
@@ -36,12 +35,12 @@ class Notices extends Base {
 		 */
 		if ( \apply_filters( 'cf7_smtp_alert_localization', true ) ) {
 			new Yoast_I18n_WordPressOrg_v3(
-			[
-				'textdomain'  => C_TEXTDOMAIN,
-				'cf7_smtp' => C_NAME,
-				'hook'        => 'admin_notices',
-			],
-			true
+				array(
+					'textdomain' => C_TEXTDOMAIN,
+					'cf7_smtp'   => C_NAME,
+					'hook'       => 'admin_notices',
+				),
+				true
 			);
 		}
 

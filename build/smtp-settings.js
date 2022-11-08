@@ -151,6 +151,19 @@ const smtpAdmin = () => {
       }
     });
   });
+  const formSelectDefault = document.getElementById('cf7_smtp_preset');
+  const formSelectAuth = document.getElementById('cf7-smtp-auth');
+  const formSelectHost = document.getElementById('cf7_smtp_host');
+  const formSelectPort = document.getElementById('cf7_smtp_port');
+  formSelectDefault.addEventListener('change', e => {
+    const selectedEl = e.target[e.target.selectedIndex];
+    if (selectedEl) {
+      const authRadio = document.querySelector('.auth-' + selectedEl.dataset.auth);
+      authRadio.checked = true;
+      formSelectHost.value = selectedEl.dataset.host;
+      formSelectPort.value = selectedEl.dataset.port;
+    }
+  });
 };
 window.onload = smtpAdmin();
 }();
