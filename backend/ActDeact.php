@@ -13,6 +13,7 @@
 namespace cf7_smtp\Backend;
 
 use cf7_smtp\Engine\Base;
+use WP_Site;
 
 /**
  * Activate and deactive method of the plugin and relates.
@@ -29,7 +30,7 @@ class ActDeact extends Base {
 			return;
 		}
 
-		// Activate plugin when new blog is added
+		/* Activate plugin when new blog is added */
 		\add_action( 'wpmu_new_blog', array( $this, 'activate_new_site' ) );
 
 	}
@@ -61,7 +62,11 @@ class ActDeact extends Base {
 	public static function activate( bool $network_wide ) {
 		if ( \function_exists( 'is_multisite' ) && \is_multisite() ) {
 			if ( $network_wide ) {
-				/** @var array<\WP_Site> $blogs - Get all blog ids*/
+				/**
+				 * Get all blog ids
+				 *
+				 * @var array<WP_Site> $blogs - the array of blog id
+				 */
 				$blogs = \get_sites();
 
 				foreach ( $blogs as $blog ) {
@@ -92,7 +97,11 @@ class ActDeact extends Base {
 	public static function deactivate( bool $network_wide ) {
 		if ( \function_exists( 'is_multisite' ) && \is_multisite() ) {
 			if ( $network_wide ) {
-				/** @var array<\WP_Site> $blogs - Get all blog ids */
+				/**
+				 * Get all blog ids.
+				 *
+				 * @var array<WP_Site> $blogs - Blog ids.
+				 */
 				$blogs = \get_sites();
 
 				foreach ( $blogs as $blog ) {
@@ -141,7 +150,7 @@ class ActDeact extends Base {
 
 		$default_cf7_smtp_options = self::default_options();
 
-		$options = get_option( C_TEXTDOMAIN . '-options' );
+		$options = get_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
 		if ( false !== $options && ! $reset_options ) {
 
@@ -153,12 +162,12 @@ class ActDeact extends Base {
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
-			update_option( C_TEXTDOMAIN . '-options', $new_options );
+			update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
 
 		} else {
 			/* if the plugin options are missing Init the plugin with the default option + the default settings */
 
-			add_option( C_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
+			add_option( CF7_SMTP_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
 		}
 
 	}
@@ -170,7 +179,7 @@ class ActDeact extends Base {
 	 * @return void
 	 */
 	private static function single_activate() {
-		// Clear the permalinks
+		/* Clear the permalinks */
 		\flush_rewrite_rules();
 	}
 
@@ -183,9 +192,9 @@ class ActDeact extends Base {
 	private static function single_deactivate() {
 
 		// @TODO: Define deactivation functionality here
-		\delete_option( C_TEXTDOMAIN . '-options' );
+		\delete_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
-		// Clear the permalinks
+		/* Clear the permalinks */
 		\flush_rewrite_rules();
 	}
 

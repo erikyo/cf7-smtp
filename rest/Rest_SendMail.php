@@ -14,6 +14,8 @@ namespace cf7_smtp\Rest;
 use cf7_smtp\Core\Mailer;
 use cf7_smtp\Engine\Base;
 
+use WP_Error;
+use WP_HTTP_Response;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -23,9 +25,7 @@ use WP_REST_Response;
 class Rest_SendMail extends Base {
 
 	/**
-	 * Initialize the class.
-	 *
-	 * @return void|bool
+	 * Initialize the class and get the plugin settings
 	 */
 	public function initialize() {
 		parent::initialize();
@@ -57,33 +57,78 @@ class Rest_SendMail extends Base {
 		\register_rest_route(
 			'cf7-smtp/v1',
 			'/sendmail/',
-			[
+			array(
 				'methods'             => 'POST',
 				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
-				'callback'            => [ $this, 'smtp_sendmail' ],
-				'args'                => [
-					'nonce' => [
+				'callback'            => array( $this, 'smtp_sendmail' ),
+				'args'                => array(
+					'nonce' => array(
 						'required' => true,
-					],
-				],
-			]
+					),
+				),
+			)
+		);
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/get_errors/',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'smtp_sendmail_get_errors' ),
+				'args'                => array(
+					'nonce' => array(
+						'required' => true,
+					),
+				),
+			)
 		);
 	}
 
-	private function cf7_smtp_testmailer( $mail_data, $mail_headers ) {
+	/**
+	 * It returns an array of the values of the keys 'email', 'subject', 'body', 'from_name', and 'from_mail' of the array
+	 * $mail_data, or if the key is not set, the value of the corresponding key in the array $this->options
+	 *
+	 * @param array $mail_data This is an array of the data that was sent to the function.
+	 *
+	 * @return array an array of the email, subject, body, from_name, and from_mail.
+	 */
+	private function cf7_smtp_testmailer_fill_data( array $mail_data ) {
+		return array(
+			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $this->options['email'],
+			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : 'no subject provided',
+			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : 'mail body not provided',
+			'from_name' => ! empty( $mail_data['from_name'] ) ? sanitize_text_field( $mail_data['from_name'] ) : $this->options['from_name'],
+			'from_mail' => ! empty( $mail_data['from_mail'] ) ? sanitize_email( $mail_data['from_mail'] ) : $this->options['from_mail'],
+		);
+	}
+
+
+	/**
+	 * It sends a test email to the email address provided by the user
+	 *
+	 * @param array $mail_data an array containing the following keys.
+	 * @param array $mail_headers an array of headers to be used in the email.
+	 *
+	 * @return string The log of wp_mail
+	 */
+	private function cf7_smtp_testmailer( array $mail_data, array $mail_headers ) {
+
+		$mail = $this->cf7_smtp_testmailer_fill_data( $mail_data );
 
 		/* the destination mail is mandatory */
-		if ( empty( $mail_data['email'] ) ) {
-			error_log(print_r("email missing ", true));
+		if ( empty( $mail['email'] ) ) {
+			cf7_smtp_log( 'you need to fill the "email" field in order to decide where the mail has to be received' );
 			return false;
 		}
 
-		/* allows to change the "from" */
+		/* allows to change the "from" if the user has chosen to override WordPress data */
 		$headers = '';
-		if ( ! empty( $mail_headers ) ) {
-			$headers = "From: {$mail_headers['from_user']} <{$mail_headers['from_mail']}>" . "\r\n";
+		if ( ! empty( $this->options['advanced'] ) ) {
+			$headers = sprintf( "From: %s <%s>\r\n", $mail_headers['from_name'], $mail_headers['from_mail'] );
 		}
 
 		/* store the testing flag temporally */
@@ -91,37 +136,71 @@ class Rest_SendMail extends Base {
 
 		/* adds the mail template (if enabled) */
 		if ( ! empty( $this->options['custom_template'] ) ) {
-			$smtp_mailer       = new Mailer();
-			$mail_data['body'] = $smtp_mailer->cf7_smtp_form_template(
-				[
-					'body'     => $mail_data['body'] ?? 'mail body missing',
-					'subject'  => $mail_data['subject'] ?? false,
-					'language' => 'en',
-				],
-				'test.html'
+			$smtp_mailer  = new Mailer();
+			$mail['body'] = $smtp_mailer->cf7_smtp_form_template(
+				array(
+					'body'    => $mail['body'],
+					'subject' => $mail['subject'],
+				),
+				'test'
 			);
 		}
 
+		/* if needed catch the error of wp_mail and return it to the user. */
+		$mail_log = '';
 		ob_start();
-		wp_mail(
-			$mail_data['email'],
-			$mail_data['subject'],
-			$mail_data['body'],
-			$headers
-		);
-		$mail_result = ob_get_contents();
+		try {
+			wp_mail(
+				$mail['email'],
+				$mail['subject'],
+				$mail['body'],
+				$headers
+			);
+		} catch ( \Exception $e ) {
+			$mail_log .= $e;
+		}
+
+		$mail_log .= ob_get_contents();
 		ob_end_clean();
 
-		return $mail_result;
+		return $mail_log;
+	}
+
+	/**
+	 * It returns the error message from the transient if it exists, otherwise it returns an error message saying that it
+	 * cannot find any log
+	 *
+	 * @return WP_Error|WP_HTTP_Response|WP_REST_Response The response is being returned.
+	 */
+	public function smtp_sendmail_get_errors() {
+		$err_msg = get_transient( 'cf7_smtp_testing_error' );
+		if ( ! empty( $err_msg ) ) {
+			$response = \rest_ensure_response(
+				array(
+					'message' => get_transient( 'cf7_smtp_testing_error' ),
+				)
+			);
+			$response->set_status( 200 );
+		} else {
+			$response = \rest_ensure_response(
+				array(
+					'error' => 'cannot find any log',
+				)
+			);
+			$response->set_status( 400 );
+
+		}
+
+		return $response;
 	}
 
 
 	/**
-	 * smtp_sendmail
+	 * The rest endpoint that send the email
 	 *
 	 * @param WP_REST_Request $request Values.
 	 *
-	 * @return WP_REST_Response|WP_REST_Request - the rest request to send a mail
+	 * @return WP_Error|WP_HTTP_Response|WP_REST_Response - the rest request to send a mail
 	 *
 	 * @since 0.0.1
 	 */
@@ -129,36 +208,41 @@ class Rest_SendMail extends Base {
 
 		$json_params = $request->get_json_params();
 
-		// array('name-from' => $json_params['name-from'],'email-from' => $json_params['email-from'])
-		// $from_email = apply_filters( 'wp_mail_from', $from_email );
-		// $from_name = apply_filters( 'wp_mail_from_name', $from_name );
-
 		if ( ! empty( $json_params['email'] ) ) {
 
 			$r = self::cf7_smtp_testmailer(
-				[
+				array(
 					'email'   => $json_params['email'],
-					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message delivered! 🎉',
+					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message works! 🎉',
 					'body'    => ! empty( $json_params["body'"] ) ? $json_params["body'"] : '',
-				],
-				[
-					'from_user' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $this->options['from_name'],
-					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $this->options['from_email'],
-				]
+				),
+				array(
+					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $this->options['from_name'],
+					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $this->options['from_mail'],
+				)
 			);
 
 			if ( ! empty( $r ) ) {
-				return \rest_ensure_response(
-					[ 'message' => $r, ]
+
+				$response = \rest_ensure_response(
+					array( 'message' => $r )
 				);
+				$response->set_status( 200 );
+
 			}
 		}
 
-		$response = \rest_ensure_response(
-			[ 'message' => 'error', ]
-		);
+		if ( empty( $response ) ) {
 
-		$response->set_status( 500 );
+			$response = \rest_ensure_response(
+				array(
+					'message' => 'error',
+					'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+				)
+			);
+
+			$response->set_status( 500 );
+		}
 
 		return $response;
 

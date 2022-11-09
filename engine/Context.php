@@ -1,7 +1,7 @@
 <?php
 
 /**
- * cf7_smtp
+ * CF7_SMTP context class
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -13,9 +13,10 @@
 namespace cf7_smtp\Engine;
 
 use Inpsyde\WpContext;
+use WP_User;
 
 /**
- * cf7-smtp Is Methods
+ * CF7-SMTP Context Methods.
  */
 class Context {
 
@@ -34,7 +35,7 @@ class Context {
 	 * @return bool
 	 * @SuppressWarnings("StaticAccess")
 	 */
-	public function request( string $type ) {
+	public function request( string $type ): bool {
 		$this->context = WpContext::determine();
 
 		switch ( $type ) {
@@ -77,22 +78,22 @@ class Context {
 	 *
 	 * @return bool
 	 */
-	public function is_amp() {
+	public function is_amp(): bool {
 		return \function_exists( 'is_amp_endpoint' ) && \is_amp_endpoint();
 	}
 
 	/**
 	 * Whether given user is an administrator.
 	 *
-	 * @param \WP_User|null $user The given user.
+	 * @param WP_User|null $user The given user.
 	 * @return bool
 	 */
-	public static function is_user_admin( \WP_User $user = null ) { // phpcs:ignore
+	public static function is_user_admin( WP_User $user = null ): bool { // phpcs:ignore
 		if ( \is_null( $user ) ) {
 			$user = \wp_get_current_user();
 		}
 
-		if ( ! $user instanceof \WP_User ) {
+		if ( ! $user instanceof WP_User ) {
 			\_doing_it_wrong( __METHOD__, 'To check if the user is admin is required a WP_User object.', '0.0.1' );
 		}
 

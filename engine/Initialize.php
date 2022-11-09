@@ -44,6 +44,8 @@ class Initialize {
 	 * The Constructor that load the entry classes
 	 *
 	 * @param \Composer\Autoload\ClassLoader $composer Composer autoload output.
+	 *
+	 * @throws \Exception - unable to load classes.
 	 * @since 0.0.1
 	 */
 	public function __construct( \Composer\Autoload\ClassLoader $composer ) {
@@ -69,8 +71,9 @@ class Initialize {
 	 * Initialize all the classes.
 	 *
 	 * @since 0.0.1
-	 * @SuppressWarnings("MissingImport")
 	 * @return void
+	 * @throws \Exception $err - throw warnings wen the module isn't initialized.
+	 * @SuppressWarnings("MissingImport")
 	 */
 	private function load_classes() {
 		$this->classes = \apply_filters( 'cf7_smtp_classes_to_execute', $this->classes );
@@ -99,12 +102,12 @@ class Initialize {
 	 * @since 0.0.1
 	 * @return array Return the classes.
 	 */
-	private function get_classes( string $namespace ) {
+	private function get_classes( string $namespace ): array {
 		$prefix    = $this->composer->getPrefixesPsr4();
 		$classmap  = $this->composer->getClassMap();
 		$namespace = 'cf7_smtp\\' . $namespace;
 
-		// In case composer has autoload optimized
+		// In case composer has autoload optimized.
 		if ( isset( $classmap['cf7_smtp\\Engine\\Initialize'] ) ) {
 			$classes = \array_keys( $classmap );
 
@@ -121,14 +124,14 @@ class Initialize {
 
 		$namespace .= '\\';
 
-		// In case composer is not optimized
+		// In case composer is not optimized.
 		if ( isset( $prefix[ $namespace ] ) ) {
 			$folder    = $prefix[ $namespace ][0];
 			$php_files = $this->scandir( $folder );
 			$this->find_classes( $php_files, $folder, $namespace );
 
 			if ( ! WP_DEBUG ) {
-				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', C_TEXTDOMAIN ) );
+				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', CF7_SMTP_TEXTDOMAIN ) );
 			}
 
 			return $this->classes;
@@ -145,7 +148,7 @@ class Initialize {
 	 * @since 0.0.1
 	 * @return array List of files.
 	 */
-	private function scandir( string $folder ) {
+	private function scandir( string $folder ): array {
 		$temp_files = \scandir( $folder );
 			$files  = array();
 
@@ -176,7 +179,7 @@ class Initialize {
 				continue;
 			}
 
-			// Verify the Namespace level
+			// Verify the Namespace level.
 			if ( \substr_count( $base . $class_name, '\\' ) < 2 ) {
 				continue;
 			}

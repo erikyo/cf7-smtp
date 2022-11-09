@@ -5,12 +5,13 @@
     "author": "Erik Golinelli <erik@codekraft.it>",
     "files": [
         "backend/*",
-        "cli/*",
+        "build/*",
+        "core/*",
         "engine/*",
         "functions/*",
-        "integrations/*",
+        "rest/*",
         "internals/*",
-        "rest/*"
+        "templates/*"
     ],
     "scripts": {
         "start": "wp-scripts start",

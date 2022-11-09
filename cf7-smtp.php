@@ -7,7 +7,7 @@
  * @license   GPL 2.0+
  * @link      https://modul-r.codekraft.it/
  *
- * Plugin Name:     cf7-smtp
+ * Plugin Name:     SMTP for Contact From 7
  * Plugin URI:      @TODO
  * Description:     @TODO
  * Version:         0.0.1
@@ -17,7 +17,7 @@
  * License:         GPL 2.0+
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
  * Domain Path:     /languages
- * Requires PHP:    7.4
+ * Requires PHP:    7.1
  * WordPress-Plugin-Boilerplate-Powered: v3.3.0
  */
 
@@ -26,20 +26,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you can not directly access this file.' );
 }
 
-define( 'C_VERSION', '0.0.1' );
-define( 'C_TEXTDOMAIN', 'cf7-smtp' );
-define( 'C_NAME', 'Contact Form 7 - SMTP' );
-define( 'C_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
-define( 'C_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'C_PLUGIN_ABSOLUTE', __FILE__ );
-define( 'C_MIN_PHP_VERSION', '5.6' );
-define( 'C_WP_VERSION', '5.3' );
+const CF7_SMTP_NAME            = 'Contact Form 7 - SMTP';
+const CF7_SMTP_TEXTDOMAIN      = 'cf7-smtp';
+const CF7_SMTP_MIN_PHP_VERSION = '7.1';
+
+define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
+define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 if ( ! defined( 'CF7_SMTP_PASSWORD' ) ) {
 	define( 'CF7_SMTP_PASSWORD', false );
 }
 
-if ( version_compare( PHP_VERSION, C_MIN_PHP_VERSION, '<=' ) ) {
+if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(
 		'admin_init',
 		static function() {
@@ -52,7 +50,7 @@ if ( version_compare( PHP_VERSION, C_MIN_PHP_VERSION, '<=' ) ) {
 			echo wp_kses_post(
 				sprintf(
 					'<div class="notice notice-error"><p>%s</p></div>',
-					__( '"cf7-smtp" requires PHP 5.6 or newer.', C_TEXTDOMAIN )
+					__( 'SMTP for Contact Form 7 requires PHP 7.1 or newer.', CF7_SMTP_TEXTDOMAIN )
 				)
 			);
 		}
@@ -62,15 +60,21 @@ if ( version_compare( PHP_VERSION, C_MIN_PHP_VERSION, '<=' ) ) {
 	return;
 }
 
-$cf7_smtp_libraries = require C_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ignore
+$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ignore
 
-require_once C_PLUGIN_ROOT . 'functions/functions.php';
+require_once CF7_SMTP_PLUGIN_ROOT . 'functions/functions.php';
 
 // TODO: Add your new plugin on the wiki: https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate
 
 if ( ! wp_installing() ) {
-	register_activation_hook( C_TEXTDOMAIN . '/' . C_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'activate' ) );
-	register_deactivation_hook( C_TEXTDOMAIN . '/' . C_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'deactivate' ) );
+
+	/* It's a hook that is called when the plugin is activated. */
+	register_activation_hook( CF7_SMTP_TEXTDOMAIN . '/' . CF7_SMTP_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'activate' ) );
+
+	/* It's a hook that is called when the plugin is deactivated. */
+	register_deactivation_hook( CF7_SMTP_TEXTDOMAIN . '/' . CF7_SMTP_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'deactivate' ) );
+
+	/* It's a hook that is called when all plugins are loaded. */
 	add_action(
 		'plugins_loaded',
 		static function () use ( $cf7_smtp_libraries ) {

@@ -23,6 +23,8 @@ use WPCF7_Mail;
  */
 class Mailer extends Base {
 	/**
+	 * the tags allowed for the mail content.
+	 *
 	 * @var array
 	 */
 	private $mail_allowed_tags;
@@ -62,8 +64,8 @@ class Mailer extends Base {
 		\add_action(
 			'wp_mail_failed',
 			function ( $error ) {
-				error_log( 'cf7 smtp errors' );
-				error_log( print_r( $error, true ) );
+				set_transient( 'cf7_smtp_testing_error', $error, MINUTE_IN_SECONDS );
+				cf7_smtp_log( $error );
 			}
 		);
 
@@ -80,40 +82,38 @@ class Mailer extends Base {
 	 * It replaces the {{message}} placeholder in the template with the actual message, and then replaces the {{subject}}
 	 * placeholder with the actual subject
 	 *
-	 * @param array $mail_data The components of the email.
-	 *       //    $components = array(
-	 *       //      'subject'  => string,
-	 *       //      'body'     => string,
-	 *       //      'language' => language,
-	 *       //  );
-	 * @param string $template_name the name of the html file
+	 * @param array  $mail_data The components of the email.
+	 *        //  $components = array(
+	 *        //      'subject'  => string,
+	 *        //      'body'     => string,
+	 *        //      'language' => language,
+	 *        //  );.
+	 * @param string $template The content of the template as literal.
 	 *
 	 * @return string The body of the email.
 	 */
-	public function cf7_smtp_form_template( array $mail_data, string $template_name ): string {
+	public function cf7_smtp_form_template( array $mail_data, string $template ): string {
 
-		/* get the mail template */
-		$template = $this->cf7_smtp_get_email_style( $template_name );
-
-		if ( !empty($template) ) {
-			/* htmlize the mail content */
-			$mail_body = nl2br( wp_kses( $mail_data['body'], $this->mail_allowed_tags ) );
+		/* htmlize the mail content */
+		if ( ! empty( $template ) ) {
+			$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses( $mail_data['body'], $this->mail_allowed_tags ) ) : false;
 		} else {
 			$mail_body = $mail_data['body'];
 		}
 
-		/* replace the message in body */
-		$mail_body = str_replace( '{{message}}', $mail_body, $template );
+		/* if the mail body is available replace the message in body */
+		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;
 
 		/* set the default mail replacement */
 		$template_replacements = apply_filters(
 			'cf7_smtp_mail_template_replacements',
 			array(
-				'subject'   => esc_html( $mail_data['subject'] ),
-				'language'  => sanitize_text_field( $mail_data['language'] ) ?? get_bloginfo( 'language' ),
-				'site_logo' => apply_filters( 'cf7_smtp_mail_logo', wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ),
-				'site_url'  => apply_filters( 'cf7_smtp_mail_logo_url', get_site_url() ),
-			)
+				'subject'   => esc_html( $mail_data['subject'] ) ?? '',
+				'language'  => ! empty( $mail_data['language'] ) ? sanitize_text_field( $mail_data['language'] ) : get_bloginfo( 'language' ),
+				'site_logo' => apply_filters( 'cf7_smtp_mail_logo', wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) ?? '',
+				'site_url'  => apply_filters( 'cf7_smtp_mail_logo_url', get_site_url() ) ?? '',
+			),
+			sanitize_file_name( $template . '.html' )
 		);
 
 		/* It's a simple way to replace the placeholders in the template with the actual values. */
@@ -128,15 +128,18 @@ class Mailer extends Base {
 	 * It gets the contents of a file and returns it
 	 *
 	 * @param string $template_name The name of the template file.
+	 * @param int    $id The template that refers to contact form id.
+	 * @param string $lang The template language.
 	 *
 	 * @return false|string The contents of the file.
 	 */
-	public function cf7_smtp_get_email_style( string $template_name ) {
+	public function cf7_smtp_get_email_style( string $template_name, int $id, string $lang ) {
 
-		// TODO FILTER user defined template
-		// $template = file_get_contents( get_stylesheet_directory_uri() . 'templates/mail/default.html' );
+		$user_template = sprintf( '%s%s-%d-%s.html', get_stylesheet_directory(), $template_name, $id, $lang );
 
-		return file_get_contents( C_PLUGIN_ROOT . 'templates/' . $template_name );
+		return file_exists( $user_template )
+			? file_get_contents( $user_template )
+			: file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/' . $template_name . '.html' );
 	}
 
 
@@ -149,9 +152,11 @@ class Mailer extends Base {
 	 *
 	 * @return array $components The $components array is being returned.
 	 */
-	public function cf7_smtp_email_style( $components, $contact_form, $mail ) {
+	public function cf7_smtp_email_style( array $components, WPCF7_ContactForm $contact_form, WPCF7_Mail $mail ): array {
 
-		if ( empty( $this->options['custom_template'] ) ) return $components;
+		if ( empty( $this->options['custom_template'] ) ) {
+			return $components;
+		}
 
 		$email_data = array(
 			'body'     => $components['body'],
@@ -162,7 +167,7 @@ class Mailer extends Base {
 		if ( ! empty( $components['body'] ) ) {
 			$components['body'] = self::cf7_smtp_form_template(
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
-				apply_filters( 'cf7_smtp_mail_template', 'default.html', $contact_form->id(), $contact_form->locale() )
+				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
 			);
 		}
 
@@ -174,7 +179,7 @@ class Mailer extends Base {
 	 *
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer object.
 	 *
-	 * @throws Exception
+	 * @throws Exception May fail and throw an exception.
 	 */
 	public function cf7_smtp_overrides( PHPMailer\PHPMailer $phpmailer ) {
 
@@ -208,7 +213,8 @@ class Mailer extends Base {
 		$verbose = get_transient( 'cf7_smtp_testing' );
 		if ( $verbose ) {
 			delete_transient( 'cf7_smtp_testing' );
-			$phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
+			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
+			$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
 		}
 
 		/* Force html if the user has choosen a custom template */

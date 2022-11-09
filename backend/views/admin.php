@@ -22,11 +22,11 @@
 	?>
 
 	<div class="card main-options">
-		<h3><?php esc_html__( 'Options', C_TEXTDOMAIN ); ?></h3>
+		<h3><?php esc_html__( 'Options', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 		<form method="post" action="options.php" id="cf7-smtp-settings" class="form-table">
 			<?php
 			/* This prints out all hidden setting fields */
-			settings_fields( C_TEXTDOMAIN . '-settings' );
+			settings_fields( CF7_SMTP_TEXTDOMAIN . '-settings' );
 			do_settings_sections( 'smtp-settings' );
 			submit_button();
 			?>

@@ -16,20 +16,20 @@
 <div class="wrap">
 
 	<div class="card" id="sendmail-testform">
-		<h3><?php echo esc_html__( 'Send A test Mail', C_TEXTDOMAIN ); ?></h3>
+		<h3><?php echo esc_html__( 'Send A test Mail', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 
 		<form action="">
 			<label for="name-from">Name: </label>
-			<input type="text" name="name-from" id="name-from" placeholder="<?php echo sanitize_text_field($this->options['from_name']); ?>">
+			<input type="text" name="name-from" id="name-from" placeholder="<?php echo esc_html( $this->options['from_name'] ); ?>" >
 
 			<label for="subject">Subject:</label>
-			<input type="text" id="subject" name="subject" placeholder="Add here something like: this is a test mail!">
+			<input type="text" id="subject" name="subject" placeholder="Add here something like: this is a test mail!" >
 
 			<label for="email-from">From: </label>
-			<input type="email" name="email-from" id="email-from" placeholder="<?php echo sanitize_email($this->options['from_mail']) ;?>">
+			<input type="email" name="email-from" id="email-from" placeholder="<?php echo esc_html( $this->options['from_mail'] ); ?>" >
 
 			<label for="email">To*: </label>
-			<input type="email" name="email" id="email" value="<?php echo sanitize_email(get_option( 'admin_email' )) ;?>" required>
+			<input type="email" name="email" id="email" value="<?php echo esc_html( get_option( 'admin_email' ) ); ?>" required >
 
 			<label for="body">Message:</label>
 			<textarea id="body" name="body" rows="6" placeholder="add here your custom mail body for the test mail"></textarea>

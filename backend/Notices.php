@@ -36,8 +36,8 @@ class Notices extends Base {
 		if ( \apply_filters( 'cf7_smtp_alert_localization', true ) ) {
 			new Yoast_I18n_WordPressOrg_v3(
 				array(
-					'textdomain' => C_TEXTDOMAIN,
-					'cf7_smtp'   => C_NAME,
+					'textdomain' => CF7_SMTP_TEXTDOMAIN,
+					'cf7_smtp'   => CF7_SMTP_NAME,
 					'hook'       => 'admin_notices',
 				),
 				true

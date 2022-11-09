@@ -40,7 +40,7 @@ class Settings_Page extends Base {
 		\add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		$realpath        = (string) \realpath( \dirname( __FILE__ ) );
-		$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . C_TEXTDOMAIN . '.php' );
+		$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . CF7_SMTP_TEXTDOMAIN . '.php' );
 
 		\add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 	}
@@ -55,10 +55,10 @@ class Settings_Page extends Base {
 
 		\add_submenu_page(
 			'wpcf7',
-			C_NAME,
-			__( 'SMTP', 'cf7-antispam' ),
+			CF7_SMTP_NAME,
+			__( 'SMTP', CF7_SMTP_TEXTDOMAIN ),
 			'wpcf7_edit_contact_forms',
-			C_TEXTDOMAIN,
+			CF7_SMTP_TEXTDOMAIN,
 			array( $this, 'display_plugin_admin_page' )
 		);
 
@@ -74,8 +74,8 @@ class Settings_Page extends Base {
 	 * @return void
 	 */
 	public function display_plugin_admin_page() {
-		include_once C_PLUGIN_ROOT . 'backend/views/admin.php';
-		include_once C_PLUGIN_ROOT . 'backend/views/send_mail.php';
+		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
+		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php';
 	}
 
 	/**
@@ -88,7 +88,11 @@ class Settings_Page extends Base {
 	public function add_action_links( array $links ) {
 		return \array_merge(
 			array(
-				'settings' => '<a href="' . \admin_url( 'admin.php?page=' . C_TEXTDOMAIN ) . '">' . \__( 'Settings', C_TEXTDOMAIN ) . '</a>',
+				'settings' => sprintf(
+					'<a href="%s">%s</a>',
+					\admin_url( 'admin.php?page=' . CF7_SMTP_TEXTDOMAIN ),
+					\__( 'Settings', CF7_SMTP_TEXTDOMAIN )
+				),
 			),
 			$links
 		);

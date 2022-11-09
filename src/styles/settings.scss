@@ -44,12 +44,21 @@
   pre {
 	padding: 30px 20px;
 	box-sizing: border-box;
-	border: 1px solid #f3f3f3;
+	border: 1px solid #2f333a;
+	background: #2f333a;
 	border-radius: 8px;
 
 	code {
 	  white-space: break-spaces;
 	  font-size: .8rem;
+	  color: white;
+	  background: rgba(0,0,0,0.5);
+	}
+	&.ok {
+		border-color: #4caf50;
+	}
+	&.error {
+	  border-color: #f44336;
 	}
   }
 }

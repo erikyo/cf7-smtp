@@ -1,7 +1,7 @@
 <?php
 
 /**
- * cf7_smtp
+ * CF7_SMTP engine class
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -18,17 +18,19 @@ namespace cf7_smtp\Engine;
 class Base {
 
 	/**
-	 * @var array The settings of the plugin.
+	 * The settings of the plugin.
+	 *
+	 * @var array
 	 */
 	public $options = array();
 
 	/**
 	 * Initialize the class and get the plugin settings
 	 *
-	 * @return bool
+	 * @return void|boolean
 	 */
 	public function initialize() {
-		$this->options = \c_get_settings();
+		$this->options = \cf7_smtp_get_settings();
 
 		return true;
 	}
