@@ -23,13 +23,13 @@ global $current_user;
 
 		<form action="">
 			<label for="name-from">Name: </label>
-			<input type="text" name="name-from" id="name-from" placeholder="<?php echo $this->options['advanced'] ? esc_html( $this->options['from_name'] ) : esc_html(wp_get_current_user()->display_name); ?>" >
+			<input type="text" name="name-from" id="name-from" placeholder="<?php echo $this->options['advanced'] ? esc_html( $this->options['from_name'] ) : esc_html( wp_get_current_user()->display_name ); ?>" >
 
 			<label for="subject">Subject:</label>
 			<input type="text" id="subject" name="subject" placeholder="<?php esc_html_e( 'Add here something like: "this is a test mail!"', CF7_SMTP_TEXTDOMAIN ); ?>">
 
 			<label for="email-from">From: </label>
-			<input type="email" name="email-from" id="email-from" placeholder="<?php echo $this->options['advanced'] ? esc_html( $this->options['from_mail'] ) : esc_html(wp_get_current_user()->user_email); ?>" >
+			<input type="email" name="email-from" id="email-from" placeholder="<?php echo $this->options['advanced'] ? esc_html( $this->options['from_mail'] ) : esc_html( wp_get_current_user()->user_email ); ?>" >
 
 			<label for="email">To*: </label>
 			<input type="email" name="email" id="email" value="<?php echo esc_html( get_option( 'admin_email' ) ); ?>" required >

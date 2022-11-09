@@ -4,646 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e882cbfa963ac343cff076c8945821f5",
+    "content-hash": "16f654d981a9edbca9d1c5c1cb65df95",
     "packages": [
-        {
-            "name": "decodelabs/coercion",
-            "version": "v0.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/coercion.git",
-                "reference": "346596fcc06e5e0dd8056c7ffe687c1a830ece6c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/coercion/zipball/346596fcc06e5e0dd8056c7ffe687c1a830ece6c",
-                "reference": "346596fcc06e5e0dd8056c7ffe687c1a830ece6c",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/exceptional": "^0.3",
-                "php": "^7.2|^8.0"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Simple tools for managing PHP types",
-            "keywords": [
-                "data",
-                "structure",
-                "type"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/coercion/issues",
-                "source": "https://github.com/decodelabs/coercion/tree/v0.1.3"
-            },
-            "time": "2022-03-14T23:30:53+00:00"
-        },
-        {
-            "name": "decodelabs/collections",
-            "version": "v0.6.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/collections.git",
-                "reference": "5d2891ababdcd6772830e8ff2f82638e705810f4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/collections/zipball/5d2891ababdcd6772830e8ff2f82638e705810f4",
-                "reference": "5d2891ababdcd6772830e8ff2f82638e705810f4",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/exceptional": "^0.3",
-                "decodelabs/fluidity": "^0.2",
-                "decodelabs/gadgets": "^0.7",
-                "php": "^7.2|^8.0",
-                "symfony/polyfill-php73": "^1.22"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.4",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.45",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^8.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.6.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\Collections\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Reusable collection components",
-            "keywords": [
-                "collection",
-                "data",
-                "structure"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/collections/issues",
-                "source": "https://github.com/decodelabs/collections/tree/v0.6.1"
-            },
-            "time": "2021-04-07T10:57:34+00:00"
-        },
-        {
-            "name": "decodelabs/dictum",
-            "version": "v0.2.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/dictum.git",
-                "reference": "67d2c6650302dcf2b0eb38e7ce183c3f4434b731"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/dictum/zipball/67d2c6650302dcf2b0eb38e7ce183c3f4434b731",
-                "reference": "67d2c6650302dcf2b0eb38e7ce183c3f4434b731",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/exceptional": "^0.3",
-                "decodelabs/fluidity": "^0.2",
-                "decodelabs/glitch-support": "^0.3",
-                "decodelabs/veneer": "^0.7|^0.8",
-                "php": "^7.2|^8.0",
-                "symfony/polyfill-mbstring": "^1.7",
-                "symfony/polyfill-php80": "^1.22"
-            },
-            "require-dev": {
-                "decodelabs/atlas": "^0.9",
-                "decodelabs/phpstan-decodelabs": "^0.4",
-                "decodelabs/systemic": "^0.8",
-                "decodelabs/terminus": "^0.7",
-                "nesbot/carbon": "^2.25",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.45",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^8.3"
-            },
-            "suggest": {
-                "decodelabs/systemic": "Managed locale and timezone info"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/global.php"
-                ],
-                "psr-4": {
-                    "DecodeLabs\\Dictum\\": "src/Dictum"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Text formatting tools",
-            "keywords": [
-                "format",
-                "text"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/dictum/issues",
-                "source": "https://github.com/decodelabs/dictum/tree/v0.2.9"
-            },
-            "time": "2021-10-20T14:40:03+00:00"
-        },
-        {
-            "name": "decodelabs/elementary",
-            "version": "v0.1.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/elementary.git",
-                "reference": "3854f825480accfb9d6f59edfee870c0226701ad"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/elementary/zipball/3854f825480accfb9d6f59edfee870c0226701ad",
-                "reference": "3854f825480accfb9d6f59edfee870c0226701ad",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/coercion": "^0.1",
-                "decodelabs/collections": "^0.6.1",
-                "decodelabs/exceptional": "^0.3",
-                "decodelabs/glitch-support": "^0.3",
-                "php": "^7.2|^8.0",
-                "symfony/polyfill-php80": "^1.22"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\Elementary\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Shared base markup handling library",
-            "keywords": [
-                "html",
-                "markup",
-                "xml"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/elementary/issues",
-                "source": "https://github.com/decodelabs/elementary/tree/v0.1.8"
-            },
-            "time": "2022-03-11T19:37:30+00:00"
-        },
-        {
-            "name": "decodelabs/exceptional",
-            "version": "v0.3.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/exceptional.git",
-                "reference": "f8c88978aafc83676917d0d11c375493ebbe2643"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/exceptional/zipball/f8c88978aafc83676917d0d11c375493ebbe2643",
-                "reference": "f8c88978aafc83676917d0d11c375493ebbe2643",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/coercion": "^0.1",
-                "decodelabs/glitch-support": "^0.3",
-                "php": "^7.2|^8.0",
-                "symfony/polyfill-mbstring": "^1.7"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.3.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "DecodeLabs\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Better Exceptions for PHP",
-            "keywords": [
-                "exception"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/exceptional/issues",
-                "source": "https://github.com/decodelabs/exceptional/tree/v0.3.3"
-            },
-            "time": "2022-03-09T16:37:04+00:00"
-        },
-        {
-            "name": "decodelabs/fluidity",
-            "version": "v0.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/fluidity.git",
-                "reference": "90a30ccc8250acf3375af5bf71b4f43b9c9ddf75"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/fluidity/zipball/90a30ccc8250acf3375af5bf71b4f43b9c9ddf75",
-                "reference": "90a30ccc8250acf3375af5bf71b4f43b9c9ddf75",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\Fluidity\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Tools for creating fluent interfaces",
-            "keywords": [
-                "fluent",
-                "fluid",
-                "library",
-                "tools"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/fluidity/issues",
-                "source": "https://github.com/decodelabs/fluidity/tree/v0.2.1"
-            },
-            "time": "2022-03-09T16:38:37+00:00"
-        },
-        {
-            "name": "decodelabs/gadgets",
-            "version": "v0.7.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/gadgets.git",
-                "reference": "16ef85330a62dc4b1a1dcdc8bfc096c1f1fe3169"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/gadgets/zipball/16ef85330a62dc4b1a1dcdc8bfc096c1f1fe3169",
-                "reference": "16ef85330a62dc4b1a1dcdc8bfc096c1f1fe3169",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/exceptional": "^0.3",
-                "php": "^7.2|^8.0"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.4",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.45",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^8.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.7.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\Gadgets\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Useful tools for building PHP libraries",
-            "keywords": [
-                "library",
-                "tools"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/gadgets/issues",
-                "source": "https://github.com/decodelabs/gadgets/tree/v0.7.2"
-            },
-            "abandoned": "decodelabs/lucid",
-            "time": "2021-05-01T10:35:18+00:00"
-        },
-        {
-            "name": "decodelabs/glitch-support",
-            "version": "v0.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/glitch-support.git",
-                "reference": "fb659ca5a2cbbf60eb931a25659b469a26f97d20"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/glitch-support/zipball/fb659ca5a2cbbf60eb931a25659b469a26f97d20",
-                "reference": "fb659ca5a2cbbf60eb931a25659b469a26f97d20",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0"
-            },
-            "require-dev": {
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\Glitch\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Shared support classes for DecodeLabs\\Glitch",
-            "keywords": [
-                "debug",
-                "dump",
-                "dumper",
-                "exception"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/glitch-support/issues",
-                "source": "https://github.com/decodelabs/glitch-support/tree/v0.3.2"
-            },
-            "time": "2022-03-09T13:04:10+00:00"
-        },
-        {
-            "name": "decodelabs/tagged",
-            "version": "v0.11.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/tagged.git",
-                "reference": "201d904f63b927d44fa3a4ded13ca3b7c6aa50f8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/tagged/zipball/201d904f63b927d44fa3a4ded13ca3b7c6aa50f8",
-                "reference": "201d904f63b927d44fa3a4ded13ca3b7c6aa50f8",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/collections": "^0.6.1",
-                "decodelabs/dictum": "^0.2.4",
-                "decodelabs/elementary": "^0.1.4",
-                "decodelabs/exceptional": "^0.3",
-                "decodelabs/gadgets": "^0.7",
-                "decodelabs/glitch-support": "^0.3",
-                "decodelabs/veneer": "^0.7|^0.8",
-                "ext-intl": "*",
-                "php": "^7.2|^8.0",
-                "symfony/polyfill-mbstring": "^1.7",
-                "symfony/polyfill-php80": "^1.22"
-            },
-            "require-dev": {
-                "decodelabs/atlas": "^0.9",
-                "decodelabs/chirp": "^0.6",
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "decodelabs/systemic": "^0.8",
-                "decodelabs/terminus": "^0.7",
-                "erusev/parsedown": "^1.7",
-                "michelf/php-markdown": "^1.9",
-                "nesbot/carbon": "^2.25",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.45",
-                "phpunit/phpunit": "^8",
-                "soundasleep/html2text": "^1.1",
-                "symplify/easy-coding-standard": "^8.3"
-            },
-            "suggest": {
-                "decodelabs/chirp": "Enable parsing of Tweets",
-                "decodelabs/systemic": "Managed locale and timezone info",
-                "erusev/parsedown": "Add support for Markdown parsing",
-                "michelf/php-markdown": "Alternative Markdown parsing provider",
-                "nesbot/carbon": "Support for time interval formatting",
-                "soundasleep/html2text": "Better HTML to text conversion"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.11.x-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/global.php"
-                ],
-                "psr-4": {
-                    "DecodeLabs\\Tagged\\": "src/Tagged"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "PHP markup generation without the fuss",
-            "keywords": [
-                "generator",
-                "html",
-                "markup"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/tagged/issues",
-                "source": "https://github.com/decodelabs/tagged/tree/v0.11.10"
-            },
-            "time": "2021-10-20T14:56:31+00:00"
-        },
-        {
-            "name": "decodelabs/veneer",
-            "version": "v0.8.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/decodelabs/veneer.git",
-                "reference": "7d91604195c1e8b1ff3f1deea9392edfb2231cc4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/decodelabs/veneer/zipball/7d91604195c1e8b1ff3f1deea9392edfb2231cc4",
-                "reference": "7d91604195c1e8b1ff3f1deea9392edfb2231cc4",
-                "shasum": ""
-            },
-            "require": {
-                "decodelabs/exceptional": "^0.3",
-                "decodelabs/glitch-support": "^0.3",
-                "php": "^7.2|^8.0",
-                "psr/container": "^1"
-            },
-            "require-dev": {
-                "decodelabs/atlas": "^0.9",
-                "decodelabs/phpstan-decodelabs": "^0.5",
-                "decodelabs/terminus": "^0.7",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^8",
-                "symplify/easy-coding-standard": "^10"
-            },
-            "bin": [
-                "bin/veneer-stub"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.8.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DecodeLabs\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Wright",
-                    "email": "tom@inflatablecookie.com"
-                }
-            ],
-            "description": "Automated static facades",
-            "keywords": [
-                "facade",
-                "library",
-                "tools"
-            ],
-            "support": {
-                "issues": "https://github.com/decodelabs/veneer/issues",
-                "source": "https://github.com/decodelabs/veneer/tree/v0.8.5"
-            },
-            "time": "2022-03-25T00:29:07+00:00"
-        },
         {
             "name": "inpsyde/wp-context",
             "version": "1.3.1",
@@ -703,299 +65,6 @@
                 "source": "https://github.com/inpsyde/wp-context/tree/1.3.1"
             },
             "time": "2021-10-19T12:40:19+00:00"
-        },
-        {
-            "name": "psr/container",
-            "version": "1.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/container.git",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/513e0666f7216c7459170d56df27dfcefe1689ea",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Container\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "Common Container Interface (PHP FIG PSR-11)",
-            "homepage": "https://github.com/php-fig/container",
-            "keywords": [
-                "PSR-11",
-                "container",
-                "container-interface",
-                "container-interop",
-                "psr"
-            ],
-            "support": {
-                "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/1.1.2"
-            },
-            "time": "2021-11-05T16:50:12+00:00"
-        },
-        {
-            "name": "symfony/polyfill-mbstring",
-            "version": "v1.26.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e",
-                "reference": "9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "provide": {
-                "ext-mbstring": "*"
-            },
-            "suggest": {
-                "ext-mbstring": "For best performance"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.26-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill for the Mbstring extension",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "mbstring",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.26.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-05-24T11:49:31+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php73",
-            "version": "v1.26.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php73.git",
-                "reference": "e440d35fa0286f77fb45b79a03fedbeda9307e85"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/e440d35fa0286f77fb45b79a03fedbeda9307e85",
-                "reference": "e440d35fa0286f77fb45b79a03fedbeda9307e85",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.26-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php73\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php73/tree/v1.26.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-05-24T11:49:31+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.26.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "cfa0ae98841b9e461207c13ab093d76b0fa7bace"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/cfa0ae98841b9e461207c13ab093d76b0fa7bace",
-                "reference": "cfa0ae98841b9e461207c13ab093d76b0fa7bace",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.26-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.26.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-05-10T07:21:04+00:00"
         }
     ],
     "packages-dev": [
@@ -3392,6 +2461,54 @@
             "time": "2016-08-06T20:24:11+00:00"
         },
         {
+            "name": "psr/container",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/513e0666f7216c7459170d56df27dfcefe1689ea",
+                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/container/issues",
+                "source": "https://github.com/php-fig/container/tree/1.1.2"
+            },
+            "time": "2021-11-05T16:50:12+00:00"
+        },
+        {
             "name": "psr/event-dispatcher",
             "version": "1.0.0",
             "source": {
@@ -4674,6 +3791,251 @@
             "time": "2022-05-24T11:49:31+00:00"
         },
         {
+            "name": "symfony/polyfill-mbstring",
+            "version": "v1.26.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e",
+                "reference": "9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "provide": {
+                "ext-mbstring": "*"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.26-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.26.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-05-24T11:49:31+00:00"
+        },
+        {
+            "name": "symfony/polyfill-php73",
+            "version": "v1.26.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php73.git",
+                "reference": "e440d35fa0286f77fb45b79a03fedbeda9307e85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/e440d35fa0286f77fb45b79a03fedbeda9307e85",
+                "reference": "e440d35fa0286f77fb45b79a03fedbeda9307e85",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.26-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php73\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php73/tree/v1.26.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-05-24T11:49:31+00:00"
+        },
+        {
+            "name": "symfony/polyfill-php80",
+            "version": "v1.26.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php80.git",
+                "reference": "cfa0ae98841b9e461207c13ab093d76b0fa7bace"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/cfa0ae98841b9e461207c13ab093d76b0fa7bace",
+                "reference": "cfa0ae98841b9e461207c13ab093d76b0fa7bace",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.26-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ion Bazan",
+                    "email": "ion.bazan@gmail.com"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.26.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-05-10T07:21:04+00:00"
+        },
+        {
             "name": "symfony/polyfill-php81",
             "version": "v1.26.0",
             "source": {
@@ -5440,7 +4802,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4"
+        "php": ">=7.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

@@ -46,7 +46,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="cf7_smtp_"/>
+				<element value="cf7_smtp"/>
 			</property>
 		</properties>
 	</rule>

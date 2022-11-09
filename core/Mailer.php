@@ -94,12 +94,10 @@ class Mailer extends Base {
 	 */
 	public function cf7_smtp_form_template( array $mail_data, string $template ): string {
 
+		if (empty($template)) return $mail_data['body'];
+
 		/* htmlize the mail content */
-		if ( ! empty( $template ) ) {
-			$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses( $mail_data['body'], $this->mail_allowed_tags ) ) : false;
-		} else {
-			$mail_body = $mail_data['body'];
-		}
+		$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses( $mail_data['body'], $this->mail_allowed_tags ) ) : "";
 
 		/* if the mail body is available replace the message in body */
 		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;

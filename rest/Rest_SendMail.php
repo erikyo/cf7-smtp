@@ -142,7 +142,7 @@ class Rest_SendMail extends Base {
 					'body'    => $mail['body'],
 					'subject' => $mail['subject'],
 				),
-				'test'
+				file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/test.html' )
 			);
 		}
 
@@ -234,7 +234,7 @@ class Rest_SendMail extends Base {
 				$response = \rest_ensure_response(
 					array(
 						'status'  => 'error',
-						'message' => "empty response",
+						'message' => 'empty response',
 						'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
