@@ -1,6 +1,5 @@
 import './styles/settings.scss';
 import apiFetch from '@wordpress/api-fetch';
-import { error } from '../../../../wp-includes/js/dist/redux-routine';
 
 apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
 
@@ -44,35 +43,63 @@ const smtpAdmin = () => {
 		enableAdvanced(formAdvancedSection, smtpAdvancedOptions.checked);
 	});
 
+	/**
+	 *  Email Response box
+	 *
+	 *  @member {HTMLElement} formElem - the Email form used to test email functionalities
+	 *  @member {HTMLElement} responseBox - the wrapper for the smtp server messages
+	 */
 	const formElem = document.querySelector('#sendmail-testform form');
-	const responseBox = document.querySelector('#sendmail-response code');
+	const responseBox = document.querySelector('#sendmail-response pre');
+
+	/* Initialize the response box and show a welcome message */
+	cleanOutput(
+		responseBox,
+		'<code>Mail Server initialization completed!</code>'
+	);
+
+	/**
+	 * It takes a DOM element and a message, and sets the DOM element's innerHTML to the message, with a timestamp
+	 *
+	 * @param {HTMLElement} logWrap   - The element that will contain the log messages.
+	 * @param {?string}     [message] - The message to be displayed in the log.
+	 */
+	function cleanOutput(logWrap, message = '') {
+		const date = new Date();
+		logWrap.innerHTML =
+			`<code class="logdate alignright">Log start ${date}</code>` +
+			message;
+	}
 
 	/**
 	 * It takes a message, splits it into lines, and then adds each line to the output container with a random delay
 	 *
-	 * @param {HTMLElement} outputContainer - the element where the output will be displayed
-	 * @param {string}      msg             - the message to be displayed
-	 * @param {boolean}     mailSent        if the mail was sent or not
+	 * @param {HTMLElement}  outputContainer - the element where the output will be displayed
+	 * @param {string}       msg             - the message to be displayed
+	 * @param {boolean|null} mailSent        if the mail was sent or not
 	 */
-	function OutputMessage(outputContainer, msg, mailSent = false) {
+	function OutputMessage(outputContainer, msg, mailSent = null) {
 		msg = msg.split(/\n/);
 		if (msg.length) {
-			outputContainer.innerHTML = '';
 			msg.forEach((line) => {
 				/* will add the lines "softly" */
 				setTimeout(() => {
-					outputContainer.innerHTML += line;
-				}, 200 * (Math.random() * 200));
+					outputContainer.insertAdjacentHTML(
+						'beforeend',
+						`<code>${line}</code>`
+					);
+				}, 100 + Math.random() * 100);
 
 				// TODO: regex here to search for errors
 			});
 		}
+		// if the mailSent flag is set (true or false) update the container class
 		if (mailSent) {
-			outputContainer.classList.add('error');
-			outputContainer.classList.remove('ok');
-		} else {
-			outputContainer.classList.add('ok');
 			outputContainer.classList.remove('error');
+			outputContainer.classList.add('ok');
+		} else if (mailSent === false) {
+			outputContainer.classList.remove('ok');
+			outputContainer.classList.add('error');
 		}
 	}
 
@@ -89,20 +116,30 @@ const smtpAdmin = () => {
 			data[key] = value;
 		}
 
+		/* clean the previous results*/
+		cleanOutput(responseBox);
+
 		apiFetch({
 			path: '/cf7-smtp/v1/sendmail',
 			method: 'POST',
 			data,
 		})
 			.then((r) => {
-				if (r.message) {
-					console.log(r);
-					OutputMessage(responseBox, r.message, true);
-				}
+				OutputMessage(
+					responseBox,
+					'Waiting for server response... ⏰',
+					true
+				);
+
+				console.log(r);
+
+				OutputMessage(
+					responseBox,
+					r.message + '\r\n** END **\r\n',
+					r.status === 'sent'
+				);
 			})
 			.catch((err) => {
-				OutputMessage(responseBox, err.message, false);
-
 				setTimeout(function () {
 					apiFetch({
 						path: '/cf7-smtp/v1/get_errors',
@@ -118,15 +155,28 @@ const smtpAdmin = () => {
 									resp.message.errors.wp_mail_failed.join(
 										'\r\n'
 									);
-								OutputMessage(responseBox, errorMessage, false);
+								OutputMessage(
+									responseBox,
+									errorMessage +
+										'\r\n' +
+										err.message +
+										'\r\n** END **',
+									false
+								);
 							}
 						})
-						.catch((err) => console.log(err));
-				}, 1000);
+						.catch((errMsg) => console.log(errMsg));
+				}, 2000);
 			});
 	});
 
-	/* variables needed to set via js the connection parameters */
+	/**
+	 *  Variables needed to set SMTP connetion
+	 *
+	 *  @member {HTMLElement} formSelectDefault - cf7_smtp_preset
+	 *  @member {HTMLElement} formSelectHost - cf7_smtp_host
+	 *  @member {HTMLElement} formSelectPort - cf7_smtp_port
+	 */
 	const formSelectDefault = document.getElementById('cf7_smtp_preset');
 	const formSelectHost = document.getElementById('cf7_smtp_host');
 	const formSelectPort = document.getElementById('cf7_smtp_port');

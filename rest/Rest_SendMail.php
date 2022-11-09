@@ -156,8 +156,8 @@ class Rest_SendMail extends Base {
 				$mail['body'],
 				$headers
 			);
-		} catch ( \Exception $e ) {
-			$mail_log .= $e;
+		} catch ( \PHPMailer\PHPMailer\Exception $e ) {
+			echo "🆘 Something went wrong\r\n";
 		}
 
 		$mail_log .= ob_get_contents();
@@ -176,19 +176,15 @@ class Rest_SendMail extends Base {
 		$err_msg = get_transient( 'cf7_smtp_testing_error' );
 		if ( ! empty( $err_msg ) ) {
 			$response = \rest_ensure_response(
-				array(
-					'message' => get_transient( 'cf7_smtp_testing_error' ),
-				)
+				array( 'message' => $err_msg )
 			);
 			$response->set_status( 200 );
+			delete_transient( 'cf7_smtp_testing_error' );
 		} else {
 			$response = \rest_ensure_response(
-				array(
-					'error' => 'cannot find any log',
-				)
+				array( 'error' => __( 'cannot find any log', CF7_SMTP_TEXTDOMAIN ) )
 			);
-			$response->set_status( 400 );
-
+			$response->set_status( 404 );
 		}
 
 		return $response;
@@ -225,22 +221,34 @@ class Rest_SendMail extends Base {
 			if ( ! empty( $r ) ) {
 
 				$response = \rest_ensure_response(
-					array( 'message' => $r )
+					array(
+						'status'  => 'sent',
+						'message' => $r,
+					)
 				);
+
 				$response->set_status( 200 );
 
+			} else {
+
+				$response = \rest_ensure_response(
+					array(
+						'status'  => 'error',
+						'message' => "empty response",
+						'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+					)
+				);
+				$response->set_status( 503 );
+
 			}
-		}
-
-		if ( empty( $response ) ) {
-
+		} else {
 			$response = \rest_ensure_response(
 				array(
-					'message' => 'error',
+					'status'  => 'error',
+					'message' => 'Destination Email missing',
 					'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 				)
 			);
-
 			$response->set_status( 500 );
 		}
 

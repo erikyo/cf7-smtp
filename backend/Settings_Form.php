@@ -23,14 +23,14 @@ class Settings_Form {
 	private $options;
 
 	/**
-	 * The array of stmp hosts presets.
+	 * The array of smtp hosts presets.
 	 *
 	 * @var array[]
 	 */
 	private $cf7_smtp_host_presets;
 
 	/**
-	 * Possibile auth value (none, ssl, tls).
+	 * Possible auth value (none, ssl, tls).
 	 *
 	 * @var string[]
 	 */
@@ -44,42 +44,45 @@ class Settings_Form {
 	public function __construct() {
 		$this->options = get_option( 'cf7-smtp-options' );
 
-		$this->cf7_smtp_host_presets = array(
-			'custom'      => array(
-				'host' => '',
-				'auth' => '',
-				'port' => false,
-			),
-			'Aruba'       => array(
-				'host' => 'smtps.aruba.it',
-				'auth' => 'ssl',
-				'port' => 465,
-			),
-			'Gmail (ssl)' => array(
-				'host' => 'smtp.gmail.com',
-				'auth' => 'ssl',
-				'port' => 465,
-			),
-			'Gmail (tls)' => array(
-				'host' => 'smtp.gmail.com',
-				'auth' => 'tls',
-				'port' => 587,
-			),
-			'Yahoo (ssl)' => array(
-				'host' => 'pop.mail.yahoo.com',
-				'auth' => 'ssl',
-				'port' => 465,
-			),
-			'Yahoo (tls)' => array(
-				'host' => 'pop.mail.yahoo.com',
-				'auth' => 'tls',
-				'port' => 587,
-			),
-			'Outlook.com' => array(
-				'host' => 'smtp-mail.outlook.com',
-				'auth' => 'tls',
-				'port' => 587,
-			),
+		$this->cf7_smtp_host_presets = apply_filters(
+			'cf7_smtp_servers',
+			array(
+				'custom'      => array(
+					'host' => '',
+					'auth' => '',
+					'port' => false,
+				),
+				'aruba'       => array(
+					'host' => 'smtps.aruba.it',
+					'auth' => 'ssl',
+					'port' => 465,
+				),
+				'gmail (ssl)' => array(
+					'host' => 'smtp.gmail.com',
+					'auth' => 'ssl',
+					'port' => 465,
+				),
+				'gmail (tls)' => array(
+					'host' => 'smtp.gmail.com',
+					'auth' => 'tls',
+					'port' => 587,
+				),
+				'yahoo (ssl)' => array(
+					'host' => 'pop.mail.yahoo.com',
+					'auth' => 'ssl',
+					'port' => 465,
+				),
+				'yahoo (tls)' => array(
+					'host' => 'pop.mail.yahoo.com',
+					'auth' => 'tls',
+					'port' => 587,
+				),
+				'outlook.com' => array(
+					'host' => 'smtp-mail.outlook.com',
+					'auth' => 'tls',
+					'port' => 587,
+				),
+			)
 		);
 
 		$this->auth_values = array( '', 'ssl', 'tls' );
@@ -237,18 +240,28 @@ class Settings_Form {
 	/**
 	 * It takes an array of arrays, and returns a string of HTML options
 	 *
-	 * @param array $options The array of options to be converted to HTML.
+	 * @param array  $options The array of options to be converted to HTML.
+	 * @param string $selected The selected item.
+	 *
+	 * @return string
 	 */
-	public function cf7_smtp_form_array_to_options( array $options ) {
+	public function cf7_smtp_form_array_to_options( array $options, $selected = '' ) {
 		$select_opt = '';
 
 		/* if is anna array add for array element an option */
 		foreach ( $options as $option => $options_data ) {
 			$option_data = '';
 			foreach ( $options_data as $prop => $value ) {
-				$option_data .= sprintf( ' data-%s="%s"', sanitize_key( $prop ), sanitize_text_field( $value ) );
+				$option_data .= ! empty( $value ) ? sprintf( ' data-%s="%s"', sanitize_key( $prop ), sanitize_text_field( $value ) ) : '';
 			}
-			$select_opt .= "<option value='{$option}'{$option_data}>{$option}</option>";
+
+			$select_opt .= sprintf(
+				"<option value='%s'%s%s>%s</option>",
+				$option,
+				$selected === $option ? ' selected' : ' ',
+				$option_data,
+				ucfirst( $option )
+			);
 		}
 
 		return $select_opt;
@@ -263,7 +276,8 @@ class Settings_Form {
 			'<select type="checkbox" id="cf7_smtp_preset" name="cf7-smtp-options[preset]">%s</select>',
 			wp_kses(
 				self::cf7_smtp_form_array_to_options(
-					$this->cf7_smtp_host_presets
+					$this->cf7_smtp_host_presets,
+					$this->options['preset']
 				),
 				array(
 					'option' => array(
@@ -271,6 +285,7 @@ class Settings_Form {
 						'data-host' => array(),
 						'data-auth' => array(),
 						'data-port' => array(),
+						'selected'  => array(),
 					),
 				)
 			)
@@ -449,10 +464,19 @@ class Settings_Form {
 		$new_input['enabled'] = ! empty( $input['enabled'] );
 
 		/* SMTP preset */
-		$new_input['preset'] = ! empty( $input['preset'] ) ? sanitize_text_field( $input['preset'] ) : $new_input['preset'];
+		if ( ! empty( $input['preset'] ) ) {
+			$selected_preset = $this->cf7_smtp_host_presets[ sanitize_text_field( $input['preset'] ) ] ?? 'custom';
+			if ( $input['auth'] === $selected_preset['auth'] && $input['host'] === $selected_preset['host'] && intval( $input['port'] ) === intval( $selected_preset['port'] ) ) {
+				$new_input['preset'] = sanitize_text_field( $input['preset'] );
+			}
+		}
 
 		/* SMTP preset */
-		$new_input['auth'] = ! empty( $input['auth'] ) ? sanitize_text_field( $input['auth'] ) : $new_input['auth'];
+		if ( ! empty( $input['auth'] ) ) {
+			if ( in_array( $input['auth'], array( 'ssl', 'tls' ), true ) ) {
+				$new_input['auth'] = sanitize_text_field( $input['auth'] );
+			}
+		}
 
 		/* SMTP host */
 		$new_input['host'] = ! empty( $input['host'] ) ? sanitize_text_field( $input['host'] ) : $new_input['host'];
