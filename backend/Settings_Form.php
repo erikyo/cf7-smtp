@@ -221,7 +221,7 @@ class Settings_Form {
 	 */
 	public function cf7_smtp_print_section_main_subtitle() {
 		printf(
-			'<p>%s %s</p>',
+			'<p>%s</p>',
 			esc_html__( 'Welcome! Remember that you can activate and deactivate the smtp service simply by ticking the checkbox below', CF7_SMTP_TEXTDOMAIN )
 		);
 	}

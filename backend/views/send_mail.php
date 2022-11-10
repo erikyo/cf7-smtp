@@ -19,7 +19,7 @@ global $current_user;
 <div class="wrap">
 
 	<div class="card" id="sendmail-testform">
-		<h3><code class="alignright">SMTP: <?php echo $this->options['enabled'] ? esc_html__('on', CF7_SMTP_TEXTDOMAIN) : esc_html__('off', CF7_SMTP_TEXTDOMAIN) ?></code></h3>
+		<h3><code class="alignright">SMTP: <?php echo $this->options['enabled'] ? esc_html__( 'on', CF7_SMTP_TEXTDOMAIN ) : esc_html__( 'off', CF7_SMTP_TEXTDOMAIN ); ?></code></h3>
 		<h3><?php echo esc_html__( 'Send A test Mail', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 
 		<form action="">

@@ -29,7 +29,7 @@ class Notices extends Base {
 		}
 	}
 
-	public function cf7_smtp_admin_notice($message, $type = 'error') {
+	public function cf7_smtp_admin_notice( $message, $type = 'error' ) {
 		$class = "notice notice-$type";
 
 		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );

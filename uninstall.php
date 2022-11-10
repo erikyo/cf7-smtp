@@ -23,7 +23,7 @@
  */
 
 // If uninstall not called from WordPress, then exit.
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
@@ -37,7 +37,7 @@ function cf7_smtp_uninstall_multisite() {
 		/** @var array<\WP_Site> $blogs */
 		$blogs = get_sites();
 
-		if ( !empty( $blogs ) ) {
+		if ( ! empty( $blogs ) ) {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( (int) $blog->blog_id );
 				cf7_smtp_uninstall();
@@ -63,7 +63,7 @@ function cf7_smtp_uninstall() { // phpcs:ignore
 	\delete_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
 	// for site options in Multisite
-	\delete_site_option( CF7_SMTP_TEXTDOMAIN . '-options');
+	\delete_site_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 }
 
 cf7_smtp_uninstall_multisite();

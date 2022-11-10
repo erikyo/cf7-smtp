@@ -222,9 +222,9 @@ class Rest_SendMail extends Base {
 
 				$response = \rest_ensure_response(
 					array(
-						'status'  => 'sent',
-						'protocol'  => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
-						'message' => $r,
+						'status'   => 'sent',
+						'protocol' => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
+						'message'  => $r,
 					)
 				);
 				$response->set_status( 200 );
@@ -233,10 +233,10 @@ class Rest_SendMail extends Base {
 
 				$response = \rest_ensure_response(
 					array(
-						'status'  => 'error',
-						'protocol'  => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
-						'message' => 'Empty response',
-						'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+						'status'   => 'error',
+						'protocol' => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
+						'message'  => 'Empty response',
+						'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
 				$response->set_status( 503 );
@@ -246,10 +246,10 @@ class Rest_SendMail extends Base {
 
 			$response = \rest_ensure_response(
 				array(
-					'status'  => 'error',
-					'protocol'  => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
-					'message' => 'Destination Email missing',
-					'nonce'   => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+					'status'   => 'error',
+					'protocol' => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
+					'message'  => 'Destination Email missing',
+					'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 				)
 			);
 			$response->set_status( 500 );

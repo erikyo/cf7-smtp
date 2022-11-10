@@ -136,7 +136,7 @@ class ActDeact extends Base {
 			'auth'            => false,
 			'user_name'       => 'wordpress',
 			'user_pass'       => '',
-			'from_mail'       => 'wordpress@'.$current_website,
+			'from_mail'       => 'wordpress@' . $current_website,
 			'from_name'       => 'wordpress',
 		);
 
