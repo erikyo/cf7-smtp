@@ -127,6 +127,8 @@ class Mailer extends Base {
 	/**
 	 * It gets the contents of a file and returns it
 	 *
+	 * @ref WPBP/template https://github.com/WPBP/template/blob/master/template.php
+	 *
 	 * @param string $template_name The name of the template file.
 	 * @param int    $id The template that refers to contact form id.
 	 * @param string $lang The template language.
@@ -135,11 +137,30 @@ class Mailer extends Base {
 	 */
 	public function cf7_smtp_get_email_style( string $template_name, int $id, string $lang ) {
 
-		$user_template = sprintf( '%s%s-%d-%s.html', get_stylesheet_directory(), $template_name, $id, $lang );
+		$theme_custom_dir    = CF7_SMTP_TEXTDOMAIN . '/';
+		$plugin_template_dir = CF7_SMTP_PLUGIN_ROOT . 'templates/';
 
-		return file_exists( $user_template )
-			? file_get_contents( $user_template )
-			: file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/' . $template_name . '.html' );
+		/* Look in yourtheme/cf7-smtp/template-name-id.php and yourtheme/cf7-smtp/template-name.php */
+		if ( $id ) {
+			$template = locate_template( array( "{$template_name}-{$id}.html", $theme_custom_dir . "{$template_name}-{$id}.html" ) );
+		} else {
+			$template = locate_template( array( "{$template_name}.html", $theme_custom_dir . "{$template_name}.html" ) );
+		}
+
+		/* Get default template_name-id.php */
+		if ( ! $template && empty( $id ) ) {
+			$template = $plugin_template_dir . "{$template_name}-{$id}.html";
+		}
+
+		/* Get default template_name.php */
+		if ( ! $template && file_exists( $plugin_template_dir . "{$template_name}.html" ) ) {
+			$template = $plugin_template_dir . "{$template_name}.html";
+		}
+
+		/* Allows user and 3rd party plugin to filter the template file */
+		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, CF7_SMTP_TEXTDOMAIN );
+
+		return !empty($template) ? file_get_contents( $template ) : '';
 	}
 
 
@@ -165,6 +186,7 @@ class Mailer extends Base {
 		);
 
 		if ( ! empty( $components['body'] ) ) {
+
 			$components['body'] = self::cf7_smtp_form_template(
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
 				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
