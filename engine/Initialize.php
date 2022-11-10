@@ -49,22 +49,37 @@ class Initialize {
 	 * @since 0.0.1
 	 */
 	public function __construct( \Composer\Autoload\ClassLoader $composer ) {
-		$this->content  = new Engine\Context();
-		$this->composer = $composer;
+		if ( defined( 'WPCF7_VERSION' ) ) {
+			$this->content  = new Engine\Context();
+			$this->composer = $composer;
 
-		if ( $this->content->request( 'rest' ) ) {
-			$this->get_classes( 'Rest' );
+			if ( $this->content->request( 'rest' ) ) {
+				$this->get_classes( 'Rest' );
+			}
+
+			if ( $this->content->request( 'backend' ) ) {
+				$this->get_classes( 'Backend' );
+			}
+
+			if ( $this->content->request( 'core' ) ) {
+				$this->get_classes( 'Core' );
+			}
+
+			$this->load_classes();
+		} else {
+			add_action(
+				'admin_notices',
+				function () {
+					printf(
+						'<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
+						esc_html__( 'SMTP for Contact Form 7 need ', CF7_SMTP_TEXTDOMAIN ),
+						esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
+						esc_html__( 'Contact Form 7', CF7_SMTP_TEXTDOMAIN ),
+						esc_html__( ' installed and enabled in order to work.', CF7_SMTP_TEXTDOMAIN )
+					);
+				}
+			);
 		}
-
-		if ( $this->content->request( 'backend' ) ) {
-			$this->get_classes( 'Backend' );
-		}
-
-		if ( $this->content->request( 'core' ) ) {
-			$this->get_classes( 'Core' );
-		}
-
-		$this->load_classes();
 	}
 
 	/**
