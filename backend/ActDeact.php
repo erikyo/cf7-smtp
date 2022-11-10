@@ -55,11 +55,11 @@ class ActDeact extends Base {
 	/**
 	 * Fired when the plugin is activated.
 	 *
-	 * @param bool $network_wide True if active in a multiste, false if classic site.
+	 * @param bool|null $network_wide True if active in a multisite, false if classic site.
 	 * @since 0.0.1
 	 * @return void
 	 */
-	public static function activate( bool $network_wide ) {
+	public static function activate( $network_wide ) {
 		if ( \function_exists( 'is_multisite' ) && \is_multisite() ) {
 			if ( $network_wide ) {
 				/**
@@ -123,19 +123,21 @@ class ActDeact extends Base {
 	 */
 	public static function default_options() {
 
+		$current_website = wp_parse_url( network_home_url(), PHP_URL_HOST );
+
 		return array(
 			'version'         => 1,
 			'enabled'         => false,
 			'custom_template' => false,
 			'preset'          => 'custom',
 			'advanced'        => false,
-			'host'            => '127.0.0.1',
+			'host'            => $current_website,
 			'port'            => '25',
 			'auth'            => false,
-			'user_name'       => '',
+			'user_name'       => 'wordpress',
 			'user_pass'       => '',
-			'from_mail'       => '',
-			'from_name'       => '',
+			'from_mail'       => 'wordpress@'.$current_website,
+			'from_name'       => 'wordpress',
 		);
 
 	}
@@ -190,9 +192,6 @@ class ActDeact extends Base {
 	 * @return void
 	 */
 	private static function single_deactivate() {
-
-		// @TODO: Define deactivation functionality here
-		\delete_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
 		/* Clear the permalinks */
 		\flush_rewrite_rules();

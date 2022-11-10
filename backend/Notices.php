@@ -12,7 +12,6 @@
 namespace cf7_smtp\Backend;
 
 use cf7_smtp\Engine\Base;
-use Yoast_I18n_WordPressOrg_v3;
 
 /**
  * Everything that involves notification on the WordPress dashboard
@@ -28,22 +27,11 @@ class Notices extends Base {
 		if ( ! parent::initialize() ) {
 			return;
 		}
-
-		/*
-		 * Alert after few days to suggest to contribute to the localization if it is incomplete
-		 * on translate.wordpress.org, the filter enables to remove globally.
-		 */
-		if ( \apply_filters( 'cf7_smtp_alert_localization', true ) ) {
-			new Yoast_I18n_WordPressOrg_v3(
-				array(
-					'textdomain' => CF7_SMTP_TEXTDOMAIN,
-					'cf7_smtp'   => CF7_SMTP_NAME,
-					'hook'       => 'admin_notices',
-				),
-				true
-			);
-		}
-
 	}
 
+	public function cf7_smtp_admin_notice($message, $type = 'error') {
+		$class = "notice notice-$type";
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+	}
 }

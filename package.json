@@ -11,7 +11,12 @@
         "functions/*",
         "rest/*",
         "templates/*",
-        "vendor/*"
+        "vendor/*",
+        "index.php",
+        "cf7-smtp.php",
+        "README.txt",
+        "LICENSE.txt",
+        "uninstall.php"
     ],
     "scripts": {
         "start": "wp-scripts start",
@@ -28,10 +33,11 @@
     "devDependencies": {
         "@babel/core": "^7.18.2",
         "@wordpress/api-fetch": "^6.18.0",
-        "@wordpress/babel-preset-default": "^6.12.0",
-        "@wordpress/browserslist-config": "^4.1.2",
-        "@wordpress/eslint-plugin": "^12.5.0",
-        "@wordpress/scripts": "^23.2.0"
+        "@wordpress/babel-preset-default": "^7.5.0",
+        "@wordpress/browserslist-config": "^5.4.0",
+        "@wordpress/env": "^5.6.0",
+        "@wordpress/eslint-plugin": "^13.5.0",
+        "@wordpress/scripts": "^24.5.0"
     },
     "engines": {
         "node": ">=14.0.0",

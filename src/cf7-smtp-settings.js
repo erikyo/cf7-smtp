@@ -20,27 +20,46 @@ const smtpAdmin = () => {
 	/**
 	 * Toggle enabled advanced settings row
 	 *
+	 * @param {Array}       elements - an array of "nth" input
 	 * @param {HTMLElement} formElem - the form row
 	 * @param {boolean}     enabled  - show or hide the form row
 	 */
-	function enableAdvanced(formElem, enabled) {
-		formElem.querySelector('tr:nth-child(3)').style.display = enabled
-			? 'table-row'
-			: 'none';
-		formElem.querySelector('tr:nth-child(4)').style.display = enabled
-			? 'table-row'
-			: 'none';
+	function enableAdvanced(elements, formElem, enabled) {
+		elements.forEach((el) => {
+			formElem.querySelector(`tr:nth-child(${el})`).style.display =
+				enabled ? 'table-row' : 'none';
+		});
 	}
 
+	/**
+	 * Enables the SMTP settings
+	 */
+	const smtpEnabled = document.querySelector('#cf7_smtp_enabled');
+	const formSmtpSection = document.querySelector(
+		'#cf7-smtp-settings .form-table:first-of-type'
+	);
+	enableAdvanced([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+
+	smtpEnabled.addEventListener('click', () => {
+		enableAdvanced([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+	});
+
+	/**
+	 * Enables the advanced settings
+	 */
 	const smtpAdvancedOptions = document.querySelector('#cf7_smtp_advanced');
 	const formAdvancedSection = document.querySelector(
 		'#cf7-smtp-settings .form-table:last-of-type'
 	);
-	enableAdvanced(formAdvancedSection, smtpAdvancedOptions.checked);
+	enableAdvanced([3, 4], formAdvancedSection, smtpAdvancedOptions.checked);
 
 	/* Adding an event listener to the smtpAdvancedOptions element. */
 	smtpAdvancedOptions.addEventListener('click', () => {
-		enableAdvanced(formAdvancedSection, smtpAdvancedOptions.checked);
+		enableAdvanced(
+			[3, 4],
+			formAdvancedSection,
+			smtpAdvancedOptions.checked
+		);
 	});
 
 	/**

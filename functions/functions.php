@@ -16,7 +16,7 @@
  * @return array
  */
 function cf7_smtp_get_settings(): array {
-	return apply_filters( 'cf7_smtp_get_settings', get_option( CF7_SMTP_TEXTDOMAIN . '-options' ) );
+	return apply_filters( 'cf7_smtp_get_settings', get_option( CF7_SMTP_TEXTDOMAIN . '-options', array() ) );
 }
 
 /**

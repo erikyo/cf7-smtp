@@ -8,10 +8,10 @@
  * @link      https://modul-r.codekraft.it/
  *
  * Plugin Name:     SMTP for Contact From 7
- * Plugin URI:      @TODO
- * Description:     @TODO
+ * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
+ * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  * Version:         0.0.1
- * Author:          Erik Golinelli
+ * Author:          Erik
  * Author URI:      https://modul-r.codekraft.it/
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+

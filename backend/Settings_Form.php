@@ -221,8 +221,8 @@ class Settings_Form {
 	 */
 	public function cf7_smtp_print_section_main_subtitle() {
 		printf(
-			'<p>%s</p>',
-			esc_html__( 'The settings for this plugin', CF7_SMTP_TEXTDOMAIN )
+			'<p>%s %s</p>',
+			esc_html__( 'Welcome! Remember that you can activate and deactivate the smtp service simply by ticking the checkbox below', CF7_SMTP_TEXTDOMAIN )
 		);
 	}
 
@@ -468,13 +468,17 @@ class Settings_Form {
 			$selected_preset = $this->cf7_smtp_host_presets[ sanitize_text_field( $input['preset'] ) ] ?? 'custom';
 			if ( $input['auth'] === $selected_preset['auth'] && $input['host'] === $selected_preset['host'] && intval( $input['port'] ) === intval( $selected_preset['port'] ) ) {
 				$new_input['preset'] = sanitize_text_field( $input['preset'] );
+			} else {
+				$new_input['preset'] = 'custom';
 			}
 		}
 
 		/* SMTP preset */
-		if ( ! empty( $input['auth'] ) ) {
+		if ( isset( $input['auth'] ) ) {
 			if ( in_array( $input['auth'], array( 'ssl', 'tls' ), true ) ) {
 				$new_input['auth'] = sanitize_text_field( $input['auth'] );
+			} else {
+				$new_input['auth'] = '';
 			}
 		}
 
@@ -496,11 +500,11 @@ class Settings_Form {
 		/* SMTP advanced */
 		$new_input['advanced'] = ! empty( $input['advanced'] );
 
-		/* SMTP from Mail */
-		$new_input['from_mail'] = ! empty( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];
+			/* SMTP from Mail */
+			$new_input['from_mail'] = ! empty( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];
 
-		/* SMTP from UserName */
-		$new_input['from_name'] = ! empty( $input['from_name'] ) ? sanitize_text_field( $input['from_name'] ) : $new_input['from_name'];
+			/* SMTP from UserName */
+			$new_input['from_name'] = ! empty( $input['from_name'] ) ? sanitize_text_field( $input['from_name'] ) : $new_input['from_name'];
 
 		return $new_input;
 	}
