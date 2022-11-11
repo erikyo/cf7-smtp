@@ -25,10 +25,16 @@ const smtpAdmin = () => {
 	 * @param {boolean}     enabled  - show or hide the form row
 	 */
 	function enableAdvanced(elements, formElem, enabled) {
-		elements.forEach((el) => {
-			formElem.querySelector(`tr:nth-child(${el})`).style.display =
-				enabled ? 'table-row' : 'none';
-		});
+		if (formElem) {
+			elements.forEach((el) => {
+				formElem.querySelector(`tr:nth-child(${el})`).style.display =
+					enabled ? 'table-row' : 'none';
+			});
+		} else {
+			console.log(
+				`Cannot find form element ${elements} of ${toString(formElem)}`
+			);
+		}
 	}
 
 	/**
@@ -41,7 +47,11 @@ const smtpAdmin = () => {
 	enableAdvanced([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
 
 	smtpEnabled.addEventListener('click', () => {
-		enableAdvanced([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+		enableAdvanced(
+			[2, 3, 4, 5, 6, 7],
+			formSmtpSection,
+			smtpEnabled.checked
+		);
 	});
 
 	/**
@@ -51,12 +61,12 @@ const smtpAdmin = () => {
 	const formAdvancedSection = document.querySelector(
 		'#cf7-smtp-settings .form-table:last-of-type'
 	);
-	enableAdvanced([3, 4], formAdvancedSection, smtpAdvancedOptions.checked);
+	enableAdvanced([2, 3], formAdvancedSection, smtpAdvancedOptions.checked);
 
 	/* Adding an event listener to the smtpAdvancedOptions element. */
 	smtpAdvancedOptions.addEventListener('click', () => {
 		enableAdvanced(
-			[3, 4],
+			[2, 3],
 			formAdvancedSection,
 			smtpAdvancedOptions.checked
 		);

@@ -21,16 +21,46 @@
 	do_action( 'cf7_smtp_dashboard' );
 	?>
 
-	<div class="card main-options">
+	<div class="cf7-smtp-options">
 		<h3><?php esc_html__( 'Options', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 		<form method="post" action="options.php" id="cf7-smtp-settings" class="form-table">
 			<?php
 			/* This prints out all hidden setting fields */
 			settings_fields( CF7_SMTP_TEXTDOMAIN . '-settings' );
+
+			/* This prints out the smtp settings */
+			echo '<div class="card smtp-settings-options">';
 			do_settings_sections( 'smtp-settings' );
 			submit_button();
+			echo '</div>';
+
+			/* This prints the style options (template) */
+			echo '<div class="card smtp-style-options">';
+			do_settings_sections( 'smtp-style' );
+			submit_button();
+			echo '</div>';
+
+			/* This prints the cron options (mail report) */
+			echo '<div class="card main-options">';
+			do_settings_sections( 'smtp-cron' );
+
+
+			if ( wp_next_scheduled( 'cf7_smtp_report' ) && CF7ANTISPAM_DEBUG ) {
+				echo '<div class="tip schedule"><h1>⏰</h1>';
+				printf(
+					'<small class="monospace">%s %s <br/>Server time %s</small>',
+					esc_html__( 'Next scheduled unban event:', CF7_SMTP_TEXTDOMAIN ),
+					esc_html( wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7_smtp_report' ) ) ),
+					esc_html( wp_date( 'Y-m-d H:i:s', time() ) )
+				);
+				echo '</div>';
+			}
+
+
+			submit_button();
+			echo '</div>';
+
 			?>
 		</form>
 	</div>
-
 </div>

@@ -60,10 +60,19 @@ function cf7_smtp_uninstall_multisite() {
  */
 function cf7_smtp_uninstall() { // phpcs:ignore
 
+	/* delete site options */
 	\delete_option( CF7_SMTP_TEXTDOMAIN . '-options' );
+	\delete_option( 'cf7_smtp_report' );
 
-	// for site options in Multisite
+	/* for site options in Multisite. */
 	\delete_site_option( CF7_SMTP_TEXTDOMAIN . '-options' );
+	\delete_site_option( 'cf7_smtp_report' );
+
+	/* unschedule cf7 smtp events */
+	$timestamp = wp_next_scheduled( 'cf7_smtp_report' );
+	if ( $timestamp ) {
+		wp_clear_scheduled_hook( 'cf7_smtp_report' );
+	}
 }
 
 cf7_smtp_uninstall_multisite();

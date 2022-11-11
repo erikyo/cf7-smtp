@@ -1,6 +1,6 @@
 <?php
 /**
- * cf7_smtp
+ * CF7_SMTP MAILER
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -61,6 +61,9 @@ class Mailer extends Base {
 			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_overrides' ) );
 		}
 
+		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
+		\add_action( 'wpcf7_mail_failed', array( $this, 'cf7_smtp_wp_mail_failed' ) );
+
 		\add_action(
 			'wp_mail_failed',
 			function ( $error ) {
@@ -75,6 +78,41 @@ class Mailer extends Base {
 			99,
 			3
 		);
+	}
+
+
+	/**
+	 * Fired when the mail has succeeded
+	 *
+	 * @param WPCF7_ContactForm $contact_form The contact form that has sent the email.
+	 *
+	 * TODO: with the contact form instance we could build better stats in the future
+	 *
+	 * @return void
+	 */
+	public function cf7_smtp_wp_mail_succeeded( $contact_form ) {
+		$report                      = get_option( 'cf7_smtp_report' );
+		$report['storage'][ time() ] = array(
+			'mail_sent' => true,
+		);
+		$report['sent']              = ++$report['sent'];
+		update_option( 'cf7_smtp_report', $report );
+	}
+
+	/**
+	 * Fired when the mail has failed
+	 *
+	 * @param WPCF7_ContactForm $contact_form The contact form that has sent the email.
+	 *
+	 * @return void
+	 */
+	public function cf7_smtp_wp_mail_failed( $contact_form ) {
+		$report                      = get_option( 'cf7_smtp_report' );
+		$report['storage'][ time() ] = array(
+			'mail_sent' => false,
+		);
+		$report['failed']            = ++$report['failed'];
+		update_option( 'cf7_smtp_report', $report );
 	}
 
 
@@ -158,9 +196,9 @@ class Mailer extends Base {
 		}
 
 		/* Allows user and 3rd party plugin to filter the template file */
-		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, CF7_SMTP_TEXTDOMAIN );
+		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, CF7_SMTP_TEXTDOMAIN );
 
-		return !empty($template) ? file_get_contents( $template ) : '';
+		return ! empty( $template ) ? file_get_contents( $template ) : '';
 	}
 
 

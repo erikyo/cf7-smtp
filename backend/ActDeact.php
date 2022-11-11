@@ -129,6 +129,8 @@ class ActDeact extends Base {
 			'version'         => 1,
 			'enabled'         => false,
 			'custom_template' => false,
+			'report_every'    => false,
+			'report_to'       => wp_get_current_user()->user_email ?? '',
 			'preset'          => 'custom',
 			'advanced'        => false,
 			'host'            => $current_website,
@@ -141,7 +143,6 @@ class ActDeact extends Base {
 		);
 
 	}
-
 
 	/**
 	 *  Create or Update the CF7 Antispam options
@@ -181,6 +182,7 @@ class ActDeact extends Base {
 	 * @return void
 	 */
 	private static function single_activate() {
+
 		/* Clear the permalinks */
 		\flush_rewrite_rules();
 	}

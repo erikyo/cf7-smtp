@@ -17,8 +17,32 @@
 	width: 100%
   }
 
+  input#cf7_smtp_user_pass.unsafe {
+	box-shadow: 0 0 0 1px red inset;
+  }
+
   input[type='submit'] {
 	@extend %button
+  }
+
+  .tip.schedule {
+	padding: 8px 16px;
+	margin: 16px auto 0;
+	display: flex;
+	justify-content: center;
+	background: #ffebeb;
+	border: 1px solid #f44336;
+	border-radius: 5px;
+	* {
+	  margin: 0 8px;
+	  padding: 0;
+	}
+	h1 {
+	  font-size: 30px;
+	}
+	.monospace {
+
+	}
   }
 }
 

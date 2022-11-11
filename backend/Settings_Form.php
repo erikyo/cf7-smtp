@@ -181,15 +181,6 @@ class Settings_Form {
 
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
-			'custom_template',
-			__( 'Custom Template', CF7_SMTP_TEXTDOMAIN ),
-			array( $this, 'cf7_smtp_print_custom_template_callback' ),
-			'smtp-settings',
-			'smtp_advanced'
-		);
-
-		/* Settings cf7_smtp enabled */
-		add_settings_field(
 			'advanced',
 			__( 'Enable Overrides', CF7_SMTP_TEXTDOMAIN ),
 			array( $this, 'cf7_smtp_print_advanced_callback' ),
@@ -214,6 +205,49 @@ class Settings_Form {
 			'smtp-settings',
 			'smtp_advanced'
 		);
+
+		/* Section style */
+		add_settings_section(
+			'smtp_style',
+			__( 'Style', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_section_style_subtitle' ),
+			'smtp-style'
+		);
+
+		/* Settings cf7_smtp enabled */
+		add_settings_field(
+			'custom_template',
+			__( 'Custom Template', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_custom_template_callback' ),
+			'smtp-style',
+			'smtp_style'
+		);
+
+		/* Section cron */
+		add_settings_section(
+			'smtp_cron',
+			__( 'Cron', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_section_cron_subtitle' ),
+			'smtp-cron'
+		);
+
+		/* Settings cf7_smtp enabled */
+		add_settings_field(
+			'report_every',
+			__( 'Schedule report every', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_report_every_callback' ),
+			'smtp-cron',
+			'smtp_cron'
+		);
+
+		/* Settings cf7_smtp enabled */
+		add_settings_field(
+			'report_to',
+			__( 'Email report to', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_report_to_callback' ),
+			'smtp-cron',
+			'smtp_cron'
+		);
 	}
 
 	/**
@@ -223,6 +257,24 @@ class Settings_Form {
 		printf(
 			'<p>%s</p>',
 			esc_html__( 'Welcome! Remember that you can activate and deactivate the smtp service simply by ticking the checkbox below', CF7_SMTP_TEXTDOMAIN )
+		);
+	}
+	/**
+	 * It prints The main setting text below the title
+	 */
+	public function cf7_smtp_print_section_style_subtitle() {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Add an html template that wraps the email. (ps. You can enable a user-defined template, see the documentation for more information)', CF7_SMTP_TEXTDOMAIN )
+		);
+	}
+	/**
+	 * It prints The main setting text below the title
+	 */
+	public function cf7_smtp_print_section_cron_subtitle() {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Do you want to know if the mails are running smoothly? Let me occasionally e-mail a summary to verify the functionality.', CF7_SMTP_TEXTDOMAIN )
 		);
 	}
 
@@ -265,6 +317,27 @@ class Settings_Form {
 		}
 
 		return $select_opt;
+	}
+
+	/**
+	 * Utility that generates the options for a select input given an array of values
+	 *
+	 * @param array  $values - the array of selection options.
+	 * @param string $selected - the name of the selected one (if any).
+	 *
+	 * @return string - the html needed inside the select
+	 */
+	private function cf7_smtp_generate_options( $values, $selected = '' ) {
+		$html = '';
+		foreach ( $values as $key => $value ) {
+			$html .= sprintf(
+				'<option value="%s" %s>%s</option>',
+				sanitize_key( $key ),
+				$key === $selected ? 'selected' : '',
+				$value['display']
+			);
+		}
+		return $html;
 	}
 
 	/**
@@ -395,11 +468,12 @@ class Settings_Form {
 	 * The value of the text input field is set to the value of the user_pass key in the $this->options array.
 	 */
 	public function cf7_smtp_print_user_pass_callback() {
+		$u_pass = ! ( empty( CF7_SMTP_SETTINGS ) && empty( CF7_SMTP_SETTINGS['password'] ) );
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
-			empty( CF7_SMTP_PASSWORD ) ? 'unsafe' : 'safe',
-			empty( $this->options['user_pass'] ) && empty( CF7_SMTP_PASSWORD ) ? '' : 'placeholder="***"',
-			empty( CF7_SMTP_PASSWORD ) ? '' : 'disabled'
+			$u_pass ? 'unsafe' : 'safe',
+			empty( $this->options['user_pass'] ) && $u_pass ? '' : 'placeholder="***"',
+			$u_pass ? '' : 'disabled'
 		);
 	}
 
@@ -448,6 +522,38 @@ class Settings_Form {
 	}
 
 	/**
+	 * It generates a select box with the options 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' and the default value is 'disabled'
+	 */
+	public function cf7_smtp_print_report_every_callback() {
+		/* the list of available schedules */
+		$schedules = wp_get_schedules();
+		$schedules = array_merge( array( '' => array( 'display' => 'disabled' ) ), $schedules );
+		printf(
+			'<select id="report_every" name="cf7-smtp-options[report_every]">%s</select>',
+			wp_kses(
+				$this->cf7_smtp_generate_options(
+					$schedules,
+					isset( $this->options['report_every'] ) ? $this->options['report_every'] : ''
+				),
+				array(
+					'option' => array(
+						'value'    => array(),
+						'selected' => array(),
+					),
+				)
+			)
+		);
+	}
+
+	public function cf7_smtp_print_report_to_callback() {
+		printf(
+			'<input type="text" id="cf7_smtp_report_to" name="cf7-smtp-options[report_to]" value="%s" />',
+			! empty( $this->options['report_to'] ) ? sanitize_email( $this->options['report_to'] ) : wp_get_current_user()->user_email
+		);
+	}
+
+
+	/**
 	 * Sanitize each setting field as needed
 	 *
 	 * @param array $input Contains all settings fields as array keys.
@@ -494,9 +600,6 @@ class Settings_Form {
 		/* SMTP Password */
 		$new_input['user_pass'] = ! empty( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
 
-		/* SMTP custom_template */
-		$new_input['custom_template'] = ! empty( $input['custom_template'] );
-
 		/* SMTP advanced */
 		$new_input['advanced'] = ! empty( $input['advanced'] );
 
@@ -505,6 +608,35 @@ class Settings_Form {
 
 			/* SMTP from UserName */
 			$new_input['from_name'] = ! empty( $input['from_name'] ) ? sanitize_text_field( $input['from_name'] ) : $new_input['from_name'];
+
+		/* SMTP custom_template */
+		$new_input['custom_template'] = ! empty( $input['custom_template'] );
+
+		/* SMTP report cron schedule */
+		$schedule = wp_get_schedules();
+		if ( ! empty( $input['report_every'] ) && in_array( $input['report_every'], array_keys( $schedule ), true ) ) {
+			if ( $this->options['report_every'] !== $input['report_every'] ) {
+				$new_input['report_every'] = $input['report_every'];
+
+				/* delete previous scheduled events */
+				$timestamp = wp_next_scheduled( 'cf7_smtp_report' );
+				if ( $timestamp ) {
+					wp_clear_scheduled_hook( 'cf7_smtp_report' );
+				}
+
+				/* add the new scheduled event */
+				wp_schedule_event( time() + $schedule[ $new_input['report_every'] ]['interval'], $new_input['report_every'], 'cf7_smtp_report' );
+			}
+		} else {
+			/* Get the timestamp for the next event. */
+			$timestamp = wp_next_scheduled( 'cf7_smtp_report' );
+			if ( $timestamp ) {
+				wp_clear_scheduled_hook( 'cf7_smtp_report' );
+			}
+		}
+
+		/* SMTP send report to */
+		$new_input['report_to'] = ! empty( $input['report_to'] ) ? sanitize_text_field( $input['report_to'] ) : $new_input['report_to'];
 
 		return $new_input;
 	}

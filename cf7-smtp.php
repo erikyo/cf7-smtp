@@ -26,15 +26,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you can not directly access this file.' );
 }
 
-const CF7_SMTP_NAME            = 'Contact Form 7 - SMTP';
-const CF7_SMTP_TEXTDOMAIN      = 'cf7-smtp';
-const CF7_SMTP_MIN_PHP_VERSION = '7.1';
+define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
+define( 'CF7_SMTP_TEXTDOMAIN', 'cf7-smtp' );
+define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-if ( ! defined( 'CF7_SMTP_PASSWORD' ) ) {
-	define( 'CF7_SMTP_PASSWORD', false );
+if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
+	define(
+		'CF7_SMTP_SETTINGS',
+		array(
+			'host'      => ! defined( 'CF7_SMTP_HOST' ) ? false : CF7_SMTP_HOST,
+			'port'      => ! defined( 'CF7_SMTP_PORT' ) ? false : CF7_SMTP_PORT,
+			'auth'      => ! defined( 'CF7_SMTP_AUTH' ) ? false : CF7_SMTP_AUTH,
+			'user_name' => ! defined( 'CF7_SMTP_USER_NAME' ) ? false : CF7_SMTP_USER_NAME,
+			'user_pass' => ! defined( 'CF7_SMTP_USER_PASSWORD' ) ? false : CF7_SMTP_USER_PASSWORD,
+			'from_mail' => ! defined( 'CF7_SMTP_FROM_MAIL' ) ? false : CF7_SMTP_FROM_MAIL,
+			'from_name' => ! defined( 'CF7_SMTP_FROM_NAME' ) ? false : CF7_SMTP_FROM_NAME,
+		)
+	);
 }
 
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
@@ -50,7 +61,7 @@ if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 			echo wp_kses_post(
 				sprintf(
 					'<div class="notice notice-error"><p>%s</p></div>',
-					__( 'SMTP for Contact Form 7 requires PHP 7.1 or newer.', CF7_SMTP_TEXTDOMAIN )
+					esc_html__( 'SMTP for Contact Form 7 requires PHP 7.1 or newer.', CF7_SMTP_TEXTDOMAIN )
 				)
 			);
 		}
