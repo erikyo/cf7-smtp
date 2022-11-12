@@ -48,11 +48,18 @@ class Mailer extends Base {
 		$this->mail_allowed_tags = apply_filters(
 			'cf7_smtp_mail_allowed_tags',
 			array(
-				'i'      => array(),
+				'table'  => array(),
+				'tr'     => array(),
+				'td'     => array(),
+				'div'    => array(),
+				'span'   => array(),
+				'br'     => array(),
+				'hr'     => array(),
 				'b'      => array(),
+				'p'      => array(),
 				'a'      => array(
 					'href'   => array(),
-					'target' => array(),
+					'target' => array( '_blank', '_top' ),
 				),
 				'strong' => array(),
 				'h1'     => array(),
@@ -101,7 +108,7 @@ class Mailer extends Base {
 		$report                      = get_option( 'cf7_smtp_report' );
 		$report['storage'][ time() ] = array(
 			'mail_sent' => true,
-			'id'        => $contact_form->id(),
+			'form_id'   => $contact_form->id(),
 		);
 		$report['sent']              = ++$report['sent'];
 		update_option( 'cf7_smtp_report', $report );
@@ -146,7 +153,7 @@ class Mailer extends Base {
 		}
 
 		/* htmlize the mail content */
-		$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses( $mail_data['body'], $this->mail_allowed_tags ) ) : '';
+		$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses_post( $mail_data['body'] ) ) : '';
 
 		/* if the mail body is available replace the message in body */
 		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;
@@ -172,6 +179,7 @@ class Mailer extends Base {
 				 * @param string $mail_logo the url of the image
 				 */
 				'site_logo' => apply_filters( 'cf7_smtp_mail_logo', wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) ?? '',
+				'site_name' => apply_filters( 'cf7_smtp_mail_logo_alt', esc_html( get_bloginfo( 'name' ) ) ),
 
 				/**
 				 * Set the mail logo link url (what happens when you click on the image at the top of the email)

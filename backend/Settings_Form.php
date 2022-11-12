@@ -277,7 +277,7 @@ class Settings_Form {
 	public function cf7_smtp_print_advanced_callback() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Leave empty to NOT override the WordPress defaults (and in addition it may be different from the one below as the one you set in Contact Form 7 will be used)', CF7_SMTP_TEXTDOMAIN )
+			esc_html__( 'Leave empty to NOT override the WordPress defaults (the one used can be different from the one you see below, if left blank the one set in Contact Form 7 will be used)', CF7_SMTP_TEXTDOMAIN )
 		);
 	}
 

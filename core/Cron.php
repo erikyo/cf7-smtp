@@ -68,27 +68,10 @@ class Cron extends Base {
 			$last_report = time();
 		}
 
-		cf7_smtp_log( $report['storage'] );
-
-		foreach ( $report['storage'] as $date => $row ) {
-
-			if ( $last_report > $date ) {
-				cf7_smtp_log( "skip $date" );
-				continue;
-			}
-
-			$mail_count++;
-
-			$html .= sprintf(
-				'<p>%s - %s</p><br/>',
-				gmdate( 'r', $date ),
-				! empty( $row['mail_sent'] ) ? '✅' : '⛔'
-			);
-		}
-
 		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
 			$html .= sprintf(
-				"\r\n<p><b>%s</b>%s - <b>%s</b> %s</p>",
+				"<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>",
+				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
 				esc_html__( 'Sent with success', CF7_SMTP_TEXTDOMAIN ),
 				intval( $report['success'] ),
 				esc_html__( 'Failed', CF7_SMTP_TEXTDOMAIN ),
@@ -96,18 +79,37 @@ class Cron extends Base {
 			);
 		}
 
+		if ( $report['storage'] ) {
+			$html .= sprintf(
+				"<h3>%s</h3>",
+				esc_html__( 'Mail sent since last update', CF7_SMTP_TEXTDOMAIN )
+			);
+
+			foreach ( $report['storage'] as $date => $row ) {
+
+				if ( $last_report > $date ) {
+					cf7_smtp_log( "skip $date" );
+					continue;
+				}
+
+				$mail_count++;
+
+				$html .= sprintf(
+					"<p>%s - %s %s</p>",
+					wp_date( 'r', $date ),
+					! empty( $row['mail_sent'] ) ? '✅' : '⛔',
+					! empty( $row['form_id'] ) ? $row['form_id'] : ''
+				);
+			}
+		}
+
 		$html .= ! empty( $report['storage'] )
 			? sprintf(
-				'<br/><h4>%s</h4><p>%s</p>',
-				esc_html(
-					sprintf(
-						__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
-						/* translators: %1$s (number) is the total count of emails sent and %2$s (number) is the number of mail since the last report */
-						__( '%1$s overall sent mails, %2$s since last report', CF7_SMTP_TEXTDOMAIN ),
-						count( $report['storage'] ),
-						$mail_count
-					)
-				)
+			/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
+				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
+				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
+				count( $report['storage'] ),
+				$mail_count
 			)
 			: esc_html__( 'No Mail in storage', CF7_SMTP_TEXTDOMAIN );
 
@@ -135,7 +137,7 @@ class Cron extends Base {
 		$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
 
 		/* build the report */
-		$report_formatted = $this->cf7_smtp_format_report( $report, 0654 );
+		$report_formatted = $this->cf7_smtp_format_report( $report, $last_report );
 		cf7_smtp_log( $report_formatted );
 
 		/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
