@@ -13,6 +13,7 @@
  * Get the settings of the plugin in a filterable way
  *
  * @since 0.0.1
+ *
  * @return array
  */
 function cf7_smtp_get_settings(): array {

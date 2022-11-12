@@ -97,12 +97,13 @@ class Rest_SendMail extends Base {
 	 * @return array an array of the email, subject, body, from_name, and from_mail.
 	 */
 	private function cf7_smtp_testmailer_fill_data( array $mail_data ) {
+		$mailer = new Mailer();
 		return array(
-			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $this->options['email'],
-			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : 'no subject provided',
-			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : 'mail body not provided',
-			'from_name' => ! empty( $mail_data['from_name'] ) ? sanitize_text_field( $mail_data['from_name'] ) : $this->options['from_name'],
-			'from_mail' => ! empty( $mail_data['from_mail'] ) ? sanitize_email( $mail_data['from_mail'] ) : $this->options['from_mail'],
+			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $mailer->cf7_smtp_get_setting_by_key( 'email', $this->options ),
+			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', CF7_SMTP_TEXTDOMAIN ),
+			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'mail body not provided', CF7_SMTP_TEXTDOMAIN ),
+			'from_mail' => ! empty( $mail_data['from_mail'] ) ? sanitize_email( $mail_data['from_mail'] ) : $mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options ),
+			'from_name' => ! empty( $mail_data['from_name'] ) ? sanitize_text_field( $mail_data['from_name'] ) : $mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options ),
 		);
 	}
 
@@ -127,8 +128,9 @@ class Rest_SendMail extends Base {
 
 		/* allows to change the "from" if the user has chosen to override WordPress data */
 		$headers = '';
-		if ( ! empty( $this->options['advanced'] ) ) {
-			$headers = sprintf( "From: %s <%s>\r\n", $mail_headers['from_name'], $mail_headers['from_mail'] );
+		/* Setting the "from" (email and name). */
+		if ( ! empty( $mail['from_mail'] ) ) {
+			$headers = sprintf( "From: %s <%s>\r\n", $mail['from_name'], $mail['from_mail'] );
 		}
 
 		/* store the testing flag temporally */
@@ -206,6 +208,8 @@ class Rest_SendMail extends Base {
 
 		if ( ! empty( $json_params['email'] ) ) {
 
+			$smtp_mailer = new Mailer();
+
 			$r = self::cf7_smtp_testmailer(
 				array(
 					'email'   => $json_params['email'],
@@ -213,8 +217,8 @@ class Rest_SendMail extends Base {
 					'body'    => ! empty( $json_params["body'"] ) ? $json_params["body'"] : '',
 				),
 				array(
-					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $this->options['from_name'],
-					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $this->options['from_mail'],
+					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name' ),
+					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail' ),
 				)
 			);
 

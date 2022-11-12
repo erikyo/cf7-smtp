@@ -132,7 +132,6 @@ class ActDeact extends Base {
 			'report_every'    => false,
 			'report_to'       => wp_get_current_user()->user_email ?? '',
 			'preset'          => 'custom',
-			'advanced'        => false,
 			'host'            => $current_website,
 			'port'            => '25',
 			'auth'            => false,

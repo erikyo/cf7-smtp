@@ -33,17 +33,17 @@ define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
+if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
-			'host'      => ! defined( 'CF7_SMTP_HOST' ) ? false : CF7_SMTP_HOST,
-			'port'      => ! defined( 'CF7_SMTP_PORT' ) ? false : CF7_SMTP_PORT,
-			'auth'      => ! defined( 'CF7_SMTP_AUTH' ) ? false : CF7_SMTP_AUTH,
-			'user_name' => ! defined( 'CF7_SMTP_USER_NAME' ) ? false : CF7_SMTP_USER_NAME,
-			'user_pass' => ! defined( 'CF7_SMTP_USER_PASSWORD' ) ? false : CF7_SMTP_USER_PASSWORD,
-			'from_mail' => ! defined( 'CF7_SMTP_FROM_MAIL' ) ? false : CF7_SMTP_FROM_MAIL,
-			'from_name' => ! defined( 'CF7_SMTP_FROM_NAME' ) ? false : CF7_SMTP_FROM_NAME,
+			'host'      => defined( 'CF7_SMTP_HOST' ) ? CF7_SMTP_HOST : false,
+			'port'      => defined( 'CF7_SMTP_PORT' ) ? CF7_SMTP_PORT : false,
+			'auth'      => defined( 'CF7_SMTP_AUTH' ) ? CF7_SMTP_AUTH : false,
+			'user_name' => defined( 'CF7_SMTP_USER_NAME' ) ? CF7_SMTP_USER_NAME : false,
+			'user_pass' => defined( 'CF7_SMTP_USER_PASS' ) ? CF7_SMTP_USER_PASS : false,
+			'from_mail' => defined( 'CF7_SMTP_FROM_MAIL' ) ? CF7_SMTP_FROM_MAIL : false,
+			'from_name' => defined( 'CF7_SMTP_FROM_NAME' ) ? CF7_SMTP_FROM_NAME : false,
 		)
 	);
 }

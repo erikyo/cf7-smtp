@@ -38,6 +38,13 @@ class Mailer extends Base {
 
 		parent::initialize();
 
+		/**
+		 * Filter the mail content to allow only certain tags
+		 *
+		 * @since 0.0.1
+		 *
+		 * @param array $mail_allowed_tags a wp_kses formatted array of tags and properties
+		 */
 		$this->mail_allowed_tags = apply_filters(
 			'cf7_smtp_mail_allowed_tags',
 			array(
@@ -86,7 +93,7 @@ class Mailer extends Base {
 	 *
 	 * @param WPCF7_ContactForm $contact_form The contact form that has sent the email.
 	 *
-	 * TODO: with the contact form instance we could build better stats in the future
+	 * @TODO: with the contact form instance we could build better stats in the future.
 	 *
 	 * @return void
 	 */
@@ -94,6 +101,7 @@ class Mailer extends Base {
 		$report                      = get_option( 'cf7_smtp_report' );
 		$report['storage'][ time() ] = array(
 			'mail_sent' => true,
+			'id'        => $contact_form->id(),
 		);
 		$report['sent']              = ++$report['sent'];
 		update_option( 'cf7_smtp_report', $report );
@@ -110,6 +118,7 @@ class Mailer extends Base {
 		$report                      = get_option( 'cf7_smtp_report' );
 		$report['storage'][ time() ] = array(
 			'mail_sent' => false,
+			'id'        => $contact_form->id(),
 		);
 		$report['failed']            = ++$report['failed'];
 		update_option( 'cf7_smtp_report', $report );
@@ -142,13 +151,35 @@ class Mailer extends Base {
 		/* if the mail body is available replace the message in body */
 		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;
 
-		/* set the default mail replacement */
+		/**
+		 * Set the mail replacements tags
+		 *
+		 * @param array $mail_tags an array where the key is the needle and the value is what has to be replaced in content
+		 * @param string $template_name the name of the template without ".html"
+		 */
 		$template_replacements = apply_filters(
 			'cf7_smtp_mail_template_replacements',
 			array(
-				'subject'   => esc_html( $mail_data['subject'] ) ?? '',
+				'title'     => ! empty( $mail_data['title'] ) ? esc_html( $mail_data['title'] ) : '',
+				'subject'   => ! empty( $mail_data['subject'] ) ? esc_html( $mail_data['subject'] ) : '',
 				'language'  => ! empty( $mail_data['language'] ) ? sanitize_text_field( $mail_data['language'] ) : get_bloginfo( 'language' ),
+
+				/**
+				 * Set the mail logo image shown at the top of the email
+				 *
+				 * @since 0.0.1
+				 *
+				 * @param string $mail_logo the url of the image
+				 */
 				'site_logo' => apply_filters( 'cf7_smtp_mail_logo', wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) ?? '',
+
+				/**
+				 * Set the mail logo link url (what happens when you click on the image at the top of the email)
+				 *
+				 * @since 0.0.1
+				 *
+				 * @param string $mail_url the url of the image
+				 */
 				'site_url'  => apply_filters( 'cf7_smtp_mail_logo_url', get_site_url() ) ?? '',
 			),
 			sanitize_file_name( $template . '.html' )
@@ -195,7 +226,17 @@ class Mailer extends Base {
 			$template = $plugin_template_dir . "{$template_name}.html";
 		}
 
-		/* Allows user and 3rd party plugin to filter the template file */
+		/**
+		 * Allows user and 3rd party plugin to filter the template file
+		 *
+		 * @since 0.0.1
+		 *
+		 * @param string $template the filename of the template
+		 * @param string $template_name the name of the template
+		 * @param string $id the contact form id
+		 * @param string $lang the contact form language
+		 * @param string $CF7_SMTP_TEXTDOMAIN cf7-smtp slug
+		 */
 		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, CF7_SMTP_TEXTDOMAIN );
 
 		return ! empty( $template ) ? file_get_contents( $template ) : '';
@@ -226,12 +267,33 @@ class Mailer extends Base {
 		if ( ! empty( $components['body'] ) ) {
 
 			$components['body'] = self::cf7_smtp_form_template(
+				/**
+				 * Allows user and 3rd party plugin to filter the template file
+				 *
+				 * @since 0.0.1
+				 *
+				 * @param string $template the filename of the template
+				 * @param string $template_name the name of the template
+				 * @param string $id the contact form id
+				 * @param string $lang the contact form language
+				 * @param string $CF7_SMTP_TEXTDOMAIN cf7-smtp slug
+				 */
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
 				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
 			);
 		}
 
 		return $components;
+	}
+
+	public function cf7_smtp_get_setting_by_key( $key, $options = false ) {
+		$options = ! empty( $options ) ? $options : $this->options;
+		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
+			return CF7_SMTP_SETTINGS[ $key ];
+		} elseif ( isset( $options[ $key ] ) ) {
+			return $options[ $key ];
+		}
+		return '';
 	}
 
 	/**
@@ -248,25 +310,31 @@ class Mailer extends Base {
 		/* SSL or TLS, if necessary for your server */
 		if ( ! empty( $this->options['auth'] ) ) {
 			$phpmailer->SMTPAuth   = true;
-			$phpmailer->SMTPSecure = $this->options['auth'];
+			$phpmailer->SMTPSecure = $this->cf7_smtp_get_setting_by_key( 'auth' );
 		}
 
 		/*Host*/
 		if ( ! empty( $this->options['host'] ) ) {
-			$phpmailer->Host = sanitize_text_field( $this->options['host'] );
+			$phpmailer->Host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host' ) );
 		}
 
 		/*Port*/
 		if ( $this->options['port'] ) {
-			$phpmailer->Port = intval( $this->options['port'] );
+			$phpmailer->Port = intval( $this->cf7_smtp_get_setting_by_key( 'port' ) );
 		}
 
 		/* Force it to use Username and Password to authenticate */
 		if ( $this->options['user_name'] ) {
-			$phpmailer->Username = sanitize_text_field( $this->options['user_name'] );
+			$phpmailer->Username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name' ) );
 		}
 		if ( $this->options['user_pass'] ) {
-			$phpmailer->Password = cf7_smtp_decrypt( $this->options['user_pass'] );
+			if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
+				$phpmailer->Password = CF7_SMTP_SETTINGS['user_pass'];
+			} elseif ( ! empty( $this->options['user_pass'] ) ) {
+				$phpmailer->Password = cf7_smtp_decrypt( $this->options['user_pass'] );
+			} else {
+				$phpmailer->Password = '';
+			}
 		}
 
 		/* Enable verbose debug output */
@@ -283,10 +351,10 @@ class Mailer extends Base {
 		}
 
 		/* Setting the "from" (email and name). */
-		if ( ! empty( $this->options['advanced'] ) ) {
-			if ( ! empty( $this->options['from_mail'] ) && ! empty( $this->options['from_name'] ) ) {
-				$phpmailer->setFrom( $this->options['from_mail'], $this->options['from_name'] );
-			}
+		$from_mail = $this->cf7_smtp_get_setting_by_key( 'from_mail' );
+		if ( ! empty( $from_mail ) ) {
+			$from_name = $this->cf7_smtp_get_setting_by_key( 'from_name' );
+			$phpmailer->setFrom( $from_mail, $from_name );
 		}
 	}
 }

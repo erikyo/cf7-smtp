@@ -55,24 +55,6 @@ const smtpAdmin = () => {
 	});
 
 	/**
-	 * Enables the advanced settings
-	 */
-	const smtpAdvancedOptions = document.querySelector('#cf7_smtp_advanced');
-	const formAdvancedSection = document.querySelector(
-		'#cf7-smtp-settings .form-table:last-of-type'
-	);
-	enableAdvanced([2, 3], formAdvancedSection, smtpAdvancedOptions.checked);
-
-	/* Adding an event listener to the smtpAdvancedOptions element. */
-	smtpAdvancedOptions.addEventListener('click', () => {
-		enableAdvanced(
-			[2, 3],
-			formAdvancedSection,
-			smtpAdvancedOptions.checked
-		);
-	});
-
-	/**
 	 *  Email Response box
 	 *
 	 *  @member {HTMLElement} formElem - the Email form used to test email functionalities
@@ -159,8 +141,6 @@ const smtpAdmin = () => {
 					'Waiting for server response... ⏰',
 					true
 				);
-
-				console.log(r);
 
 				OutputMessage(
 					responseBox,

@@ -19,9 +19,17 @@ There is a module for testing the sending of 'live' e-mails (with the API rest w
 
 And last but not least there is the possibility of using a customised template to send your e-mails in a less textual and slightly prettier format! The template can be customised for each form and internationalized.
 
+In addition, this plugin isn't a paywall, I don't want to sell nothing! To send mails with the smtp you should just reconfigure WordPress to do so, it is [really very easy](https://gist.github.com/erikyo/1b20572dfae676a20a6b888ab35c40f4#file-wp_mail_test-php-L40-L46)
+
 == SMTP ==
 SMTP stands for 'Simple Mail Transfer Protocol'. It is a connection-oriented, text-based network protocol of the Internet protocol family and as such is on the seventh layer of the ISO/OSI model, the application layer. Like any other network protocol, it contains the rules for proper communication between networked computers. SMTP is specifically responsible for sending and forwarding e-mails from a sender to a recipient.
 Since its release in 1982 as the successor to the 'Mail Box Protocol' in Arpanet, SMTP has become the standard protocol for sending e-mails. However, the SMTP procedure remains largely invisible to the normal consumer, as it is executed in the background by the e-mail programme used. Only if the software, the webmail application on the browser or the mobile e-mail application does not automatically determine the SMTP protocol when creating an account, does it have to be set manually to ensure smooth e-mail traffic.
+
+= SMTP presets  =
+1. Aruba
+2. Gmail (tls and ssl)
+3. Yahoo (tls and ssl)
+4. Outlook (tls and ssl)
 
 = How this plugin works  =
 

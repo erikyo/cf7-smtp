@@ -48,9 +48,10 @@
 			if ( wp_next_scheduled( 'cf7_smtp_report' ) && CF7ANTISPAM_DEBUG ) {
 				echo '<div class="tip schedule"><h1>⏰</h1>';
 				printf(
-					'<small class="monospace">%s %s <br/>Server time %s</small>',
-					esc_html__( 'Next scheduled unban event:', CF7_SMTP_TEXTDOMAIN ),
+					'<small class="monospace"><b>%s</b> %s <br/><b>%s</b> %s</small>',
+					esc_html__( 'Next report:', CF7_SMTP_TEXTDOMAIN ),
 					esc_html( wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7_smtp_report' ) ) ),
+					esc_html__( 'Server time:', CF7_SMTP_TEXTDOMAIN ),
 					esc_html( wp_date( 'Y-m-d H:i:s', time() ) )
 				);
 				echo '</div>';

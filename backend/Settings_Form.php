@@ -175,23 +175,14 @@ class Settings_Form {
 		add_settings_section(
 			'smtp_advanced',
 			__( 'Advanced Options', CF7_SMTP_TEXTDOMAIN ),
-			array( $this, 'cf7_smtp_print_empty_callback' ),
-			'smtp-settings'
-		);
-
-		/* Settings cf7_smtp enabled */
-		add_settings_field(
-			'advanced',
-			__( 'Enable Overrides', CF7_SMTP_TEXTDOMAIN ),
 			array( $this, 'cf7_smtp_print_advanced_callback' ),
-			'smtp-settings',
-			'smtp_advanced'
+			'smtp-settings'
 		);
 
 		/* Settings cf7_smtp from_mail */
 		add_settings_field(
 			'from_mail',
-			__( 'Override User Mail', CF7_SMTP_TEXTDOMAIN ),
+			__( 'From mail', CF7_SMTP_TEXTDOMAIN ),
 			array( $this, 'cf7_smtp_print_from_mail_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -200,7 +191,7 @@ class Settings_Form {
 		/* Settings cf7_smtp from_mail */
 		add_settings_field(
 			'from_name',
-			__( 'Override User Name', CF7_SMTP_TEXTDOMAIN ),
+			__( 'From name', CF7_SMTP_TEXTDOMAIN ),
 			array( $this, 'cf7_smtp_print_from_name_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -279,13 +270,14 @@ class Settings_Form {
 	}
 
 	/**
-	 * It prints a checkbox with the id of `cf7_smtp_enabled` and the name of `cf7-smtp-options[enabled]` and if the `enabled`
-	 * option is set, it will be checked
+	 * It returns nothing
+	 *
+	 * @return void Nothing.
 	 */
-	public function cf7_smtp_print_enable_callback() {
+	public function cf7_smtp_print_advanced_callback() {
 		printf(
-			'<input type="checkbox" id="cf7_smtp_enabled" name="cf7-smtp-options[enabled]" %s />',
-			! empty( $this->options['enabled'] ) ? 'checked="true"' : ''
+			'<p>%s</p>',
+			esc_html__( 'Leave empty to NOT override the WordPress defaults (and in addition it may be different from the one below as the one you set in Contact Form 7 will be used)', CF7_SMTP_TEXTDOMAIN )
 		);
 	}
 
@@ -373,8 +365,6 @@ class Settings_Form {
 	 * @return string a string of HTML.
 	 */
 	public function cf7_smtp_form_generate_radio( $selected = '' ) {
-		// TODO user extendable?
-
 		$html = '';
 		foreach ( $this->auth_values as $auth ) {
 			$auth_name = ! empty( $auth ) ? $auth : esc_html__( 'none', CF7_SMTP_TEXTDOMAIN );
@@ -390,21 +380,49 @@ class Settings_Form {
 	}
 
 	/**
-	 * It returns nothing
+	 * If the CF7_SMTP_SETTINGS constant is defined and the key is set, return the value of the key. Otherwise, if the key is
+	 * set in the options array, return the value of the key. Otherwise, return 'unset'
 	 *
-	 * @return void Nothing.
+	 * @param string $key The key of the option you want to retrieve.
+	 * @param bool   $return If true, the value of the option will be returned. If false, the option's status will be returned.
+	 *
+	 * @return array $option The value of the key in the CF7_SMTP_SETTINGS array, or the value of the key in the $this->options array, or
+	 * 'unset' if the key is not found in either array.
 	 */
-	public function cf7_smtp_print_empty_callback() {}
+	public function cf7_smtp_find_setting( string $key, bool $return = true ): array {
+		$option = array(
+			'value'   => '',
+			'defined' => false,
+		);
+		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
+			$option['value']   = $return ? CF7_SMTP_SETTINGS[ $key ] : 'defined';
+			$option['defined'] = true;
+		} elseif ( ! empty( $this->options[ $key ] ) ) {
+			$option['value'] = $return ? $this->options[ $key ] : 'stored';
+		}
+		return $option;
+	}
+
+	/**
+	 * It prints a checkbox with the id of `cf7_smtp_enabled` and the name of `cf7-smtp-options[enabled]` and if the `enabled`
+	 * option is set, it will be checked
+	 */
+	public function cf7_smtp_print_enable_callback() {
+		printf(
+			'<input type="checkbox" id="cf7_smtp_enabled" name="cf7-smtp-options[enabled]" %s />',
+			! empty( $this->options['enabled'] ) || ! empty( CF7_SMTP_SETTINGS ) ? 'checked="true"' : ''
+		);
+	}
 
 	/**
 	 * It prints a radio button group with the value of the 'auth' key in the $this->options array
 	 */
 	public function cf7_smtp_print_auth_callback() {
-		$auth_value = ! empty( $this->options['auth'] ) ? sanitize_key( $this->options['auth'] ) : '';
+		$auth = $this->cf7_smtp_find_setting( 'auth' );
 		printf(
 			'<div id="cf7-smtp-auth">%s</div>',
 			wp_kses(
-				self::cf7_smtp_form_generate_radio( $auth_value ),
+				self::cf7_smtp_form_generate_radio( $auth['value'] ),
 				array(
 					'label' => array(),
 					'input' => array(
@@ -424,9 +442,11 @@ class Settings_Form {
 	 * option, and a placeholder of localhost
 	 */
 	public function cf7_smtp_print_host_callback() {
+		$host = $this->cf7_smtp_find_setting( 'host' );
 		printf(
-			'<input type="text" id="cf7_smtp_host" name="cf7-smtp-options[host]" value="%s" placeholder="localhost" />',
-			! empty( $this->options['host'] ) ? esc_html( $this->options['host'] ) : ''
+			'<input type="text" id="cf7_smtp_host" name="cf7-smtp-options[host]" value="%s" placeholder="localhost" value="%s" />',
+			! empty( $host['value'] ) ? esc_html( $host['value'] ) : '',
+			$host['defined'] ? 'disabled' : ''
 		);
 	}
 
@@ -435,9 +455,11 @@ class Settings_Form {
 	 * option
 	 */
 	public function cf7_smtp_print_port_callback() {
+		$port = $this->cf7_smtp_find_setting( 'port' );
 		printf(
-			'<input type="number" id="cf7_smtp_port" name="cf7-smtp-options[port]" value="%s" />',
-			! empty( $this->options['port'] ) ? intval( $this->options['port'] ) : ''
+			'<input type="number" id="cf7_smtp_port" name="cf7-smtp-options[port]" value="%s" %s min="0" max="65353" step="1" />',
+			! empty( $port['value'] ) ? intval( $port['value'] ) : '',
+			$port['defined'] ? 'disabled' : ''
 		);
 	}
 
@@ -446,56 +468,26 @@ class Settings_Form {
 	 * of the user_name key in the options array
 	 */
 	public function cf7_smtp_print_user_name_callback() {
+		$user_name = $this->cf7_smtp_find_setting( 'user_name' );
 		printf(
-			'<input type="text" id="cf7_smtp_user_name" name="cf7-smtp-options[user_name]" value="%s" />',
-			! empty( $this->options['user_name'] ) ? esc_html( $this->options['user_name'] ) : ''
+			'<input type="text" id="cf7_smtp_user_name" name="cf7-smtp-options[user_name]" value="%s" %s />',
+			! empty( $user_name['value'] ) ? esc_html( $user_name['value'] ) : '',
+			$user_name['defined'] ? 'disabled' : ''
 		);
 	}
 
+
 	/**
-	 * It prints a text input field with the id of cf7_smtp_user_pass, the name of cf7-smtp-options[user_pass], and the class
-	 * of either safe or unsafe.
-	 *
-	 * The class of safe or unsafe is determined by whether or not the CF7_SMTP_PASSWORD constant is defined. If it is
-	 * defined, the class is safe. If it is not defined, the class is unsafe.
-	 *
-	 * The placeholder attribute is set to *** if the CF7_SMTP_PASSWORD constant is defined. If it is not defined, the
-	 * placeholder attribute is not set.
-	 *
-	 * The disabled attribute is set if the CF7_SMTP_PASSWORD constant is defined. If it is not defined, the disabled
-	 * attribute is not set.
-	 *
-	 * The value of the text input field is set to the value of the user_pass key in the $this->options array.
+	 * It prints a text input field with the id of cf7_smtp_user_pass, the name of cf7-smtp-options[user_pass], and a class of
+	 * either safe or unsafe
 	 */
 	public function cf7_smtp_print_user_pass_callback() {
-		$u_pass = ! ( empty( CF7_SMTP_SETTINGS ) && empty( CF7_SMTP_SETTINGS['password'] ) );
+		$user_pass = $this->cf7_smtp_find_setting( 'user_pass', false );
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
-			$u_pass ? 'unsafe' : 'safe',
-			empty( $this->options['user_pass'] ) && $u_pass ? '' : 'placeholder="***"',
-			$u_pass ? '' : 'disabled'
-		);
-	}
-
-	/**
-	 * It prints a checkbox with the id of cf7_smtp_custom_template and the name of cf7-smtp-options[custom_template] and if
-	 * the custom_template option is not empty, it adds the checked="true" attribute to the checkbox
-	 */
-	public function cf7_smtp_print_custom_template_callback() {
-		printf(
-			'<input type="checkbox" id="cf7_smtp_custom_template" name="cf7-smtp-options[custom_template]" %s />',
-			! empty( $this->options['custom_template'] ) ? 'checked="true"' : ''
-		);
-	}
-
-	/**
-	 * It prints a checkbox with the id of cf7_smtp_advanced and the name of cf7-smtp-options[advanced] and if the advanced
-	 * option is not empty, it checks the box
-	 */
-	public function cf7_smtp_print_advanced_callback() {
-		printf(
-			'<input type="checkbox" id="cf7_smtp_advanced" name="cf7-smtp-options[advanced]" %s />',
-			! empty( $this->options['advanced'] ) ? 'checked="true"' : ''
+			! empty( $user_pass['defined'] ) ? 'safe' : 'unsafe',
+			'' === $user_pass['value'] ? '' : 'placeholder="***"',
+			'defined' === $user_pass['value'] ? 'disabled' : ''
 		);
 	}
 
@@ -504,20 +496,26 @@ class Settings_Form {
 	 * the from_mail key in the options array
 	 */
 	public function cf7_smtp_print_from_mail_callback() {
+		$from_mail = $this->cf7_smtp_find_setting( 'from_mail' );
 		printf(
-			'<input type="email" id="cf7_smtp_from_mail" name="cf7-smtp-options[from_mail]" value="%s" />',
-			! empty( $this->options['from_mail'] ) ? sanitize_text_field( $this->options['from_mail'] ) : ''
+			'<input type="email" id="cf7_smtp_from_mail" name="cf7-smtp-options[from_mail]" value="%s" %s />',
+			! empty( $from_mail['value'] ) ? esc_html( $from_mail['value'] ) : '',
+			$from_mail['defined'] ? 'disabled' : ''
 		);
 	}
 
 	/**
 	 * It prints a text input field with the id of cf7_smtp_from_name and the name of cf7-smtp-options[from_name] and the
 	 * value of the from_name option
+	 *
+	 * This one could be empty.
 	 */
 	public function cf7_smtp_print_from_name_callback() {
+		$from_name = $this->cf7_smtp_find_setting( 'from_name' );
 		printf(
-			'<input type="text" id="cf7_smtp_from_name" name="cf7-smtp-options[from_name]" value="%s" />',
-			! empty( $this->options['from_name'] ) ? sanitize_text_field( $this->options['from_name'] ) : ''
+			'<input type="text" id="cf7_smtp_from_name" name="cf7-smtp-options[from_name]" value="%s" %s />',
+			isset( $from_name['value'] ) ? esc_html( $from_name['value'] ) : '',
+			$from_name['defined'] ? 'disabled' : ''
 		);
 	}
 
@@ -545,10 +543,25 @@ class Settings_Form {
 		);
 	}
 
+	/**
+	 * It prints a checkbox with the id of cf7_smtp_custom_template and the name of cf7-smtp-options[custom_template] and if
+	 * the custom_template option is not empty, it adds the checked="true" attribute to the checkbox
+	 */
+	public function cf7_smtp_print_custom_template_callback() {
+		printf(
+			'<input type="checkbox" id="cf7_smtp_custom_template" name="cf7-smtp-options[custom_template]" %s />',
+			! empty( $this->options['custom_template'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/**
+	 * It prints a text input field with the id of `cf7_smtp_report_to` and the name of `cf7-smtp-options[report_to]` and the
+	 * value of the `report_to` key in the `$this->options` array
+	 */
 	public function cf7_smtp_print_report_to_callback() {
 		printf(
 			'<input type="text" id="cf7_smtp_report_to" name="cf7-smtp-options[report_to]" value="%s" />',
-			! empty( $this->options['report_to'] ) ? sanitize_email( $this->options['report_to'] ) : wp_get_current_user()->user_email
+			! empty( $this->options['report_to'] ) ? esc_html( $this->options['report_to'] ) : esc_html( wp_get_current_user()->user_email )
 		);
 	}
 
@@ -600,21 +613,18 @@ class Settings_Form {
 		/* SMTP Password */
 		$new_input['user_pass'] = ! empty( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
 
-		/* SMTP advanced */
-		$new_input['advanced'] = ! empty( $input['advanced'] );
+		/* SMTP from Mail */
+		$new_input['from_mail'] = isset( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];
 
-			/* SMTP from Mail */
-			$new_input['from_mail'] = ! empty( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];
-
-			/* SMTP from UserName */
-			$new_input['from_name'] = ! empty( $input['from_name'] ) ? sanitize_text_field( $input['from_name'] ) : $new_input['from_name'];
+		/* SMTP from UserName */
+		$new_input['from_name'] = isset( $input['from_name'] ) ? sanitize_text_field( $input['from_name'] ) : $new_input['from_name'];
 
 		/* SMTP custom_template */
 		$new_input['custom_template'] = ! empty( $input['custom_template'] );
 
 		/* SMTP report cron schedule */
 		$schedule = wp_get_schedules();
-		if ( ! empty( $input['report_every'] ) && in_array( $input['report_every'], array_keys( $schedule ), true ) ) {
+		if ( isset( $input['report_every'] ) && in_array( $input['report_every'], array_keys( $schedule ), true ) ) {
 			if ( $this->options['report_every'] !== $input['report_every'] ) {
 				$new_input['report_every'] = $input['report_every'];
 
@@ -628,6 +638,7 @@ class Settings_Form {
 				wp_schedule_event( time() + $schedule[ $new_input['report_every'] ]['interval'], $new_input['report_every'], 'cf7_smtp_report' );
 			}
 		} else {
+			$new_input['report_every'] = '';
 			/* Get the timestamp for the next event. */
 			$timestamp = wp_next_scheduled( 'cf7_smtp_report' );
 			if ( $timestamp ) {
