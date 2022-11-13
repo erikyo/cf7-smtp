@@ -23,7 +23,7 @@ use WPCF7_Mail;
  */
 class Mailer extends Base {
 	/**
-	 * the tags allowed for the mail content.
+	 * The tags allowed for the mail content.
 	 *
 	 * @var array
 	 */
@@ -109,6 +109,7 @@ class Mailer extends Base {
 		$report['storage'][ time() ] = array(
 			'mail_sent' => true,
 			'form_id'   => $contact_form->id(),
+			'title'     => $contact_form->title(),
 		);
 		$report['sent']              = ++$report['sent'];
 		update_option( 'cf7_smtp_report', $report );
@@ -126,6 +127,7 @@ class Mailer extends Base {
 		$report['storage'][ time() ] = array(
 			'mail_sent' => false,
 			'id'        => $contact_form->id(),
+			'title'     => $contact_form->title(),
 		);
 		$report['failed']            = ++$report['failed'];
 		update_option( 'cf7_smtp_report', $report );
@@ -247,6 +249,7 @@ class Mailer extends Base {
 		 */
 		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, CF7_SMTP_TEXTDOMAIN );
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		return ! empty( $template ) ? file_get_contents( $template ) : '';
 	}
 
@@ -294,6 +297,15 @@ class Mailer extends Base {
 		return $components;
 	}
 
+	/**
+	 * It returns the value of the key in the CF7_SMTP_SETTINGS array if it exists, otherwise it returns the value of the key
+	 * in the $options array if it exists, otherwise it returns an empty string
+	 *
+	 * @param string      $key The key of the setting you want to retrieve.
+	 * @param array|false $options The options array.
+	 *
+	 * @return string The value of the key in the array.
+	 */
 	public function cf7_smtp_get_setting_by_key( $key, $options = false ) {
 		$options = ! empty( $options ) ? $options : $this->options;
 		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
@@ -312,7 +324,7 @@ class Mailer extends Base {
 	 * @throws Exception May fail and throw an exception.
 	 */
 	public function cf7_smtp_overrides( PHPMailer\PHPMailer $phpmailer ) {
-
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->isSMTP();
 
 		/* SSL or TLS, if necessary for your server */
@@ -352,6 +364,7 @@ class Mailer extends Base {
 			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
 			$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
 		}
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		/* Force html if the user has choosen a custom template */
 		if ( ! empty( $this->options['custom_template'] ) ) {

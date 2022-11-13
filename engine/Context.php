@@ -1,7 +1,6 @@
 <?php
-
 /**
- * CF7_SMTP context class
+ * CF7_SMTP context class.
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>

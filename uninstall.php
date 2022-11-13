@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP Uninstall
  *
@@ -34,7 +33,11 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  */
 function cf7_smtp_uninstall_multisite() {
 	if ( is_multisite() ) {
-		/** @var array<\WP_Site> $blogs */
+		/**
+		 * The array of blog ids.
+		 *
+		 * @var array<\WP_Site> $blogs
+		 */
 		$blogs = get_sites();
 
 		if ( ! empty( $blogs ) ) {

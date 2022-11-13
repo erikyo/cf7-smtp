@@ -34,73 +34,88 @@ class Cron extends Base {
 	 *
 	 * @param array $schedules This is the name of the hook that we're adding a schedule to.
 	 */
-	function cf7_smtp_add_cron_steps( $schedules ) {
-		if ( ! empty( $schedules ) ) {
-			return array_merge(
-				$schedules,
-				array(
-					'2weeks' => array(
-						'interval' => WEEK_IN_SECONDS * 2,
-						'display'  => __( 'Every 2 weeks', CF7_SMTP_TEXTDOMAIN ),
-					),
-					'month'  => array(
-						'interval' => MONTH_IN_SECONDS,
-						'display'  => __( 'Every month', CF7_SMTP_TEXTDOMAIN ),
-					),
-				)
+	public function cf7_smtp_add_cron_steps( $schedules ): array {
+		if ( ! isset( $schedules['2weeks'] ) ) {
+			$schedules['2weeks'] = array(
+				'interval' => WEEK_IN_SECONDS * 2,
+				'display'  => __( 'Every 2 weeks', CF7_SMTP_TEXTDOMAIN ),
 			);
 		}
+		if ( ! isset( $schedules['month'] ) ) {
+			$schedules['month'] = array(
+				'interval' => MONTH_IN_SECONDS,
+				'display'  => __( 'Every month', CF7_SMTP_TEXTDOMAIN ),
+			);
+		}
+		return $schedules;
 	}
 
 	/**
 	 * It takes the report data and formats it into a human-readable HTML string
 	 *
-	 * @param array $report the array of emails
-	 * @param bool  $last_report
+	 * @param array $report The array of emails.
+	 * @param bool  $last_report the time of last report (unix timestamp).
 	 *
 	 * @return string
 	 */
 	public function cf7_smtp_format_report( $report, $last_report = false ) {
-		$html       = '';
-		$mail_count = 0;
 
 		if ( ! $last_report ) {
 			$last_report = time();
 		}
 
-		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
-			$html .= sprintf(
-				"<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>",
-				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
-				esc_html__( 'Sent with success', CF7_SMTP_TEXTDOMAIN ),
-				intval( $report['success'] ),
-				esc_html__( 'Failed', CF7_SMTP_TEXTDOMAIN ),
-				intval( $report['failed'] )
-			);
-		}
+		$mail_list = array(
+			'result' => array(
+				'success' => 0,
+				'failed'  => 0,
+			),
+			'old'    => 0,
+			'count'  => 0,
+		);
 
-		if ( $report['storage'] ) {
+		$html = '';
+
+		if ( ! empty( $report['storage'] ) ) {
+
 			$html .= sprintf(
-				"<h3>%s</h3>",
+				'<h3>%s</h3>',
 				esc_html__( 'Mail sent since last update', CF7_SMTP_TEXTDOMAIN )
 			);
 
 			foreach ( $report['storage'] as $date => $row ) {
-
 				if ( $last_report > $date ) {
-					cf7_smtp_log( "skip $date" );
+					$mail_list['old']++;
 					continue;
+				} else {
+					$mail_list['recent'][ $row['mail_sent'] ]++;
+					$mail_list['count']++;
 				}
 
-				$mail_count++;
-
 				$html .= sprintf(
-					"<p>%s - %s %s</p>",
+					'<p>%s - %s %s (id: %s)</p>',
 					wp_date( 'r', $date ),
-					! empty( $row['mail_sent'] ) ? '✅' : '⛔',
-					! empty( $row['form_id'] ) ? $row['form_id'] : ''
+					empty( $row['mail_sent'] ) ? '⛔' : '✅',
+					empty( $row['title'] ) ? '' : intval( $row['title'] ),
+					empty( $row['form_id'] ) ? '' : intval( $row['form_id'] )
 				);
 			}
+		}
+
+		/* Checking if the report has valid or failed emails. Note: in order to move the report after the list of mail the previous html will be concatenated at the end of this string */
+		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
+			$html = sprintf(
+				'<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>',
+				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
+				esc_html__( 'Sent with success', CF7_SMTP_TEXTDOMAIN ),
+				intval( $mail_list['recent']['success'] ),
+				esc_html__( 'Failed', CF7_SMTP_TEXTDOMAIN ),
+				intval( $mail_list['recent']['failed'] )
+			) . $html;
+		} else {
+			$html = sprintf(
+				'<h3>%s</h3>',
+				esc_html__( 'No recent e-mails to show!', CF7_SMTP_TEXTDOMAIN )
+			);
 		}
 
 		$html .= ! empty( $report['storage'] )
@@ -109,7 +124,7 @@ class Cron extends Base {
 				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
 				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
 				count( $report['storage'] ),
-				$mail_count
+				$mail_list['count']
 			)
 			: esc_html__( 'No Mail in storage', CF7_SMTP_TEXTDOMAIN );
 
@@ -138,10 +153,17 @@ class Cron extends Base {
 
 		/* build the report */
 		$report_formatted = $this->cf7_smtp_format_report( $report, $last_report );
-		cf7_smtp_log( $report_formatted );
 
-		/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
-		$mail['subject'] = esc_html__( sprintf( '%s Mail report', esc_html( $schedules[ $options['report_every'] ]['display'] ) ), CF7_SMTP_TEXTDOMAIN );
+		$mail['subject'] = esc_html(
+			sprintf(
+			/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
+				__(
+					'%s Mail report',
+					CF7_SMTP_TEXTDOMAIN
+				),
+				$schedules[ $options['report_every'] ]['display']
+			)
+		);
 
 		/* the mail message */
 		$mail['body'] = $smtp_mailer->cf7_smtp_form_template(
@@ -150,6 +172,7 @@ class Cron extends Base {
 				'title'   => get_bloginfo( 'name' ),
 				'subject' => $mail['subject'],
 			),
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/report.html' )
 		);
 
@@ -161,6 +184,7 @@ class Cron extends Base {
 
 		/* A try catch block. */
 		try {
+			// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 			if ( wp_mail(
 				$options['report_to'],
 				$mail['subject'],

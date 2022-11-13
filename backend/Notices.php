@@ -1,6 +1,6 @@
 <?php
 /**
- * cf7_smtp
+ * CF7_SMTP notifications
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -29,6 +29,12 @@ class Notices extends Base {
 		}
 	}
 
+	/**
+	 * It displays a message on the admin page
+	 *
+	 * @param string $message The message you want to display.
+	 * @param string $type The type of notification between: error, warning, success, info. Default error.
+	 */
 	public function cf7_smtp_admin_notice( $message, $type = 'error' ) {
 		$class = "notice notice-$type";
 

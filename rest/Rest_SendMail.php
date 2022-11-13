@@ -1,6 +1,7 @@
 <?php
 /**
- * cf7_smtp
+ * CF7_SMTP Rest api endpoints
+ * provides cf7-smtp/v1/sendmail/ and cf7-smtp/v1/get_errors/
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -144,6 +145,7 @@ class Rest_SendMail extends Base {
 					'body'    => $mail['body'],
 					'subject' => $mail['subject'],
 				),
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/test.html' )
 			);
 		}
@@ -152,6 +154,7 @@ class Rest_SendMail extends Base {
 		$mail_log = '';
 		ob_start();
 		try {
+			// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 			wp_mail(
 				$mail['email'],
 				$mail['subject'],

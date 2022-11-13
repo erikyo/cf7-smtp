@@ -1,7 +1,6 @@
 <?php
-
 /**
- * cf7_smtp
+ * CF7_SMTP actiovation / deactivation class
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -182,7 +181,10 @@ class ActDeact extends Base {
 	 */
 	private static function single_activate() {
 
-		/* Clear the permalinks */
+		/**
+		 * Clear the permalinks
+		 */
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.flush_rewrite_rules_flush_rewrite_rules
 		\flush_rewrite_rules();
 	}
 
@@ -194,7 +196,10 @@ class ActDeact extends Base {
 	 */
 	private static function single_deactivate() {
 
-		/* Clear the permalinks */
+		/**
+		 * Clear the permalinks
+		 */
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.flush_rewrite_rules_flush_rewrite_rules
 		\flush_rewrite_rules();
 	}
 

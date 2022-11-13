@@ -1,7 +1,6 @@
 <?php
-
 /**
- * cf7_smtp
+ * CF7_SMTP plugin bootstrap
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -15,7 +14,7 @@ namespace cf7_smtp\Engine;
 use cf7_smtp\Engine;
 
 /**
- * cf7_smtp Initializer
+ * CF7_SMTP Initializer.
  */
 class Initialize {
 

@@ -16,9 +16,9 @@ global $current_user;
 
 use cf7_smtp\Core\Mailer as Mailer;
 
-$mailer             = new Mailer();
-$cf7_smtp_from_name = $mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options );
-$cf7_smtp_from_mail = $mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options );
+$cf7_smtp_mailer    = new Mailer();
+$cf7_smtp_from_name = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options );
+$cf7_smtp_from_mail = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options );
 ?>
 
 <div class="wrap">
@@ -32,16 +32,16 @@ $cf7_smtp_from_mail = $mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->
 			<input type="text" name="name-from" id="name-from" placeholder="<?php echo ! empty( $cf7_smtp_from_name ) ? esc_html( $cf7_smtp_from_name ) : esc_html( wp_get_current_user()->display_name ); ?>" >
 
 			<label for="subject">Subject:</label>
-			<input type="text" id="subject" name="subject" placeholder="<?php esc_html_e( 'Add here something like: "this is a test mail!"', CF7_SMTP_TEXTDOMAIN ); ?>">
+			<input type="text" id="subject" name="subject" placeholder="<?php echo esc_attr__( 'Add here something like: "this is a test mail!"', CF7_SMTP_TEXTDOMAIN ); ?>">
 
 			<label for="email-from">From: </label>
-			<input type="email" name="email-from" id="email-from" placeholder="<?php echo ! empty( $cf7_smtp_from_mail ) ? esc_html( $cf7_smtp_from_mail ) : esc_html( wp_get_current_user()->user_email ); ?>" >
+			<input type="email" name="email-from" id="email-from" placeholder="<?php echo ! empty( $cf7_smtp_from_mail ) ? esc_attr( $cf7_smtp_from_mail ) : esc_attr( wp_get_current_user()->user_email ); ?>" >
 
 			<label for="email">To*: </label>
-			<input type="email" name="email" id="email" value="<?php echo esc_html( get_option( 'admin_email' ) ); ?>" required >
+			<input type="email" name="email" id="email" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" required >
 
 			<label for="body">Message:</label>
-			<textarea id="body" name="body" rows="6" placeholder="<?php esc_html_e( 'Add here your custom mail body for the test mail otherwise a default body will be used', CF7_SMTP_TEXTDOMAIN ); ?>"></textarea>
+			<textarea id="body" name="body" rows="6" placeholder="<?php echo esc_attr__( 'Add here your custom mail body for the test mail otherwise a default body will be used', CF7_SMTP_TEXTDOMAIN ); ?>"></textarea>
 
 			<div class="button-wrap">
 				<button value="Send" class="button button-primary">Submit</button>

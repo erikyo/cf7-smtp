@@ -22,6 +22,32 @@
 		div {
 			margin: 0 !important;
 		}
+
+		h1, h2, h3 {
+			color: #060607 !important;
+		}
+
+		h2 {
+			font-weight: 700 !important;
+			font-size: 20px;
+		}
+
+		h3 {
+			font-weight: 700 !important;
+		}
+
+		ul {
+			margin-bottom: 24px !important;
+		}
+
+		p, span {
+			font-size: 14px;
+			line-height: 20px;
+		}
+
+		.footer *:not(a) {
+			color: #747F8D !important;
+		}
 	</style>
 	<noscript>
 		<xml>
@@ -32,7 +58,7 @@
 	</noscript>
 	<![endif]-->
 </head>
-<body style="margin:0;padding:0;word-spacing:normal;background-color:#F1F1F1;">
+<body style="margin:0;padding:0;word-spacing:normal;background-color:#F1F1F1;font-family:Helvetica,Arial,Lucida Grande,sans-serif;font-size: 12px;line-height: 24px;color:#363636;">
 <div role="article" aria-roledescription="email" lang="{{language}}"
 	 style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
 	<table role="presentation" style="width:100%;border:none;border-spacing:0;">
@@ -44,18 +70,27 @@
 						<td>
 				<![endif]-->
 				<table role="presentation"
-					   style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+					   style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;">
 					<tr>
-						<td style="padding:40px 30px 30px 30px;text-align:center;font-size:24px;font-weight:bold;">
+						<td style="padding:20px 0;text-align:center;font-size:24px;font-weight:bold;">
 							<a href="{{site_url}}" style="text-decoration:none;">
-								<img src="{{site_logo}}" width="200" height="50" alt="{{site_name}}" />
+								<img src="{{site_logo}}" width="200" height="50" alt="{{site_name}}"/>
 							</a>
 						</td>
 					</tr>
 					<tr>
-						<td style="padding:30px 30px 60px;background-color:#FFFFFF;">
-							<h1 style="text-align: center; padding-bottom: 16px">{{subject}}</h1>
+						<td align="left" border="0" cellpadding="0" cellspacing="0" role="presentation"
+							style="padding:20px;background:#ffffff;width:100%;border-radius:8px">
+							<h1 style="text-align: center; margin-bottom: 16px">{{subject}}</h1>
 							{{message}}
+						</td>
+					</tr>
+					<tr>
+						<td align="center" style="padding: 20px 0 12px;text-align:center;">
+							<p style="font-size: 12px; line-height: 24px; text-align: center; color: #99aab5;">
+								Sent from <a href="//www.wordpress.org/" target="_blank">WordPress</a> using <a
+									href="//contactform7.com/" target="_blank">Contact Form 7</a>, we ❤ open source
+							</p>
 						</td>
 					</tr>
 				</table>
@@ -64,14 +99,6 @@
 				</tr>
 				</table>
 				<![endif]-->
-			</td>
-		</tr>
-		<tr>
-			<td style="padding: 16px 30px 12px;text-align:center;font-size:12px; background-color: #224681; border-top: 4px solid #54c7f6;color:#FFFFFF;">
-				<p style="margin: 24px 0 0;font-size: 9px; opacity: .8;color: #EEEEEE;">Sent from <a
-						href="//www.wordpress.org/" target="_blank" style="color: white;">WordPress</a> using <a
-						href="//contactform7.com/" target="_blank" style="color: white;">Contact Form 7</a>, we ❤
-					open source</p>
 			</td>
 		</tr>
 	</table>

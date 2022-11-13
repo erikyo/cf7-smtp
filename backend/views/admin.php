@@ -11,6 +11,7 @@
  * @license   GPL 2.0+
  * @link      https://modul-r.codekraft.it/
  */
+
 ?>
 
 <div class="wrap">

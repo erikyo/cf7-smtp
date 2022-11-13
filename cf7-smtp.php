@@ -1,11 +1,7 @@
 <?php
-
 /**
- * @package   cf7_smtp
- * @author    Erik Golinelli <erik@codekraft.it>
- * @copyright 2022 Erik
- * @license   GPL 2.0+
- * @link      https://modul-r.codekraft.it/
+ * SMTP for Contact From 7
+ * A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  *
  * Plugin Name:     SMTP for Contact From 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
@@ -19,6 +15,12 @@
  * Domain Path:     /languages
  * Requires PHP:    7.1
  * WordPress-Plugin-Boilerplate-Powered: v3.3.0
+ *
+ * @package   cf7_smtp
+ * @author    Erik Golinelli <erik@codekraft.it>
+ * @copyright 2022 Erik
+ * @license   GPL 2.0+
+ * @link      https://modul-r.codekraft.it/
  */
 
 // If this file is called directly, abort.
@@ -75,7 +77,7 @@ $cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; //ph
 
 require_once CF7_SMTP_PLUGIN_ROOT . 'functions/functions.php';
 
-// TODO: Add your new plugin on the wiki: https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate
+// TODO: Add your new plugin [on the wiki](https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate).
 
 if ( ! wp_installing() ) {
 

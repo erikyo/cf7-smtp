@@ -1,7 +1,6 @@
 <?php
-
 /**
- * cf7_smtp
+ * CF7_SMTP import / export data
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>

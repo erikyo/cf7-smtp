@@ -1,6 +1,6 @@
 <?php
 /**
- * cf7_smtp
+ * CF7_SMTP plugin settings
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -445,8 +445,8 @@ class Settings_Form {
 		$host = $this->cf7_smtp_find_setting( 'host' );
 		printf(
 			'<input type="text" id="cf7_smtp_host" name="cf7-smtp-options[host]" value="%s" placeholder="localhost" value="%s" />',
-			! empty( $host['value'] ) ? esc_html( $host['value'] ) : '',
-			$host['defined'] ? 'disabled' : ''
+			esc_attr( empty( $host['value'] ) ? '' : esc_html( $host['value'] ) ),
+			esc_html( empty( $host['defined'] ) ? '' : 'disabled' )
 		);
 	}
 
@@ -458,8 +458,8 @@ class Settings_Form {
 		$port = $this->cf7_smtp_find_setting( 'port' );
 		printf(
 			'<input type="number" id="cf7_smtp_port" name="cf7-smtp-options[port]" value="%s" %s min="0" max="65353" step="1" />',
-			! empty( $port['value'] ) ? intval( $port['value'] ) : '',
-			$port['defined'] ? 'disabled' : ''
+			esc_attr( empty( $port['value'] ) ? '' : intval( $port['value'] ) ),
+			esc_html( empty( $port['defined'] ) ? '' : 'disabled' )
 		);
 	}
 
@@ -471,8 +471,8 @@ class Settings_Form {
 		$user_name = $this->cf7_smtp_find_setting( 'user_name' );
 		printf(
 			'<input type="text" id="cf7_smtp_user_name" name="cf7-smtp-options[user_name]" value="%s" %s />',
-			! empty( $user_name['value'] ) ? esc_html( $user_name['value'] ) : '',
-			$user_name['defined'] ? 'disabled' : ''
+			esc_attr( empty( $user_name['value'] ) ? '' : esc_html( $user_name['value'] ) ),
+			esc_html( empty( $user_name['defined'] ) ? '' : 'disabled' )
 		);
 	}
 
@@ -482,12 +482,13 @@ class Settings_Form {
 	 * either safe or unsafe
 	 */
 	public function cf7_smtp_print_user_pass_callback() {
-		$user_pass = $this->cf7_smtp_find_setting( 'user_pass', false );
+		$user_pass     = $this->cf7_smtp_find_setting( 'user_pass', false );
+		$user_pass_val = esc_html( $user_pass['value'] );
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
-			! empty( $user_pass['defined'] ) ? 'safe' : 'unsafe',
-			'' === $user_pass['value'] ? '' : 'placeholder="***"',
-			'defined' === $user_pass['value'] ? 'disabled' : ''
+			empty( $user_pass['defined'] ) ? 'unsafe' : 'safe',
+			esc_html( '' === $user_pass_val ? '' : 'placeholder="***"' ),
+			esc_html( 'defined' === $user_pass_val ? 'disabled' : '' )
 		);
 	}
 
@@ -499,8 +500,8 @@ class Settings_Form {
 		$from_mail = $this->cf7_smtp_find_setting( 'from_mail' );
 		printf(
 			'<input type="email" id="cf7_smtp_from_mail" name="cf7-smtp-options[from_mail]" value="%s" %s />',
-			! empty( $from_mail['value'] ) ? esc_html( $from_mail['value'] ) : '',
-			$from_mail['defined'] ? 'disabled' : ''
+			esc_attr( empty( $from_mail['value'] ) ? '' : esc_html( $from_mail['value'] ) ),
+			esc_html( empty( $from_mail['defined'] ) ? '' : 'disabled' )
 		);
 	}
 
@@ -514,8 +515,8 @@ class Settings_Form {
 		$from_name = $this->cf7_smtp_find_setting( 'from_name' );
 		printf(
 			'<input type="text" id="cf7_smtp_from_name" name="cf7-smtp-options[from_name]" value="%s" %s />',
-			isset( $from_name['value'] ) ? esc_html( $from_name['value'] ) : '',
-			$from_name['defined'] ? 'disabled' : ''
+			esc_attr( isset( $from_name['value'] ) ? esc_html( $from_name['value'] ) : '' ),
+			esc_html( $from_name['defined'] ? 'disabled' : '' )
 		);
 	}
 
@@ -550,7 +551,7 @@ class Settings_Form {
 	public function cf7_smtp_print_custom_template_callback() {
 		printf(
 			'<input type="checkbox" id="cf7_smtp_custom_template" name="cf7-smtp-options[custom_template]" %s />',
-			! empty( $this->options['custom_template'] ) ? 'checked="true"' : ''
+			empty( $this->options['custom_template'] ) ? '' : 'checked="true"'
 		);
 	}
 
@@ -561,7 +562,7 @@ class Settings_Form {
 	public function cf7_smtp_print_report_to_callback() {
 		printf(
 			'<input type="text" id="cf7_smtp_report_to" name="cf7-smtp-options[report_to]" value="%s" />',
-			! empty( $this->options['report_to'] ) ? esc_html( $this->options['report_to'] ) : esc_html( wp_get_current_user()->user_email )
+			empty( $this->options['report_to'] ) ? esc_html( wp_get_current_user()->user_email ) : esc_html( $this->options['report_to'] )
 		);
 	}
 
@@ -647,7 +648,7 @@ class Settings_Form {
 		}
 
 		/* SMTP send report to */
-		$new_input['report_to'] = ! empty( $input['report_to'] ) ? sanitize_text_field( $input['report_to'] ) : $new_input['report_to'];
+		$new_input['report_to'] = empty( $input['report_to'] ) ? $new_input['report_to'] : sanitize_text_field( $input['report_to'] );
 
 		return $new_input;
 	}

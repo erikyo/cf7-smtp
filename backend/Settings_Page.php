@@ -1,7 +1,6 @@
 <?php
-
 /**
- * cf7_smtp
+ * CF7_SMTP the settings page
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -19,6 +18,8 @@ use cf7_smtp\Engine\Base;
  */
 class Settings_Page extends Base {
 	/**
+	 * The settings form
+	 *
 	 * @var Settings_Form
 	 */
 	private $form;
