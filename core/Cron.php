@@ -24,7 +24,7 @@ class Cron extends Base {
 	 * @return void|bool
 	 */
 	public function initialize() {
-		add_action( 'cf7_smtp_report', array( $this, 'cf7_smtp_report' ) );
+		add_action( 'cf7_smtp_report', array( $this, 'cf7_smtp_send_report' ) );
 
 		add_filter( 'cron_schedules', array( $this, 'cf7_smtp_add_cron_steps' ) );
 	}
@@ -137,11 +137,11 @@ class Cron extends Base {
 	 * It sends a report of the number of successful and failed emails sent by Contact Form 7 to the email address specified
 	 * in the plugin settings
 	 */
-	public function cf7_smtp_report() {
+	public function cf7_smtp_send_report() {
 
 		/* get the stored report */
 		$options = cf7_smtp_get_settings();
-		$report  = get_option( 'cf7_smtp_report' );
+		$report  = get_option( 'cf7-smtp-report' );
 
 		/* init the mail */
 		$smtp_mailer = new Mailer();
@@ -193,7 +193,7 @@ class Cron extends Base {
 			) ) {
 				$report['failed']  = 0;
 				$report['success'] = 0;
-				update_option( 'cf7_smtp_report', $report );
+				update_option( 'cf7-smtp-report', $report );
 			}
 		} catch ( \PHPMailer\PHPMailer\Exception $e ) {
 			cf7_smtp_log( 'Something went wrong while sending the report! 😓' );

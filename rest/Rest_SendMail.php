@@ -131,7 +131,8 @@ class Rest_SendMail extends Base {
 		$headers = '';
 		/* Setting the "from" (email and name). */
 		if ( ! empty( $mail['from_mail'] ) ) {
-			$headers = sprintf( "From: %s <%s>\r\n", $mail['from_name'], $mail['from_mail'] );
+			$headers .= sprintf( "From: %s <%s>\r\n", $mail['from_name'], $mail['from_mail'] );
+			$headers .= "HTML\r\n";
 		}
 
 		/* store the testing flag temporally */
@@ -217,7 +218,7 @@ class Rest_SendMail extends Base {
 				array(
 					'email'   => $json_params['email'],
 					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message works! 🎉',
-					'body'    => ! empty( $json_params["body'"] ) ? $json_params["body'"] : '',
+					'body'    => ! empty( $json_params['body'] ) ? $json_params['body'] : '',
 				),
 				array(
 					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name' ),

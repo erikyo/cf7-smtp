@@ -105,14 +105,14 @@ class Mailer extends Base {
 	 * @return void
 	 */
 	public function cf7_smtp_wp_mail_succeeded( $contact_form ) {
-		$report                      = get_option( 'cf7_smtp_report' );
+		$report                      = get_option( 'cf7-smtp-report' );
 		$report['storage'][ time() ] = array(
 			'mail_sent' => true,
 			'form_id'   => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
 		$report['sent']              = ++$report['sent'];
-		update_option( 'cf7_smtp_report', $report );
+		update_option( 'cf7-smtp-report', $report );
 	}
 
 	/**
@@ -123,14 +123,14 @@ class Mailer extends Base {
 	 * @return void
 	 */
 	public function cf7_smtp_wp_mail_failed( $contact_form ) {
-		$report                      = get_option( 'cf7_smtp_report' );
+		$report                      = get_option( 'cf7-smtp-report' );
 		$report['storage'][ time() ] = array(
 			'mail_sent' => false,
 			'id'        => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
 		$report['failed']            = ++$report['failed'];
-		update_option( 'cf7_smtp_report', $report );
+		update_option( 'cf7-smtp-report', $report );
 	}
 
 
@@ -155,7 +155,7 @@ class Mailer extends Base {
 		}
 
 		/* htmlize the mail content */
-		$mail_body = ! empty( $mail_data['body'] ) ? nl2br( wp_kses_post( $mail_data['body'] ) ) : '';
+		$mail_body = ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : '';
 
 		/* if the mail body is available replace the message in body */
 		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;
@@ -270,7 +270,7 @@ class Mailer extends Base {
 		}
 
 		$email_data = array(
-			'body'     => $components['body'],
+			'body'     => nl2br( $components['body'] ),
 			'subject'  => $components['subject'],
 			'language' => $contact_form->locale(),
 		);
@@ -292,6 +292,9 @@ class Mailer extends Base {
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
 				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
 			);
+
+			/* store a header, so that when we send the e-mail we can activate the html accordingly */
+			$components['headers'] .= "HTML\r\n";
 		}
 
 		return $components;
@@ -329,24 +332,28 @@ class Mailer extends Base {
 
 		/* SSL or TLS, if necessary for your server */
 		if ( ! empty( $this->options['auth'] ) ) {
-			$phpmailer->SMTPAuth   = true;
-			$phpmailer->SMTPSecure = $this->cf7_smtp_get_setting_by_key( 'auth' );
+			$auth = $this->cf7_smtp_get_setting_by_key( 'auth', $this->options );
+			if ( 'tls' === $auth || 'ssl' === $auth ) {
+				$phpmailer->SMTPAuth   = true;
+				$phpmailer->SMTPSecure = $auth;
+			}
 		}
 
 		/*Host*/
 		if ( ! empty( $this->options['host'] ) ) {
-			$phpmailer->Host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host' ) );
+			$phpmailer->Host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
 		}
 
 		/*Port*/
 		if ( $this->options['port'] ) {
-			$phpmailer->Port = intval( $this->cf7_smtp_get_setting_by_key( 'port' ) );
+			$phpmailer->Port = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
 		}
 
 		/* Force it to use Username and Password to authenticate */
 		if ( $this->options['user_name'] ) {
-			$phpmailer->Username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name' ) );
+			$phpmailer->Username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name', $this->options ) );
 		}
+
 		if ( $this->options['user_pass'] ) {
 			if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
 				$phpmailer->Password = CF7_SMTP_SETTINGS['user_pass'];
@@ -366,9 +373,11 @@ class Mailer extends Base {
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
-		/* Force html if the user has choosen a custom template */
+		/* Force html if the user has chosen a custom template */
 		if ( ! empty( $this->options['custom_template'] ) ) {
-			$phpmailer->isHTML();
+			if ( preg_match( '/<html /mi', $phpmailer->Body ) ) {
+				$phpmailer->isHTML();
+			}
 		}
 
 		/* Setting the "from" (email and name). */

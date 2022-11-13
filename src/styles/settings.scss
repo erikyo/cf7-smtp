@@ -1,3 +1,9 @@
+$red: #f44336;
+$green: #4caf50;
+$blue: #3372b3;
+$grayish_blue: #2f333a;
+
+/* button template */
 %button {
   margin: 1rem 1rem 0 auto;
   display: flex;
@@ -18,7 +24,7 @@
   }
 
   input#cf7_smtp_user_pass.unsafe {
-	box-shadow: 0 0 0 1px red inset;
+	box-shadow: 0 0 0 1px $red inset;
   }
 
   input[type='submit'] {
@@ -31,7 +37,7 @@
 	display: flex;
 	justify-content: center;
 	background: #ffebeb;
-	border: 1px solid #f44336;
+	border: 1px solid $red;
 	border-radius: 5px;
 	* {
 	  margin: 0 8px;
@@ -68,24 +74,43 @@
   pre {
 	padding: 30px 20px;
 	box-sizing: border-box;
-	border-left: 3px solid #2f333a;
-	background: #2f333a;
+	border-left: 3px solid $grayish_blue;
+	background: $grayish_blue;
 	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	&.ok {
-		border-color: #4caf50;
+
+	&.enabled {
+	  border-color: $blue;
 	}
+
+	&.ok {
+	  border-color: $green;
+	}
+
 	&.error {
-	  border-color: #f44336;
+	  border-color: $red;
 	}
 
 	code {
 	  white-space: break-spaces;
 	  font-size: .8rem;
 	  color: white;
-	  background: rgba(0,0,0,0.5);
+	  background: darken($grayish_blue, .10);
+	}
+
+	span.timestamp {
+	  text-align: right;
+	  font-size: 11px;
+	  font-weight: bold;
+	  color: white;
+	  background: $blue;
+	  display: block;
+	  margin: 4px 0 4px auto;
+	  padding: 2px 8px;
+	  border-radius: 4px;
+	  line-height: 1;
 	}
   }
 }

@@ -63,6 +63,8 @@ const smtpAdmin = () => {
 	const formElem = document.querySelector('#sendmail-testform form');
 	const responseBox = document.querySelector('#sendmail-response pre');
 
+	responseBox.classList.add('enabled');
+
 	/* Initialize the response box and show a welcome message */
 	cleanOutput(
 		responseBox,
@@ -82,6 +84,11 @@ const smtpAdmin = () => {
 			message;
 	}
 
+	function extractData(line) {
+		const regex = /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)/g;
+		return regex.exec(line);
+	}
+
 	/**
 	 * It takes a message, splits it into lines, and then adds each line to the output container with a random delay
 	 *
@@ -91,17 +98,30 @@ const smtpAdmin = () => {
 	 */
 	function OutputMessage(outputContainer, msg, mailSent = null) {
 		msg = msg.split(/\n/);
-		if (msg.length) {
-			msg.forEach((line) => {
-				/* will add the lines "softly" */
-				setTimeout(() => {
-					outputContainer.insertAdjacentHTML(
-						'beforeend',
-						`<code>${line}</code>`
-					);
-				}, 100 + Math.random() * 100);
+		let lastTimestamp = 0;
 
+		if (msg.length) {
+			msg.forEach((line, index) => {
 				// TODO: regex here to search for errors
+
+				const [string, date, text] = extractData(line);
+
+				/* will add the lines "softly" */
+				setTimeout( () => {
+					if (date === lastTimestamp) {
+						outputContainer.insertAdjacentHTML(
+							'beforeend',
+							`<code>${text}</code>`
+						);
+					} else {
+						// refresh the timestamp
+						lastTimestamp = date;
+						outputContainer.insertAdjacentHTML(
+							'beforeend',
+							`<span class="timestamp">${date}</span><code>${text}</code>`
+						);
+					}
+				}, 50 * index + Math.random() * 200);
 			});
 		}
 		// if the mailSent flag is set (true or false) update the container class
@@ -136,10 +156,9 @@ const smtpAdmin = () => {
 			data,
 		})
 			.then((r) => {
-				OutputMessage(
-					responseBox,
-					'Waiting for server response... ⏰',
-					true
+				responseBox.insertAdjacentHTML(
+					'beforeend',
+					`<code>${'Waiting for server response... ⏰'}</code>`
 				);
 
 				OutputMessage(

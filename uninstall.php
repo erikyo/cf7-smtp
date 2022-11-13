@@ -64,12 +64,12 @@ function cf7_smtp_uninstall_multisite() {
 function cf7_smtp_uninstall() { // phpcs:ignore
 
 	/* delete site options */
-	\delete_option( CF7_SMTP_TEXTDOMAIN . '-options' );
-	\delete_option( 'cf7_smtp_report' );
+	\delete_option( 'cf7-smtp-options' );
+	\delete_option( 'cf7-smtp-report' );
 
 	/* for site options in Multisite. */
-	\delete_site_option( CF7_SMTP_TEXTDOMAIN . '-options' );
-	\delete_site_option( 'cf7_smtp_report' );
+	\delete_site_option( 'cf7-smtp-options' );
+	\delete_site_option( 'cf7-smtp-report' );
 
 	/* unschedule cf7 smtp events */
 	$timestamp = wp_next_scheduled( 'cf7_smtp_report' );

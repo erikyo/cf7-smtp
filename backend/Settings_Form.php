@@ -48,9 +48,9 @@ class Settings_Form {
 			'cf7_smtp_servers',
 			array(
 				'custom'      => array(
-					'host' => '',
-					'auth' => '',
-					'port' => false,
+					'host' => 'localhost',
+					'auth' => 'none',
+					'port' => 25,
 				),
 				'aruba'       => array(
 					'host' => 'smtps.aruba.it',
@@ -85,7 +85,7 @@ class Settings_Form {
 			)
 		);
 
-		$this->auth_values = array( '', 'ssl', 'tls' );
+		$this->auth_values = array( 'none', 'ssl', 'tls' );
 	}
 
 	/**
@@ -361,18 +361,20 @@ class Settings_Form {
 	 * It generates a radio button for the authentication method.
 	 *
 	 * @param string $selected The value of the selected radio button.
+	 * @param bool   $defined The value has been defined with a constant.
 	 *
 	 * @return string a string of HTML.
 	 */
-	public function cf7_smtp_form_generate_radio( $selected = '' ) {
+	public function cf7_smtp_form_generate_radio( string $selected = '', bool $defined = false ): string {
 		$html = '';
 		foreach ( $this->auth_values as $auth ) {
-			$auth_name = ! empty( $auth ) ? $auth : esc_html__( 'none', CF7_SMTP_TEXTDOMAIN );
+			$auth_name = 'tls' === $auth || 'ssl' === $auth ? $auth : esc_html__( 'none', CF7_SMTP_TEXTDOMAIN );
 			$html     .= sprintf(
-				'<label><input type="radio" name="cf7-smtp-options[auth]" class="auth-%s" value="%s"%s/>%s</label>',
-				$auth_name,
-				$auth_name,
-				$selected === $auth ? ' checked ' : ' ',
+				'<label><input type="radio" name="cf7-smtp-options[auth]" class="auth-%s" value="%s"%s%s/>%s</label>',
+				esc_attr( $auth_name ),
+				esc_attr( $auth_name ),
+				$selected === $auth ? ' checked' : ' ',
+				! empty( $defined ) ? ' disabled ' : ' ',
 				$auth_name
 			);
 		}
@@ -391,7 +393,7 @@ class Settings_Form {
 	 */
 	public function cf7_smtp_find_setting( string $key, bool $return = true ): array {
 		$option = array(
-			'value'   => '',
+			'value'   => false,
 			'defined' => false,
 		);
 		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
@@ -422,15 +424,16 @@ class Settings_Form {
 		printf(
 			'<div id="cf7-smtp-auth">%s</div>',
 			wp_kses(
-				self::cf7_smtp_form_generate_radio( $auth['value'] ),
+				self::cf7_smtp_form_generate_radio( esc_html( $auth['value'] ), $auth['defined'] ),
 				array(
 					'label' => array(),
 					'input' => array(
-						'type'    => array(),
-						'name'    => array(),
-						'class'   => array(),
-						'value'   => array(),
-						'checked' => array(),
+						'type'     => array(),
+						'name'     => array(),
+						'class'    => array(),
+						'value'    => array(),
+						'checked'  => array(),
+						'disabled' => array(),
 					),
 				)
 			)
@@ -444,7 +447,7 @@ class Settings_Form {
 	public function cf7_smtp_print_host_callback() {
 		$host = $this->cf7_smtp_find_setting( 'host' );
 		printf(
-			'<input type="text" id="cf7_smtp_host" name="cf7-smtp-options[host]" value="%s" placeholder="localhost" value="%s" />',
+			'<input type="text" id="cf7_smtp_host" name="cf7-smtp-options[host]" value="%s" %s placeholder="localhost" />',
 			esc_attr( empty( $host['value'] ) ? '' : esc_html( $host['value'] ) ),
 			esc_html( empty( $host['defined'] ) ? '' : 'disabled' )
 		);
@@ -487,7 +490,7 @@ class Settings_Form {
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
 			empty( $user_pass['defined'] ) ? 'unsafe' : 'safe',
-			esc_html( '' === $user_pass_val ? '' : 'placeholder="***"' ),
+			wp_kses( empty( $user_pass_val ) ? '' : 'placeholder="***"', array( 'placeholder' => array() ) ),
 			esc_html( 'defined' === $user_pass_val ? 'disabled' : '' )
 		);
 	}
@@ -586,7 +589,7 @@ class Settings_Form {
 		/* SMTP preset */
 		if ( ! empty( $input['preset'] ) ) {
 			$selected_preset = $this->cf7_smtp_host_presets[ sanitize_text_field( $input['preset'] ) ] ?? 'custom';
-			if ( $input['auth'] === $selected_preset['auth'] && $input['host'] === $selected_preset['host'] && intval( $input['port'] ) === intval( $selected_preset['port'] ) ) {
+			if ( isset( $input['auth'] ) && isset( $input['port'] ) && isset( $input['host'] ) && $input['auth'] === $selected_preset['auth'] && $input['host'] === $selected_preset['host'] && intval( $input['port'] ) === intval( $selected_preset['port'] ) ) {
 				$new_input['preset'] = sanitize_text_field( $input['preset'] );
 			} else {
 				$new_input['preset'] = 'custom';

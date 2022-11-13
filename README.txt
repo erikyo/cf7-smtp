@@ -36,7 +36,29 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 Would you like to find more presets? Open a request in the support form and include the necessary connection data, auth, server address and port.
 
 = Security =
-it's warmly advised to sto re
+it's warmly advised to store at least the password into config.php as a constant. And in addition, it's also very easy! It needs only to add
+`define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );`
+into your config.php just before `/* That's all, stop editing! Happy publishing. */`
+that passwords will be stored encrypted, but still it is not good practice to put it into database!
+Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
+
+But, To quickly configure multiple websites there is one constant that wraps all the others, so in case you manage many websites this will be very convenient!
+to add it to your website follow the same instructions as for a "single" value constant.
+
+```
+define(
+    'CF7_SMTP_SETTINGS',
+    array(
+        'host'      => '',
+        'port'      => '',
+        'auth'      => '',
+        'user_name' => '',
+        'user_pass' => '',
+        'from_mail' => '',
+        'from_name' => '',
+    )
+);
+```
 
 = How this plugin works  =
 
@@ -45,7 +67,7 @@ During this process I can take the body of the e-mail in simple html and wrap it
 
 = How add a custom template? =
 
-1. Into your template folder create a directory "templates"
+1. Into your template folder create a directory `templates`
 2. download the default template from [here](https://github.com/erikyo/cf7-smtp/blob/main/templates/default.html) and name it default-(*CONTACTFORMID*)-(*LANGUAGE*).html (replace *CONTACTFORMID* and *LANGUAGE* with the right references)
 3. You can, in addition, customize logo, website link and other template parts. wiki/GitHub
 
