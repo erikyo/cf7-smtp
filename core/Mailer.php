@@ -111,7 +111,7 @@ class Mailer extends Base {
 			'form_id'   => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
-		$report['sent']              = ++$report['sent'];
+		$report['success']              = ++$report['success'];
 		update_option( 'cf7-smtp-report', $report );
 	}
 
@@ -129,7 +129,7 @@ class Mailer extends Base {
 			'id'        => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
-		$report['failed']            = ++$report['failed'];
+		$report['failed']            = ++ $report['failed'];
 		update_option( 'cf7-smtp-report', $report );
 	}
 

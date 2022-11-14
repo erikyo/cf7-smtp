@@ -52,6 +52,14 @@ $grayish_blue: #2f333a;
   }
 }
 
+.smtp-style-chart {
+  h4 {
+	text-align: center;
+  }
+  #pie-chart {
+	margin: 50px;
+  }
+}
 
 #sendmail-testform {
   // the test form style

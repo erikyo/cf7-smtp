@@ -1,6 +1,6 @@
 === SMTP for Contact From 7 ===
 Contributors: codekraft
-Tags: smtp, mail, wp mail, mail template, phpmailer, contact form 7
+Tags: smtp, mail, wp mail smtp, mail template, phpmailer, contact form 7
 Requires PHP: 7.1
 Requires at least: 5.4
 Tested up to: 6.1
@@ -8,7 +8,7 @@ Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
+A simple SMTP plugin for Contact Form 7 with automated report and mail templates. Free and without ads
 
 == Description ==
 
@@ -19,7 +19,7 @@ There is a module for testing the sending of 'live' e-mails (with the API rest w
 
 And last but not least there is the possibility of using a customised template to send your e-mails in a less textual and slightly prettier format! The template can be customised for each form and internationalized.
 
-This plugin is ads free! I don't want to try to sell you any pro version and this is what I have managed to do! If you want to collaborate there are many ways, from simple suggestions and bug reporting, to translation and code contribution. See below how to do it!
+This plugin is ads free and I don't want to try to sell you any pro version! If you want to contribute, there are many ways to do so, from simple suggestions and bug reports to translating and contributing code. See below how to do it!
 
 == SMTP ==
 SMTP stands for 'Simple Mail Transfer Protocol'. It is a connection-oriented, text-based network protocol of the Internet protocol family and as such is on the seventh layer of the ISO/OSI model, the application layer.
@@ -33,7 +33,7 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 3. Yahoo (tls and ssl)
 4. Outlook (tls and ssl)
 
-Would you like to find more presets? Open a request in the support form and include the necessary connection data, auth, server address and port.
+Would you like to find more presets that you think are useful to other users? Open a request in the support form and provide the necessary connection data (auth, server address and port). In the following version of the plugin you will find them among the presets.
 
 = Security =
 it's warmly advised to store at least the password into config.php as a constant. And in addition, it's also very easy! It needs only to add
@@ -60,16 +60,18 @@ define(
 );
 ```
 
+= Template =
+Wouldn't it be better to have a small container to make our mail a little prettier? Well we have it!
+Furthermore, if you prefer to use your own template for mail, simply create it by following these steps:
+1. Create a folder named "cf7-smtp/" in your template folder.
+2. Copy what you find [here](https://github.com/erikyo/cf7-smtp/blob/main/templates/default.html) into it
+3. Name it `default.html` (or `default-{{CONTACT-FORM-ID}}-{{LANGUAGE}}.html` depends on your needs)
+4. (Optional) You can, customize logo, website link and other template parts. checkout the filter documentation on GitHub/wiki
+
 = How this plugin works  =
 
 I use a filter bundled with WordPress to configure the smtp server, modifying the normal behaviour of wp_mail.
 During this process I can take the body of the e-mail in simple html and wrap it inside a html template (customizable)
-
-= How add a custom template? =
-
-1. Into your template folder create a directory `templates`
-2. download the default template from [here](https://github.com/erikyo/cf7-smtp/blob/main/templates/default.html) and name it default-(*CONTACTFORMID*)-(*LANGUAGE*).html (replace *CONTACTFORMID* and *LANGUAGE* with the right references)
-3. You can, in addition, customize logo, website link and other template parts. wiki/GitHub
 
 == Installation ==
 

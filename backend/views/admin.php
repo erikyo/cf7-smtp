@@ -62,6 +62,20 @@
 			submit_button();
 			echo '</div>';
 
+			/* This prints the style options (template) */
+			echo '<div class="card smtp-style-chart">';
+			echo '<h2>' . esc_html__( 'Stats', CF7_SMTP_TEXTDOMAIN ) . '</h2>';
+			echo '<h4>' . esc_html__( 'Mail vs Time', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+			echo '<canvas id="line-chart" width="480" height="250"></canvas>';
+			echo '<hr>';
+			echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+			echo '<canvas id="pie-chart" width="200" height="250"></canvas>';
+
+			$cf7_smtp_report = get_option( 'cf7-smtp-report' ) ?? 'undefined';
+
+			echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
+			echo '</div>';
+
 			?>
 		</form>
 	</div>

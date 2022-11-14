@@ -230,7 +230,7 @@ class Rest_SendMail extends Base {
 
 				$response = \rest_ensure_response(
 					array(
-						'status'   => 'sent',
+						'status'   => 'success',
 						'protocol' => $this->options['enabled'] ? 'SMTP' : 'PHPMAILER',
 						'message'  => $r,
 					)

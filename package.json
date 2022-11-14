@@ -30,6 +30,7 @@
         "postinstall": "npm run build"
     },
     "devDependencies": {
+        "chart.js": "^3.9.1",
         "@babel/core": "^7.18.2",
         "@wordpress/api-fetch": "^6.18.0",
         "@wordpress/babel-preset-default": "^7.5.0",

@@ -1,5 +1,11 @@
+/* global smtpReportData */
+
+/** the style */
 import './styles/settings.scss';
+
+/** js deps */
 import apiFetch from '@wordpress/api-fetch';
+import Chart from 'chart.js/auto';
 
 apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
 
@@ -84,6 +90,13 @@ const smtpAdmin = () => {
 			message;
 	}
 
+	/**
+	 * It takes a line of text and returns an array of two elements, the first being the date and time, and the second being
+	 * the rest of the line
+	 *
+	 * @param {string} line - The line of text to extract the data from.
+	 * @return {Array} An array with the date and message.
+	 */
 	function extractData(line) {
 		const regex = /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)/g;
 		return regex.exec(line);
@@ -107,7 +120,7 @@ const smtpAdmin = () => {
 				const [string, date, text] = extractData(line);
 
 				/* will add the lines "softly" */
-				setTimeout( () => {
+				setTimeout(() => {
 					if (date === lastTimestamp) {
 						outputContainer.insertAdjacentHTML(
 							'beforeend',
@@ -164,7 +177,7 @@ const smtpAdmin = () => {
 				OutputMessage(
 					responseBox,
 					r.message + '\r\n** END **\r\n',
-					r.status === 'sent'
+					r.status === 'success'
 				);
 			})
 			.catch((err) => {
@@ -226,3 +239,119 @@ const smtpAdmin = () => {
 };
 
 window.onload = smtpAdmin();
+
+function mailCharts() {
+	console.log(smtpReportData);
+
+	if (typeof smtpReportData !== 'undefined') {
+		const cf7aCharts = {};
+		smtpReportData.lineData = {
+			success: {},
+			failed: {},
+		};
+		smtpReportData.pieData = {
+			success: 0,
+			failed: 0,
+		};
+
+		for (const timestamp in smtpReportData.storage) {
+			const day = new Date(timestamp * 1000)
+				.setHours(0, 0, 0, 0)
+				.valueOf();
+
+			if (typeof smtpReportData.lineData.failed[day] === 'undefined') {
+				smtpReportData.lineData.failed[day] = 0;
+			}
+			if (typeof smtpReportData.lineData.success[day] === 'undefined') {
+				smtpReportData.lineData.success[day] = 0;
+			}
+
+			if (smtpReportData.storage[timestamp].mail_sent === true) {
+				smtpReportData.lineData.success[day]++;
+				smtpReportData.pieData.success++;
+			} else {
+				smtpReportData.lineData.failed[day]++;
+				smtpReportData.pieData.failed++;
+			}
+		}
+
+		const lineConfig = {
+			type: 'line',
+			data: {
+				datasets: [
+					{
+						label: 'Failed',
+						data: Object.values(smtpReportData.lineData.failed),
+						fill: false,
+						borderColor: 'rgb(255, 99, 132)',
+						tension: 0.1,
+					},
+					{
+						label: 'Success',
+						data: Object.values(smtpReportData.lineData.success),
+						fill: false,
+						borderColor: 'rgb(54, 162, 235)',
+						tension: 0.1,
+					},
+				],
+				labels: Object.keys(smtpReportData.lineData.failed).map(
+					(label) => new Date().toDateString(label)
+				),
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					legend: { display: false },
+				},
+				scales: {
+					y: {
+						ticks: {
+							min: 0,
+							precision: 0,
+						},
+					},
+				},
+			},
+		};
+
+		console.log(lineConfig);
+
+		const PieConfig = {
+			type: 'pie',
+			data: {
+				labels: Object.keys(smtpReportData.pieData),
+				datasets: [
+					{
+						label: 'Total count',
+						data: Object.values(smtpReportData.pieData),
+						backgroundColor: [
+							'rgb(54, 162, 235)',
+							'rgb(255, 99, 132)',
+						],
+						hoverOffset: 4,
+					},
+				],
+				options: {
+					responsive: true,
+					plugins: {
+						legend: { display: false },
+					},
+				},
+			},
+		};
+
+		cf7aCharts.lineChart = new Chart(
+			document.getElementById('line-chart'),
+			lineConfig
+		);
+
+		cf7aCharts.pieChart = new Chart(
+			document.getElementById('pie-chart'),
+			PieConfig
+		);
+
+		return cf7aCharts;
+	}
+}
+
+window.onload = mailCharts();
