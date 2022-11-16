@@ -99,7 +99,7 @@ export function smtpAdmin() {
 	 * @param {boolean|null} mailSent        if the mail was sent or not
 	 */
 	function OutputMessage(outputContainer, msg, mailSent = null) {
-		msg = msg.split(/\n/);
+		msg = msg.split(/\n|<br\s*\/?>/);
 		let lastTimestamp = 0;
 
 		if (msg.length) {
@@ -109,26 +109,27 @@ export function smtpAdmin() {
 				const [raw, date, text] = extractData(line);
 
 				/* will add the lines "softly" */
-				setTimeout(() => {
-					if (!text) {
-						outputContainer.insertAdjacentHTML(
-							'beforeend',
-							`<code>${raw}</code>`
-						);
-					} else if (date === lastTimestamp) {
-						outputContainer.insertAdjacentHTML(
-							'beforeend',
-							`<code>${text}</code>`
-						);
-					} else {
-						// refresh the timestamp
-						lastTimestamp = date;
-						outputContainer.insertAdjacentHTML(
-							'beforeend',
-							`<span class="timestamp">${date}</span><code>${text}</code>`
-						);
-					}
-				}, 50 * index);
+				if (raw !== '')
+					setTimeout(() => {
+						if (!text) {
+							outputContainer.insertAdjacentHTML(
+								'beforeend',
+								`<code>${raw}</code>`
+							);
+						} else if (date === lastTimestamp) {
+							outputContainer.insertAdjacentHTML(
+								'beforeend',
+								`<code>${text}</code>`
+							);
+						} else {
+							// refresh the timestamp
+							lastTimestamp = date;
+							outputContainer.insertAdjacentHTML(
+								'beforeend',
+								`<span class="timestamp">${date}</span><code>${text}</code>`
+							);
+						}
+					}, 50 * index);
 			});
 		}
 
