@@ -328,7 +328,7 @@ class Mailer extends Base {
 		$verbose = get_transient( 'cf7_smtp_testing' );
 		if ( $verbose ) {
 			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
-			$phpmailer->SMTPDebug   = SMTP::DEBUG_CONNECTION;
+			$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
 		}
 
 		/* Force html if the user has chosen a custom template */

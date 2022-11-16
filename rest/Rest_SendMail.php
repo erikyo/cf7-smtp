@@ -95,6 +95,7 @@ class Rest_SendMail extends Base {
 	 * $mail_data, or if the key is not set, the value of the corresponding key in the array $this->options
 	 *
 	 * @param array $mail_data This is an array of the data that was sent to the function.
+	 * @param array $mail_headers The mail headers that we want to append.
 	 *
 	 * @return array an array of the email, subject, body, from_name, and from_mail.
 	 */
@@ -171,12 +172,12 @@ class Rest_SendMail extends Base {
 		ob_end_clean();
 
 		if ( ! empty( $mail_sent ) && empty( $mail_log ) ) {
-			/** as wp_mail docbloc says:
+			/** As wp_mail docbloc says:
 			 * A true return value does not automatically mean that the user received the
 			 * email successfully. It just only means that the method used was able to
 			 * process the request without any errors.
 			 */
-			$mail_log = date("Y-m-d h:i:s") . " " . esc_html__( 'Mail processed without errors', CF7_SMTP_TEXTDOMAIN );
+			$mail_log = esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed without errors', CF7_SMTP_TEXTDOMAIN ) );
 		}
 
 		return $mail_log;
@@ -185,6 +186,8 @@ class Rest_SendMail extends Base {
 	/**
 	 * It returns the error message from the transient if it exists, otherwise it returns an error message saying that it
 	 * cannot find any log
+	 *
+	 * @param array $request The http request.
 	 *
 	 * @return WP_Error|WP_HTTP_Response|WP_REST_Response The response is being returned.
 	 */
