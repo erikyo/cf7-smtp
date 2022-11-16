@@ -1,0 +1,10 @@
+$red: #f44336;
+$green: #4caf50;
+$blue: #3372b3;
+$grayish_blue: #2f333a;
+
+/* button template */
+%button {
+  margin: 1rem 1rem 0 auto;
+  display: flex;
+}
