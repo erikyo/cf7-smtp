@@ -63,7 +63,7 @@ class Enqueue extends Base {
 				CF7_SMTP_TEXTDOMAIN . '-settings-script',
 				'smtp_settings',
 				array(
-					'nonce' => wp_create_nonce( 'cf7-smtp' ),
+					'nonce' => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 				)
 			);
 		}

@@ -122,7 +122,7 @@ class ActDeact extends Base {
 	 */
 	public static function default_options() {
 
-		$current_website = wp_parse_url( network_home_url(), PHP_URL_HOST );
+		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), - 2, 2, true ) ), PHP_URL_HOST );
 
 		return array(
 			'version'         => 1,
@@ -133,7 +133,7 @@ class ActDeact extends Base {
 			'preset'          => 'custom',
 			'host'            => $current_website,
 			'port'            => '25',
-			'auth'            => false,
+			'auth'            => '',
 			'user_name'       => 'wordpress',
 			'user_pass'       => '',
 			'from_mail'       => 'wordpress@' . $current_website,

@@ -58,7 +58,7 @@ class Settings_Page extends Base {
 			'wpcf7',
 			CF7_SMTP_NAME,
 			__( 'SMTP', CF7_SMTP_TEXTDOMAIN ),
-			'wpcf7_edit_contact_forms',
+			'manage_options',
 			CF7_SMTP_TEXTDOMAIN,
 			array( $this, 'display_plugin_admin_page' )
 		);

@@ -22,12 +22,6 @@ use WPCF7_Mail;
  * Enqueue stuff on the frontend and backend
  */
 class Mailer extends Base {
-	/**
-	 * The tags allowed for the mail content.
-	 *
-	 * @var array
-	 */
-	private $mail_allowed_tags;
 
 	/**
 	 * Initialize the class.
@@ -38,60 +32,16 @@ class Mailer extends Base {
 
 		parent::initialize();
 
-		/**
-		 * Filter the mail content to allow only certain tags
-		 *
-		 * @since 0.0.1
-		 *
-		 * @param array $mail_allowed_tags a wp_kses formatted array of tags and properties
-		 */
-		$this->mail_allowed_tags = apply_filters(
-			'cf7_smtp_mail_allowed_tags',
-			array(
-				'table'  => array(),
-				'tr'     => array(),
-				'td'     => array(),
-				'div'    => array(),
-				'span'   => array(),
-				'br'     => array(),
-				'hr'     => array(),
-				'b'      => array(),
-				'p'      => array(),
-				'a'      => array(
-					'href'   => array(),
-					'target' => array( '_blank', '_top' ),
-				),
-				'strong' => array(),
-				'h1'     => array(),
-				'h2'     => array(),
-				'h3'     => array(),
-				'h4'     => array(),
-				'h5'     => array(),
-				'h6'     => array(),
-			)
-		);
-
-		if ( ! empty( $this->options['enabled'] ) ) {
+		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
 			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_overrides' ) );
 		}
 
 		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
 		\add_action( 'wpcf7_mail_failed', array( $this, 'cf7_smtp_wp_mail_failed' ) );
 
-		\add_action(
-			'wp_mail_failed',
-			function ( $error ) {
-				set_transient( 'cf7_smtp_testing_error', $error, MINUTE_IN_SECONDS );
-				cf7_smtp_log( $error );
-			}
-		);
+		\add_action( 'wp_mail_failed', array( $this, 'cf7_smtp_wp_mail_catch_errors' ) );
 
-		\add_filter(
-			'wpcf7_mail_components',
-			array( $this, 'cf7_smtp_email_style' ),
-			99,
-			3
-		);
+		\add_filter( 'wpcf7_mail_components', array( $this, 'cf7_smtp_email_style' ), 99, 3 );
 	}
 
 
@@ -111,7 +61,7 @@ class Mailer extends Base {
 			'form_id'   => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
-		$report['success']              = ++$report['success'];
+		$report['success']           = ++$report['success'];
 		update_option( 'cf7-smtp-report', $report );
 	}
 
@@ -131,6 +81,15 @@ class Mailer extends Base {
 		);
 		$report['failed']            = ++ $report['failed'];
 		update_option( 'cf7-smtp-report', $report );
+	}
+
+	/**
+	 * If there's an error, save it to a transient.
+	 *
+	 * @param \WP_Error $error - The error message that was returned by wp_mail().
+	 */
+	public function cf7_smtp_wp_mail_catch_errors( $error ) {
+		set_transient( 'cf7_smtp_testing_error', $error, MINUTE_IN_SECONDS );
 	}
 
 
@@ -292,9 +251,6 @@ class Mailer extends Base {
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
 				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
 			);
-
-			/* store a header, so that when we send the e-mail we can activate the html accordingly */
-			$components['headers'] .= "HTML\r\n";
 		}
 
 		return $components;
@@ -327,8 +283,11 @@ class Mailer extends Base {
 	 * @throws Exception May fail and throw an exception.
 	 */
 	public function cf7_smtp_overrides( PHPMailer\PHPMailer $phpmailer ) {
+
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$phpmailer->isSMTP();
+		if ( ! empty( $this->options['enabled'] ) ) {
+			$phpmailer->isSMTP();
+		}
 
 		/* SSL or TLS, if necessary for your server */
 		if ( ! empty( $this->options['auth'] ) ) {
@@ -339,12 +298,12 @@ class Mailer extends Base {
 			}
 		}
 
-		/*Host*/
+		/* Host */
 		if ( ! empty( $this->options['host'] ) ) {
 			$phpmailer->Host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
 		}
 
-		/*Port*/
+		/* Port */
 		if ( $this->options['port'] ) {
 			$phpmailer->Port = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
 		}
@@ -354,6 +313,7 @@ class Mailer extends Base {
 			$phpmailer->Username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name', $this->options ) );
 		}
 
+		/* Provides the password if needed */
 		if ( $this->options['user_pass'] ) {
 			if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
 				$phpmailer->Password = CF7_SMTP_SETTINGS['user_pass'];
@@ -367,11 +327,9 @@ class Mailer extends Base {
 		/* Enable verbose debug output */
 		$verbose = get_transient( 'cf7_smtp_testing' );
 		if ( $verbose ) {
-			delete_transient( 'cf7_smtp_testing' );
 			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
-			$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
+			$phpmailer->SMTPDebug   = SMTP::DEBUG_CONNECTION;
 		}
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		/* Force html if the user has chosen a custom template */
 		if ( ! empty( $this->options['custom_template'] ) ) {
@@ -379,6 +337,7 @@ class Mailer extends Base {
 				$phpmailer->isHTML();
 			}
 		}
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		/* Setting the "from" (email and name). */
 		$from_mail = $this->cf7_smtp_get_setting_by_key( 'from_mail' );

@@ -82,6 +82,11 @@ class Settings_Form {
 					'auth' => 'tls',
 					'port' => 587,
 				),
+				'office365'   => array(
+					'host' => 'smtp.office365.com',
+					'auth' => 'tls',
+					'port' => 587,
+				),
 			)
 		);
 
@@ -412,7 +417,7 @@ class Settings_Form {
 	public function cf7_smtp_print_enable_callback() {
 		printf(
 			'<input type="checkbox" id="cf7_smtp_enabled" name="cf7-smtp-options[enabled]" %s />',
-			! empty( $this->options['enabled'] ) || ! empty( CF7_SMTP_SETTINGS ) ? 'checked="true"' : ''
+			! empty( $this->options['enabled'] ) ? 'checked="true"' : ''
 		);
 	}
 

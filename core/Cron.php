@@ -182,7 +182,6 @@ class Cron extends Base {
 			$headers = sprintf( "From: %s <%s>\r\n", $options['from_name'], $options['from_mail'] );
 		}
 
-		/* A try catch block. */
 		try {
 			// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 			if ( wp_mail(

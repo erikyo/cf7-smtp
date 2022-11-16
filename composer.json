@@ -33,7 +33,7 @@
         "composer/installers": "1.x"
     },
     "scripts": {
-        "WPPCS-vips": "vendor/bin/phpcs --standard=.wpcsVips.xml.dist -s --report=full,summary,source",
+        "WPPCS-vips": "vendor/bin/phpcs --standard=.wpcsVips.xml.dist.wpcsVips.xml.dist -s --report=full,summary,source",
         "PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist -s --report=full,summary,source",
         "PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=.phpcs.xml.dist  -s --report=full",
         "phpstan": "vendor/bin/phpstan",
