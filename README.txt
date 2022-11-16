@@ -2,7 +2,7 @@
 Contributors: codekraft
 Tags: smtp, mail, wp mail smtp, mail template, phpmailer, contact form 7
 Requires PHP: 7.1
-Requires at least: 5.4
+Requires at least: 5.5
 Tested up to: 6.1
 Stable tag: 0.0.1
 License: GPLv2 or later
@@ -101,3 +101,9 @@ During this process I can take the body of the e-mail in simple html and wrap it
 
 = 0.0.1 =
 * First Release
+
+= Resources =
+* [Wordpress Plugin boilerplate](https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered)
+* Contact Form 7 © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
+* chart.js https://www.chartjs.org/, © 2021 Chart.js [contributors](https://github.com/chartjs/Chart.js/graphs/contributors), [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
+* Banner image - Ejiri in Suruga Province (Sunshū Ejiri), from the series Thirty-six Views of Mount Fuji (Fugaku sanjūrokkei) Artist: Katsushika Hokusai (Japanese, Tokyo (Edo) 1760–1849 Tokyo (Edo))
