@@ -42,6 +42,7 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "optimize-autoloader": true,
     "autoload": {
         "psr-4": {
             "cf7_smtp\\Backend\\": "backend/",

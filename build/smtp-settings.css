@@ -54,10 +54,12 @@
   padding: 30px 20px;
   box-sizing: border-box;
   border-left: 3px solid #2f333a;
+  transition: 1s ease border-left-color;
   background: #2f333a;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   gap: 8px;
 }
 #sendmail-testform pre.enabled {

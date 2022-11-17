@@ -74,13 +74,13 @@ class Rest_SendMail extends Base {
 		);
 		\register_rest_route(
 			'cf7-smtp/v1',
-			'/get_errors/',
+			'/get_log/',
 			array(
 				'methods'             => 'POST',
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
-				'callback'            => array( $this, 'smtp_sendmail_get_errors' ),
+				'callback'            => array( $this, 'smtp_sendmail_get_log' ),
 				'args'                => array(
 					'nonce' => array(
 						'required' => true,
@@ -104,9 +104,9 @@ class Rest_SendMail extends Base {
 		return array(
 			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $mailer->cf7_smtp_get_setting_by_key( 'email', $this->options ),
 			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', CF7_SMTP_TEXTDOMAIN ),
-			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'mail body not provided', CF7_SMTP_TEXTDOMAIN ),
+			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'Empty mail body', CF7_SMTP_TEXTDOMAIN ),
 			'from_mail' => ! empty( $mail_headers['from_mail'] ) ? sanitize_email( $mail_headers['from_mail'] ) : false,
-			'from_name' => ! empty( $mail_headers['from_name'] ) ? sanitize_text_field( $mail_headers['from_name'] ) : false,
+			'from_name' => ! empty( $mail_headers['from_mail'] ) ? sanitize_text_field( $mail_headers['from_mail'] ) : false,
 		);
 	}
 
@@ -132,7 +132,7 @@ class Rest_SendMail extends Base {
 		/* allows to change the "from" if the user has chosen to override WordPress data */
 		$headers = '';
 		/* Setting the "from" (email and name). */
-		if ( ! empty( $mail['from_mail'] ) ) {
+		if ( ! empty( $mail_headers ) ) {
 			$headers .= sprintf( "From: %s <%s>\r\n", $mail['from_name'], $mail['from_mail'] );
 		}
 
@@ -155,29 +155,31 @@ class Rest_SendMail extends Base {
 		}
 
 		/* if needed catch the error of wp_mail and return it to the user. */
-		$mail_log = '';
-		ob_start();
-		try {
-			// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
-			$mail_sent = wp_mail(
-				$mail['email'],
-				$mail['subject'],
-				$mail['body'],
-				$headers
-			);
-		} catch ( \PHPMailer\PHPMailer\Exception $e ) {
-			echo "🆘 Something went wrong\r\n";
-		}
-		$mail_log .= ob_get_contents();
-		ob_end_clean();
 
-		if ( ! empty( $mail_sent ) && empty( $mail_log ) ) {
-			/** As wp_mail docbloc says:
+		ob_start();
+
+		// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
+		$mail_sent = wp_mail(
+			$mail['email'],
+			$mail['subject'],
+			$mail['body'],
+			$headers
+		);
+
+		$mail_log = ob_get_clean();
+
+		if ( empty( $mail_log ) ) {
+			/**
+			 * As wp_mail docbloc says:
 			 * A true return value does not automatically mean that the user received the
 			 * email successfully. It just only means that the method used was able to
 			 * process the request without any errors.
 			 */
-			$mail_log = esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed without errors', CF7_SMTP_TEXTDOMAIN ) );
+			$mail_log = esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed without errors', CF7_SMTP_TEXTDOMAIN ) ) . PHP_EOL;
+		}
+
+		if ( $mail_sent ) {
+			$mail_log .= esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail Sent ✅', CF7_SMTP_TEXTDOMAIN ) ) . PHP_EOL;
 		}
 
 		return $mail_log;
@@ -191,7 +193,7 @@ class Rest_SendMail extends Base {
 	 *
 	 * @return WP_Error|WP_HTTP_Response|WP_REST_Response The response is being returned.
 	 */
-	public function smtp_sendmail_get_errors( $request ) {
+	public function smtp_sendmail_get_log( $request ) {
 
 		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), CF7_SMTP_TEXTDOMAIN ) ) {
 			$response = \rest_ensure_response( 'Wrong nonce' );
@@ -208,23 +210,39 @@ class Rest_SendMail extends Base {
 
 		$err_msg = get_transient( 'cf7_smtp_testing_error' );
 		if ( ! empty( $err_msg ) ) {
+
 			$response = \rest_ensure_response(
 				array(
-					'status'  => 'success',
+					'status'  => 'error',
 					'message' => $err_msg,
 				)
 			);
+			$response->set_status( 200 );
 			delete_transient( 'cf7_smtp_testing_error' );
+
+			return $response;
+		}
+
+		$log = get_transient( 'cf7_smtp_testing_log' );
+		if ( ! empty( $log ) ) {
+			$response = \rest_ensure_response(
+				array(
+					'status'  => 'log',
+					'message' => esc_html( $log ),
+				)
+			);
+			$response->set_status( 200 );
+			delete_transient( 'cf7_smtp_testing_log' );
 		} else {
 			$response = \rest_ensure_response(
 				array(
 					'status'  => 'wait',
-					'message' => __( 'Still no Server response', CF7_SMTP_TEXTDOMAIN ),
+					'message' => esc_html__( 'Still no Server response', CF7_SMTP_TEXTDOMAIN ) . PHP_EOL . $log,
 				)
 			);
-		}
+			$response->set_status( 200 );
 
-		$response->set_status( 200 );
+		}
 
 		return $response;
 	}
@@ -264,47 +282,44 @@ class Rest_SendMail extends Base {
 
 			set_transient( 'cf7_smtp_testing', true, MINUTE_IN_SECONDS );
 
-			$r = self::cf7_smtp_testmailer(
+			$phpmailer_resp = self::cf7_smtp_testmailer(
 				array(
 					'email'   => $json_params['email'],
 					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message works! 🎉',
 					'body'    => ! empty( $json_params['body'] ) ? $json_params['body'] : '',
 				),
 				array(
-					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name' ),
-					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail' ),
+					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name', $options ),
+					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail', $options ),
 				)
 			);
 
-			if ( ! empty( $r ) ) {
+			if ( ! empty( $phpmailer_resp ) ) {
 
 				$response = \rest_ensure_response(
 					array(
 						'status'   => 'success',
 						'protocol' => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
-						'message'  => $r,
+						'message'  => wp_unslash( $phpmailer_resp ),
+						'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
-
-				$response->set_status( 200 );
 
 			} else {
 
 				$response = \rest_ensure_response(
 					array(
-						'status'    => 'error',
+						'status'    => 'log',
 						'protocol'  => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
-						'message'   => 'Empty response',
+						'message'   => 'success',
 						'mail_data' => $json_params,
 						'nonce'     => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
 
-				$response->set_status( 200 );
-
 			}
 
-			delete_transient( 'cf7_smtp_testing' );
+			$response->set_status( 200 );
 
 		} else {
 

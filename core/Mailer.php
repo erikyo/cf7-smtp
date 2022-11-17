@@ -22,13 +22,21 @@ use WPCF7_Mail;
  * Enqueue stuff on the frontend and backend
  */
 class Mailer extends Base {
+	/**
+	 * The mail log.
+	 *
+	 * @var array
+	 */
+	private $cf7_smtp_log;
 
 	/**
 	 * Initialize the class.
 	 *
-	 * @return void|bool
+	 * @return void
 	 */
 	public function initialize() {
+
+		$this->cf7_smtp_log = '';
 
 		parent::initialize();
 
@@ -39,6 +47,7 @@ class Mailer extends Base {
 		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
 		\add_action( 'wpcf7_mail_failed', array( $this, 'cf7_smtp_wp_mail_failed' ) );
 
+		\add_action( 'wp_mail_succeeded', array( $this, 'cf7_smtp_wp_mail_log' ) );
 		\add_action( 'wp_mail_failed', array( $this, 'cf7_smtp_wp_mail_catch_errors' ) );
 
 		\add_filter( 'wpcf7_mail_components', array( $this, 'cf7_smtp_email_style' ), 99, 3 );
@@ -89,7 +98,15 @@ class Mailer extends Base {
 	 * @param \WP_Error $error - The error message that was returned by wp_mail().
 	 */
 	public function cf7_smtp_wp_mail_catch_errors( $error ) {
-		set_transient( 'cf7_smtp_testing_error', $error, MINUTE_IN_SECONDS );
+		cf7_smtp_log( $error->get_all_error_data() );
+		set_transient( 'cf7_smtp_testing_error', $error->get_error_messages(), MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * It sets a transient for the log file.
+	 */
+	public function cf7_smtp_wp_mail_log() {
+		set_transient( 'cf7_smtp_testing_log', $this->cf7_smtp_log, MINUTE_IN_SECONDS );
 	}
 
 
@@ -335,6 +352,9 @@ class Mailer extends Base {
 		if ( ! empty( $this->options['custom_template'] ) ) {
 			if ( preg_match( '/<html /mi', $phpmailer->Body ) ) {
 				$phpmailer->isHTML();
+				$phpmailer->Debugoutput = function( $str, $level ) {
+					$this->cf7_smtp_log .= "$level: $str\n";
+				};
 			}
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

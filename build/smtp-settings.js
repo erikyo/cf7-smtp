@@ -14,8 +14,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
 /* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/scripts/utils.js");
-/* global smtp_settings */
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/scripts/utils.js");
+/**
+ * global window.smtp_settings, window.smtp_settings.nonce
+ */
+
+
 
 
 _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default().use(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default().createNonceMiddleware(window.smtp_settings.nonce));
@@ -62,9 +68,9 @@ function smtpAdmin() {
    */
   const smtpEnabled = document.querySelector('#cf7_smtp_enabled');
   const formSmtpSection = document.querySelector('#cf7-smtp-settings .form-table:first-of-type');
-  (0,_utils__WEBPACK_IMPORTED_MODULE_1__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+  (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
   smtpEnabled.addEventListener('click', () => {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_1__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
   });
 
   /**
@@ -78,7 +84,7 @@ function smtpAdmin() {
   responseBox.classList.add('enabled');
 
   /* Initialize the response box and show a welcome message */
-  cleanOutput(responseBox, '<code>Mail Server initialization completed!</code>');
+  cleanOutput(responseBox, '<code>' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Mail Server initialization completed!', 'cf7-smtp') + '</code>');
 
   /**
    * It takes a DOM element and a message, and sets the DOM element's innerHTML to the message, with a timestamp
@@ -89,7 +95,11 @@ function smtpAdmin() {
   function cleanOutput(logWrap) {
     let message = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     const date = new Date();
-    logWrap.innerHTML = `<code class="logdate alignright">Log start ${date}</code>` + message;
+    logWrap.innerHTML = `<code class="logdate alignright">${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Logs has been started in', 'cf7-smtp')} ${date}</code>` + message;
+  }
+  function appendOutput(logWrap) {
+    let message = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    logWrap.insertAdjacentHTML('beforeend', message);
   }
 
   /**
@@ -107,18 +117,18 @@ function smtpAdmin() {
       msg.forEach((line, index) => {
         // TODO: regex here to search for errors
 
-        const [raw, date, text] = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.extractData)(line);
+        const [raw, date, text] = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.extractData)(line);
 
         /* will add the lines "softly" */
         if (raw !== '') setTimeout(() => {
           if (!text) {
-            outputContainer.insertAdjacentHTML('beforeend', `<code>${raw}</code>`);
+            appendOutput(outputContainer, `<code>${raw}</code>`);
           } else if (date === lastTimestamp) {
-            outputContainer.insertAdjacentHTML('beforeend', `<code>${text}</code>`);
+            appendOutput(outputContainer, `<code>${text}</code>`);
           } else {
             // refresh the timestamp
             lastTimestamp = date;
-            outputContainer.insertAdjacentHTML('beforeend', `<span class="timestamp">${date}</span><code>${text}</code>`);
+            appendOutput(outputContainer, `<span class="timestamp">${date}</span><code>${text}</code>`);
           }
         }, 50 * index);
       });
@@ -133,23 +143,80 @@ function smtpAdmin() {
       outputContainer.classList.remove('ok');
     }
   }
-  const delay = ms => new Promise(r => setTimeout(r, ms));
 
   /**
-   *  Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
+   * Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
    *
-   * @param {Object} error api response with errors
+   * @param {Object} res the nonce to get the next request
    */
-  async function onApiError(error) {
+  function getSmtpLog(res) {
     return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
-      path: '/cf7-smtp/v1/get_errors',
+      path: '/cf7-smtp/v1/get_log',
       method: 'POST',
       data: {
-        nonce: error.nonce
+        nonce: res.nonce
       }
     }).then(result => {
       return result;
     });
+  }
+
+  /**
+   * Delay returns a promise that resolves after the given number of milliseconds.
+   *
+   * @param {number} ms - The number of milliseconds to delay.
+   */
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  /**
+   * "If the getSmtpLog function fails, wait a bit and try again."
+   *
+   * The function takes three parameters:
+   *
+   * mailResp: The response from the mail server.
+   * waitTime: The amount of time to wait before retrying.
+   * attempts: The number of times we've tried to get the log.
+   * The function returns a promise that resolves to the log
+   *
+   * @param {Object} mailResp - The response from the mailer.
+   * @param {int}    waitTime - The amount of time to wait between attempts.
+   * @param {int}    attempts - The number of times we've tried to fetch the log.
+   *
+   * @return A promise that resolves to the smtp log for the given mail response.
+   */
+  function fetchAndRetry(mailResp, waitTime, attempts) {
+    // try to get the error message if available
+    function retry(err) {
+      if (attempts > 0) {
+        throw err;
+      }
+      return delay(waitTime * (attempts + attempts)).then(() => fetchAndRetry(mailResp, waitTime, ++attempts));
+    }
+    return getSmtpLog(mailResp).then(logResp => {
+      // Error
+      if (logResp.status === 'error') {
+        appendOutput(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('🆘 Failed!', 'cf7-smtp')}</code>`);
+        if (logResp.message.length) {
+          const errorLog = logResp.message.join();
+          // then append the server response
+          return OutputMessage(responseBox, errorLog);
+        }
+      }
+
+      // Quit
+      if (logResp.message.match(/CLIENT -> SERVER: QUIT/g)) {
+        return appendOutput(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('💻 server has closed the connection!', 'cf7-smtp')}</code>`);
+      }
+
+      // Success
+      if (logResp.status === 'success') {
+        return appendOutput(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('✅ Success!', 'cf7-smtp')}</code>`);
+      }
+
+      // otherwise if nothing match output the server response
+      const resp = logResp.message;
+      return appendOutput(responseBox, `<code>${resp}</code>`);
+    }).then(retry);
   }
 
   /**
@@ -166,7 +233,7 @@ function smtpAdmin() {
 
     /* clean the previous results*/
     cleanOutput(responseBox);
-    responseBox.insertAdjacentHTML('beforeend', `<code>${"Let's start a new server connection... ✉️"}</code>`);
+    appendOutput(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Let's start a new server connection…", 'cf7-smtp')} <span class="mail-init">✉️</span></code>`);
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
       path: '/cf7-smtp/v1/sendmail',
       method: 'POST',
@@ -174,33 +241,15 @@ function smtpAdmin() {
     }).then(r => {
       if (r.status === 'success') {
         OutputMessage(responseBox, r.message, true);
-      } else {
-        responseBox.insertAdjacentHTML('beforeend', '<code>' + [r.status, r.protocol, r.message].join(' - ') + '</code>');
-
-        // try to get the error message if available
-        let connectionClose = 'false';
-        for (let attempt = 0; attempt <= 5; attempt++) {
-          if (connectionClose === true) {
-            break;
-          }
-          return new Promise(resolve => {
-            delay(1000 * attempt).then(() => onApiError(r)).then(errorResponse => {
-              let errResponse = '';
-              if (errorResponse.message.errors) {
-                errResponse += errorResponse.message.errors.wp_mail_failed.join();
-              } else {
-                errResponse += errorResponse.message;
-              }
-              responseBox.insertAdjacentHTML('beforeend', `<code>${errResponse}</code>`);
-              if (errorResponse.status === 'success') {
-                connectionClose = true;
-                resolve(connectionClose);
-              }
-            });
-          });
-        }
+        return r;
       }
-    }).catch(errMsg => errMsg);
+      // is waiting
+      appendOutput(responseBox, '<code>' + [r.status, r.protocol, r.message].join(' - ') + '</code>');
+    }).then(mailResp => {
+      fetchAndRetry(mailResp, 500, 5);
+    }).catch(errMsg => {
+      console.log(errMsg);
+    });
   });
 }
 window.onload = smtpAdmin();
@@ -375,6 +424,16 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module) {
 
 module.exports = window["wp"]["apiFetch"];
+
+/***/ }),
+
+/***/ "@wordpress/i18n":
+/*!******************************!*\
+  !*** external ["wp","i18n"] ***!
+  \******************************/
+/***/ (function(module) {
+
+module.exports = window["wp"]["i18n"];
 
 /***/ }),
 
