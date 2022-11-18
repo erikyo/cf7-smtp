@@ -5,5 +5,20 @@
   #pie-chart {
 	margin: 50px;
   }
+
+  span.chart-icon {
+	display: block;
+	width: auto;
+	text-align: center;
+	font-size: 120px;
+	line-height: 1;
+  }
+  .no-chart-title {
+	font-size: 1.3rem;
+	font-style: italic;
+	text-align: center;
+	font-weight: lighter;
+	opacity: .5;
+  }
 }
 
