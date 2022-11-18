@@ -29,3 +29,10 @@ export function extractData(raw) {
 	const regex = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)|\w.+/g;
 	return regex.exec(raw) || [raw, false, false];
 }
+
+/**
+ * Delay returns a promise that resolves after the given number of milliseconds.
+ *
+ * @param {number} ms - The number of milliseconds to delay.
+ */
+export const delay = (ms) => new Promise((r) => setTimeout(r, ms));

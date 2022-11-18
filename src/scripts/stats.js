@@ -2,7 +2,10 @@
 import Chart from 'chart.js/auto';
 
 export function mailCharts() {
-	if (0 !== Object.keys(smtpReportData).length) {
+	if (
+		typeof smtpReportData !== 'undefined' &&
+		0 !== Object.keys(smtpReportData).length
+	) {
 		const cf7aCharts = {};
 		smtpReportData.lineData = {
 			success: {},
