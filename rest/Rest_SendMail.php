@@ -91,22 +91,21 @@ class Rest_SendMail extends Base {
 	}
 
 	/**
-	 * It returns an array of the values of the keys 'email', 'subject', 'body', 'from_name', and 'from_mail' of the array
+	 * It returns an array of the values of the keys 'email', 'subject', 'body' of the array
 	 * $mail_data, or if the key is not set, the value of the corresponding key in the array $this->options
 	 *
 	 * @param array $mail_data This is an array of the data that was sent to the function.
-	 * @param array $mail_headers The mail headers that we want to append.
 	 *
-	 * @return array an array of the email, subject, body, from_name, and from_mail.
+	 * @return array an array of the email, subject, body
 	 */
-	private function cf7_smtp_testmailer_fill_data( array $mail_data, array $mail_headers ) {
+	private function cf7_smtp_testmailer_fill_data( array $mail_data ) {
 		$mailer = new Mailer();
 		return array(
 			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $mailer->cf7_smtp_get_setting_by_key( 'email', $this->options ),
 			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', CF7_SMTP_TEXTDOMAIN ),
 			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'Empty mail body', CF7_SMTP_TEXTDOMAIN ),
-			'from_mail' => ! empty( $mail_headers['from_mail'] ) ? sanitize_email( $mail_headers['from_mail'] ) : false,
-			'from_name' => ! empty( $mail_headers['from_mail'] ) ? sanitize_text_field( $mail_headers['from_mail'] ) : false,
+			'from_mail' => $mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options ),
+			'from_name' => $mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options ),
 		);
 	}
 
@@ -115,13 +114,12 @@ class Rest_SendMail extends Base {
 	 * It sends a test email to the email address provided by the user
 	 *
 	 * @param array $mail_data an array containing the following keys.
-	 * @param array $mail_headers an array of headers to be used in the email.
 	 *
 	 * @return string The log of wp_mail
 	 */
-	private function cf7_smtp_testmailer( array $mail_data, array $mail_headers ) {
+	private function cf7_smtp_testmailer( array $mail_data ) {
 
-		$mail = $this->cf7_smtp_testmailer_fill_data( $mail_data, $mail_headers );
+		$mail = $this->cf7_smtp_testmailer_fill_data( $mail_data );
 
 		/* the destination mail is mandatory */
 		if ( empty( $mail['email'] ) ) {
@@ -132,8 +130,8 @@ class Rest_SendMail extends Base {
 		/* allows to change the "from" if the user has chosen to override WordPress data */
 		$headers = '';
 		/* Setting the "from" (email and name). */
-		if ( ! empty( $mail_headers ) ) {
-			$headers .= sprintf( "From: %s <%s>\r\n", $mail['from_name'], $mail['from_mail'] );
+		if ( ! empty( $mail['from_mail'] ) ) {
+			$headers .= sprintf( "From: %s <%s>\r\n", $mail['from_name'] ?? 'WordPress', $mail['from_mail'] );
 		}
 
 		/* adds the mail template (if enabled) */
@@ -155,7 +153,6 @@ class Rest_SendMail extends Base {
 		}
 
 		/* if needed catch the error of wp_mail and return it to the user. */
-
 		ob_start();
 
 		// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
@@ -163,7 +160,7 @@ class Rest_SendMail extends Base {
 			$mail['email'],
 			$mail['subject'],
 			$mail['body'],
-			$headers
+			$headers ?? ''
 		);
 
 		$mail_log = ob_get_clean();
