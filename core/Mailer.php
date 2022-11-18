@@ -25,7 +25,7 @@ class Mailer extends Base {
 	/**
 	 * The mail log.
 	 *
-	 * @var array
+	 * @var string
 	 */
 	private $cf7_smtp_log;
 
@@ -307,54 +307,62 @@ class Mailer extends Base {
 		}
 
 		/* SSL or TLS, if necessary for your server */
-		if ( ! empty( $this->options['auth'] ) ) {
-			$auth = $this->cf7_smtp_get_setting_by_key( 'auth', $this->options );
+		$auth = $this->cf7_smtp_get_setting_by_key( 'auth', $this->options );
+		if ( ! empty( $auth ) ) {
 			if ( 'tls' === $auth || 'ssl' === $auth ) {
-				$phpmailer->SMTPAuth   = true;
 				$phpmailer->SMTPSecure = $auth;
 			}
 		}
 
-		/* Host */
-		if ( ! empty( $this->options['host'] ) ) {
-			$phpmailer->Host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
-		}
+		/* Provides the username if needed */
+		$username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name', $this->options ) );
 
-		/* Port */
-		if ( $this->options['port'] ) {
-			$phpmailer->Port = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
+		/* Provides the password if needed */
+		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
+			$password = CF7_SMTP_SETTINGS['user_pass'];
+		} elseif ( ! empty( $this->options['user_pass'] ) ) {
+			$password = cf7_smtp_decrypt( $this->options['user_pass'] );
+		} else {
+			$password = '';
 		}
 
 		/* Force it to use Username and Password to authenticate */
-		if ( $this->options['user_name'] ) {
-			$phpmailer->Username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name', $this->options ) );
+		if ( ! empty( $username ) && ! empty( $password ) ) {
+
+			/* Enables authentication */
+			$phpmailer->SMTPAuth = true;
+
+			/* Provides the username and password if needed */
+			$phpmailer->Username = sanitize_text_field( $username );
+			$phpmailer->Password = $password;
 		}
 
-		/* Provides the password if needed */
-		if ( $this->options['user_pass'] ) {
-			if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
-				$phpmailer->Password = CF7_SMTP_SETTINGS['user_pass'];
-			} elseif ( ! empty( $this->options['user_pass'] ) ) {
-				$phpmailer->Password = cf7_smtp_decrypt( $this->options['user_pass'] );
-			} else {
-				$phpmailer->Password = '';
-			}
+		/* Host */
+		$host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
+		if ( ! empty( $host ) ) {
+			$phpmailer->Host = sanitize_text_field( $host );
+		}
+
+		/* Port */
+		$port = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
+		if ( $port ) {
+			$phpmailer->Port = $port;
 		}
 
 		/* Enable verbose debug output */
 		$verbose = get_transient( 'cf7_smtp_testing' );
 		if ( $verbose ) {
 			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
-			$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
+			$phpmailer->SMTPDebug   = SMTP::DEBUG_CONNECTION;
+			$phpmailer->Debugoutput = function( $str, $level ) {
+				$this->cf7_smtp_log .= "$level: $str\n";
+			};
 		}
 
-		/* Force html if the user has chosen a custom template */
+		/* It forces html output when the user has chosen a custom template */
 		if ( ! empty( $this->options['custom_template'] ) ) {
 			if ( preg_match( '/<html /mi', $phpmailer->Body ) ) {
 				$phpmailer->isHTML();
-				$phpmailer->Debugoutput = function( $str, $level ) {
-					$this->cf7_smtp_log .= "$level: $str\n";
-				};
 			}
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -364,6 +372,7 @@ class Mailer extends Base {
 		if ( ! empty( $from_mail ) ) {
 			$from_name = $this->cf7_smtp_get_setting_by_key( 'from_name' );
 			$phpmailer->setFrom( $from_mail, $from_name );
+			$phpmailer->addReplyTo( $from_mail, $from_name );
 		}
 	}
 }
