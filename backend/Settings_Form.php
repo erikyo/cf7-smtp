@@ -617,10 +617,10 @@ class Settings_Form {
 		$new_input['port'] = ! empty( $input['port'] ) ? intval( $input['port'] ) : $new_input['port'];
 
 		/* SMTP UserName */
-		$new_input['user_name'] = ! empty( $input['user_name'] ) ? sanitize_text_field( $input['user_name'] ) : $new_input['user_name'];
+		$new_input['user_name'] = isset( $input['user_name'] ) ? sanitize_text_field( $input['user_name'] ) : $new_input['user_name'];
 
 		/* SMTP Password */
-		$new_input['user_pass'] = ! empty( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
+		$new_input['user_pass'] = isset( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
 
 		/* SMTP from Mail */
 		$new_input['from_mail'] = isset( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];

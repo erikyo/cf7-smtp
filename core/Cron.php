@@ -141,7 +141,11 @@ class Cron extends Base {
 
 		/* get the stored report */
 		$options = cf7_smtp_get_settings();
-		$report  = get_option( 'cf7-smtp-report' );
+		$report  = get_option( 'cf7-smtp-report', false );
+
+		if ( ! empty( $report ) ) {
+			return;
+		}
 
 		/* init the mail */
 		$smtp_mailer = new Mailer();
