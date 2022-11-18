@@ -28,14 +28,8 @@ $cf7_smtp_from_mail = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail'
 		<h3><?php echo esc_html__( 'Send A test Mail', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 
 		<form action="">
-			<label for="name-from">Name: </label>
-			<input type="text" name="name-from" id="name-from" placeholder="<?php echo ! empty( $cf7_smtp_from_name ) ? esc_html( $cf7_smtp_from_name ) : esc_html( wp_get_current_user()->display_name ); ?>" >
-
 			<label for="subject">Subject:</label>
 			<input type="text" id="subject" name="subject" placeholder="<?php echo esc_attr__( 'Add here something like: "this is a test mail!"', CF7_SMTP_TEXTDOMAIN ); ?>">
-
-			<label for="email-from">From: </label>
-			<input type="email" name="email-from" id="email-from" placeholder="<?php echo ! empty( $cf7_smtp_from_mail ) ? esc_attr( $cf7_smtp_from_mail ) : esc_attr( wp_get_current_user()->user_email ); ?>" >
 
 			<label for="email">To*: </label>
 			<input type="email" name="email" id="email" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" required >

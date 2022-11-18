@@ -287,10 +287,6 @@ class Rest_SendMail extends Base {
 					'email'   => $json_params['email'],
 					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message works! 🎉',
 					'body'    => ! empty( $json_params['body'] ) ? $json_params['body'] : '',
-				),
-				array(
-					'from_name' => ! empty( $json_params['name-from'] ) ? $json_params['name-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name', $options ),
-					'from_mail' => ! empty( $json_params['email-from'] ) ? $json_params['email-from'] : $smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail', $options ),
 				)
 			);
 
