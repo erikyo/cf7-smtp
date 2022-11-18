@@ -1,5 +1,5 @@
 # Contact Form 7 - SMTP
-A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
+A WordPress SMTP plugin for Contact Form 7 that allows the smtp server configuration of wp_mail() powered by automated report and custom mail templates.
 
 This is the GitHub repo of the plugin hosted into [WordPress.org Plugin Directory](https://wordpress.org/plugins/cf7-smtp/).
 

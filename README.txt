@@ -8,7 +8,7 @@ Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A simple SMTP plugin for Contact Form 7 with automated report and mail templates. Free and without ads
+A free SMTP plugin for Contact Form 7 that allows the smtp server configuration of wp_mail() powered by automated report and custom mail templates.
 
 == Description ==
 
