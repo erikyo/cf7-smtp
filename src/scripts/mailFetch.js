@@ -41,56 +41,53 @@ export function fetchAndRetry(mailResp, waitTime, attempts) {
 	/**
 	 * If the fetch fails, wait for a while and try again and try to get the error message if available
 	 *
-	 * @param {Error} err - The error that was thrown
 	 * @return {Promise} A promise that will either resolve or reject.
 	 */
-	function retry(err) {
+	function retry() {
 		if (attempts > 0) {
 			return delay(waitTime * (attempts + attempts)).then(() =>
 				fetchAndRetry(mailResp, waitTime, --attempts)
 			);
 		}
-		throw err;
 	}
 
-	return getSmtpLog(mailResp)
-		.then((logResp) => {
-			// Error
-			if (logResp.status === 'error') {
-				appendOutput(
-					responseBox,
-					`<code>${__('🆘 Failed!', 'cf7-smtp')}</code>`
-				);
+	return getSmtpLog(mailResp).then((logResp) => {
+		// Error
+		if (logResp.status === 'error') {
+			appendOutput(
+				responseBox,
+				`<code>${__('🆘 Failed!', 'cf7-smtp')}</code>`
+			);
 
-				if (logResp.message.length) {
-					const errorLog = logResp.message.join();
-					// then append the server response
-					return appendOutputMultiline(responseBox, errorLog);
-				}
+			if (logResp.message.length) {
+				const errorLog = logResp.message.join();
+				// then append the server response
+				return appendOutputMultiline(responseBox, errorLog);
 			}
+			return appendOutput(responseBox, `<code>${logResp.message}</code>`);
+		}
 
-			// Quit
-			if (logResp.message.match(/CLIENT -> SERVER: QUIT/g)) {
-				return appendOutput(
-					responseBox,
-					`<code>${__(
-						'💻 server has closed the connection!',
-						'cf7-smtp'
-					)}</code>`
-				);
-			}
+		// Quit
+		if (logResp.message.match(/CLIENT -> SERVER: QUIT/g)) {
+			return appendOutput(
+				responseBox,
+				`<code>${__(
+					'💻 server has closed the connection!',
+					'cf7-smtp'
+				)}</code>`
+			);
+		}
 
-			// Success
-			if (logResp.status === 'success') {
-				return appendOutput(
-					responseBox,
-					`<code>${__('✅ Success!', 'cf7-smtp')}</code>`
-				);
-			}
+		// Success
+		if (logResp.status === 'success') {
+			return appendOutput(
+				responseBox,
+				`<code class="">${__('✅ Success!', 'cf7-smtp')}</code>`
+			);
+		}
 
-			// otherwise if nothing match output the server response
-			const resp = logResp.message;
-			return appendOutput(responseBox, `<code>${resp}</code>`);
-		})
-		.then(retry);
+		// otherwise if nothing match output the server response
+		appendOutput(responseBox, `<code>${logResp.message}</code>`);
+		return retry();
+	});
 }

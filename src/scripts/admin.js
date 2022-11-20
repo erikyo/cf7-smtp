@@ -127,7 +127,7 @@ export function smtpAdmin() {
 			.catch((errMsg) => {
 				appendOutput(
 					responseBox,
-					__('OOOPS something went wrong!', 'cf7-smtp')
+					`<code>${__('OOOPS something went wrong!', 'cf7-smtp')}`
 				);
 				console.log(errMsg);
 			});
