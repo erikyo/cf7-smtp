@@ -1,0 +1,16 @@
+/* The form test animation */
+#sendmail-testform {
+  span.mail-init {
+	animation: translateMail 15s 1;
+	display: inline-block;
+  }
+}
+
+@keyframes translateMail {
+  from {
+	transform: translateX(0)
+  }
+  to {
+	transform: translateX(200px)
+  }
+}
