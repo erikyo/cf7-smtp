@@ -184,6 +184,24 @@ class Settings_Form {
 			'smtp-settings'
 		);
 
+		/* allow insecure options */
+		add_settings_field(
+			'insecure',
+			__( 'Allow insecure options', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_insecure_callback' ),
+			'smtp-settings',
+			'smtp_advanced'
+		);
+
+		/* Reply to */
+		add_settings_field(
+			'replyTo',
+			__( 'Add Reply To', CF7_SMTP_TEXTDOMAIN ),
+			array( $this, 'cf7_smtp_print_replyTo_callback' ),
+			'smtp-settings',
+			'smtp_advanced'
+		);
+
 		/* Settings cf7_smtp from_mail */
 		add_settings_field(
 			'from_mail',
@@ -283,6 +301,18 @@ class Settings_Form {
 		printf(
 			'<p>%s</p>',
 			esc_html__( 'Leave empty to NOT override the WordPress defaults (the one used can be different from the one you see below, if left blank the one set in Contact Form 7 will be used)', CF7_SMTP_TEXTDOMAIN )
+		);
+	}
+
+
+	/**
+	 * It prints a checkbox with the id of `cf7_smtp_enabled` and the name of `cf7-smtp-options[enabled]` and if the `enabled`
+	 * option is set, it will be checked
+	 */
+	public function cf7_smtp_print_enable_callback() {
+		printf(
+			'<input type="checkbox" id="cf7_smtp_enabled" name="cf7-smtp-options[enabled]" %s />',
+			! empty( $this->options['enabled'] ) ? 'checked="true"' : ''
 		);
 	}
 
@@ -401,7 +431,7 @@ class Settings_Form {
 			'value'   => false,
 			'defined' => false,
 		);
-		if ( ! empty( CF7_SMTP_SETTINGS ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
+		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS[ $key ] ) ) {
 			$option['value']   = $return ? CF7_SMTP_SETTINGS[ $key ] : 'defined';
 			$option['defined'] = true;
 		} elseif ( ! empty( $this->options[ $key ] ) ) {
@@ -411,13 +441,27 @@ class Settings_Form {
 	}
 
 	/**
-	 * It prints a checkbox with the id of `cf7_smtp_enabled` and the name of `cf7-smtp-options[enabled]` and if the `enabled`
-	 * option is set, it will be checked
+	 * It prints a checkbox
 	 */
-	public function cf7_smtp_print_enable_callback() {
+	public function cf7_smtp_print_insecure_callback() {
+		$insecure = $this->cf7_smtp_find_setting( 'insecure' );
 		printf(
-			'<input type="checkbox" id="cf7_smtp_enabled" name="cf7-smtp-options[enabled]" %s />',
-			! empty( $this->options['enabled'] ) ? 'checked="true"' : ''
+			'<input type="checkbox" id="cf7_smtp_insecure" name="cf7-smtp-options[insecure]" %s %s />',
+			empty( $insecure['value'] ) ? '' : 'checked="true"',
+			esc_html( empty( $insecure['defined'] ) ? '' : 'disabled' )
+		);
+	}
+
+	/**
+	 * It prints a checkbox with the id of cf7_smtp_replyTo and the name of cf7-smtp-options[replyTo] and if the option is
+	 * set, it will be checked
+	 */
+	public function cf7_smtp_print_replyTo_callback() {
+		$reply_to = $this->cf7_smtp_find_setting( 'replyTo' );
+		printf(
+			'<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />',
+			empty( $reply_to['value'] ) ? '' : 'checked="true"',
+			esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' )
 		);
 	}
 
@@ -621,6 +665,12 @@ class Settings_Form {
 
 		/* SMTP Password */
 		$new_input['user_pass'] = isset( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
+
+		/* Reply to */
+		$new_input['insecure'] = ! empty( $input['insecure'] );
+
+		/* Reply to */
+		$new_input['replyTo'] = ! empty( $input['replyTo'] );
 
 		/* SMTP from Mail */
 		$new_input['from_mail'] = isset( $input['from_mail'] ) ? sanitize_email( $input['from_mail'] ) : $new_input['from_mail'];

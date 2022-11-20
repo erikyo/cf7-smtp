@@ -134,12 +134,13 @@ class ActDeact extends Base {
 			'host'            => $current_website,
 			'port'            => '25',
 			'auth'            => '',
-			'user_name'       => 'wordpress',
+			'replyTo'         => false,
+			'insecure'        => false,
+			'user_name'       => '',
 			'user_pass'       => '',
-			'from_mail'       => 'wordpress@' . $current_website,
-			'from_name'       => 'wordpress',
+			'from_mail'       => '',
+			'from_name'       => '',
 		);
-
 	}
 
 	/**
