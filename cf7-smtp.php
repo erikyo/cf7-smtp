@@ -7,7 +7,7 @@
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  * Version:         0.0.1
- * Author:          Erik
+ * Author:          codekraft
  * Author URI:      https://modul-r.codekraft.it/
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+

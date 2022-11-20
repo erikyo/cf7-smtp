@@ -32,33 +32,40 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 2. Gmail (tls and ssl)
 3. Yahoo (tls and ssl)
 4. Outlook (tls and ssl)
+4. Office365 (tls)
 
-Would you like to find more presets that you think are useful to other users? Open a request in the support form and provide the necessary connection data (auth, server address and port). In the following version of the plugin you will find them among the presets.
+Would you like to find more presets (that you think are useful to other users)? Open a request in the support form and provide the necessary connection data (auth, server address and port). In the next cf7-smtp version you will find the required configuration among the presets.
 
 = Security =
 it's warmly advised to store at least the password into config.php as a constant. And in addition, it's also very easy! It needs only to add
-`define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );`
-into your config.php just before `/* That's all, stop editing! Happy publishing. */`
-that passwords will be stored encrypted, but still it is not good practice to put it into database!
-Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
 
-But, To quickly configure multiple websites there is one constant that wraps all the others, so in case you manage many websites this will be very convenient!
-to add it to your website follow the same instructions as for a "single" value constant.
+``define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );``
 
-```
-define(
+into your `config.php` just before
+
+``/* That's all, stop editing! Happy publishing. */``
+
+All passwords will be stored encrypted, but still it is not good practice to put it into database!
+
+= Quick setup =
+as with the user password other constants can also be defined. Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
+
+But, to quickly set up the plugin there is one constant that wraps all the others, so in case you manage multiple websites this will be very convenient!
+
+``define(
     'CF7_SMTP_SETTINGS',
     array(
-        'host'      => '',
-        'port'      => '',
-        'auth'      => '',
-        'user_name' => '',
-        'user_pass' => '',
-        'from_mail' => '',
-        'from_name' => '',
-    )
-);
-```
+        'host'      => string,
+        'port'      => number,
+        'auth'      => ''|'tls'|'ssl',
+        'user_name' => string,
+        'user_pass' => string,
+		'replyTo'   => true|false,
+		'insecure'  => true|false,
+        'from_mail' => email,
+        'from_name' => string,
+    ));
+``
 
 = Template =
 Wouldn't it be better to have a small container to make our mail a little prettier? Well we have it!
@@ -68,10 +75,20 @@ Furthermore, if you prefer to use your own template for mail, simply create it b
 3. Name it `default.html` (or `default-{{CONTACT-FORM-ID}}-{{LANGUAGE}}.html` depends on your needs)
 4. (Optional) You can, customize logo, website link and other template parts. checkout the filter documentation on GitHub/wiki
 
-= How this plugin works  =
+==Support==
+Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
+Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
-I use a filter bundled with WordPress to configure the smtp server, modifying the normal behaviour of wp_mail.
-During this process I can take the body of the e-mail in simple html and wrap it inside a html template (customizable)
+= Contribute =
+We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+
+* Reporting a bug
+* Testing the plugin with different user agent and report fingerprinting failures
+* Discussing the current state, features, improvements
+* Submitting a fix or a new feature
+
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
+By contributing, you agree that your contributions will be licensed under its GPLv2 License.
 
 == Installation ==
 
@@ -101,6 +118,9 @@ During this process I can take the body of the e-mail in simple html and wrap it
 
 = 0.0.1 =
 * First Release
+
+== Screenshot ==
+1. Plugin options (1/1)
 
 = Resources =
 * [Wordpress Plugin boilerplate](https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered)
