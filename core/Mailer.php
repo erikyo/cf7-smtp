@@ -40,8 +40,12 @@ class Mailer extends Base {
 
 		parent::initialize();
 
-		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
-			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_overrides' ) );
+		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing'  ) ) ) ) {
+			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_overrides' ), 11 );
+		}
+
+		if ( ! empty( $this->options['custom_template'] ) ) {
+			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template'), 10 );
 		}
 
 		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
@@ -52,7 +56,6 @@ class Mailer extends Base {
 
 		\add_filter( 'wpcf7_mail_components', array( $this, 'cf7_smtp_email_style' ), 99, 3 );
 	}
-
 
 	/**
 	 * Fired when the mail has succeeded
@@ -361,13 +364,6 @@ class Mailer extends Base {
 				$this->cf7_smtp_log .= "$level: $str\n";
 			};
 		}
-
-		/* Force html if the user has chosen a custom template */
-		if ( ! empty( $this->options['custom_template'] ) ) {
-			if ( preg_match( '/<html /mi', $phpmailer->Body ) ) {
-				$phpmailer->isHTML();
-			}
-		}
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		/* Reply to */
@@ -393,6 +389,16 @@ class Mailer extends Base {
 			$reply_to_mail = ! empty( $from_mail ) ? $from_mail : $phpmailer->Sender;
 			$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
 			$phpmailer->addReplyTo( $reply_to_mail, $reply_to_name );
+		}
+	}
+
+	public function cf7_smtp_apply_template( PHPMailer\PHPMailer $phpmailer ) {
+		/* Force html if the user has chosen a custom template */
+		if ( ! empty( $this->options['custom_template'] ) ) {
+			if ( preg_match( '/<html /mi', $phpmailer->Body ) ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$phpmailer->isHTML();
+			}
 		}
 	}
 }
