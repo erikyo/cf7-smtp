@@ -13,11 +13,14 @@ A free SMTP plugin for Contact Form 7 that allows the smtp server configuration 
 == Description ==
 
 WordPress uses PHPMailer to send mail from with your local mail server, but it can happen that your mail were not accepted by mail providers...
-This can happen for several reasons, sometimes because the mail server is not configured or sometimes because the records DKIM, DMARC and SPF of the domain have to be configured and so on... Anyway you can avoid any problems by using an external SMTP server and sending mail with it!
+This can happen for several reasons, sometimes because the mail server is not configured or sometimes because the records DKIM, DMARC and SPF of the domain been set up correctly and so on...
+Anyway you can avoid any problems by using an external SMTP server and sending mail with it!
 
-There is a module for testing the sending of 'live' e-mails (with the API rest without reloading the page) and the entire output of the php mailer will be captured, which will be useful in case of configuration errors (by even indicating which parameter is wrong in some cases).
+= Additional features =
 
-And last but not least there is the possibility of using a customised template to send your e-mails in a less textual and slightly prettier format! The template can be customised for each form and internationalized.
+✅ **Live testing:** a module for testing e-mail settings with the Rest-Api (that avoid to reload the page for this kind of test). The entire output of the php mailer will be captured, which will be useful in case of configuration errors or to get the wrong parameter when is possible.
+✅ **Customised template:** wrap cf7 emails with a template, so your emails will have a less textual and a little prettier format! The template can be customised for each form and internationalized.
+✅ **Automated Reports:** choose when and what email you want to receive the report and I will send you a summary of sent and failed emails
 
 This plugin is ads free and I don't want to try to sell you any pro version! If you want to contribute, there are many ways to do so, from simple suggestions and bug reports to translating and contributing code. See below how to do it!
 
@@ -27,7 +30,7 @@ Like any other network protocol, it contains the rules for proper communication 
 Since its release in 1982 as the successor to the 'Mail Box Protocol' in Arpanet, SMTP has become the standard protocol for sending e-mails. However, the SMTP procedure remains largely invisible to the normal consumer, as it is executed in the background by the e-mail programme used.
 Only if the software, the webmail application on the browser or the mobile e-mail application does not automatically determine the SMTP protocol when creating an account, does it have to be set manually to ensure smooth e-mail traffic.
 
-= SMTP presets  =
+= SMTP presets =
 1. Aruba
 2. Gmail (tls and ssl)
 3. Yahoo (tls and ssl)
@@ -39,11 +42,13 @@ Would you like to find more presets (that you think are useful to other users)? 
 = Security =
 it's warmly advised to store at least the password into config.php as a constant. And in addition, it's also very easy! It needs only to add
 
-``define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );``
+``define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );
+``
 
 into your `config.php` just before
 
-``/* That's all, stop editing! Happy publishing. */``
+``/* That's all, stop editing! Happy publishing. */
+``
 
 All passwords will be stored encrypted, but still it is not good practice to put it into database!
 
@@ -55,15 +60,15 @@ But, to quickly set up the plugin there is one constant that wraps all the other
 ``define(
     'CF7_SMTP_SETTINGS',
     array(
-        'host'      => string,
-        'port'      => number,
-        'auth'      => ''|'tls'|'ssl',
-        'user_name' => string,
-        'user_pass' => string,
-		'replyTo'   => true|false,
-		'insecure'  => true|false,
-        'from_mail' => email,
-        'from_name' => string,
+      'host'      => string,
+      'port'      => number,
+      'auth'      => ''|'tls'|'ssl',
+      'user_name' => string,
+      'user_pass' => string,
+      'replyTo'   => true|false,
+      'insecure'  => true|false,
+      'from_mail' => email,
+      'from_name' => string,
     ));
 ``
 
@@ -76,8 +81,8 @@ Furthermore, if you prefer to use your own template for mail, simply create it b
 4. (Optional) You can, customize logo, website link and other template parts. checkout the filter documentation on GitHub/wiki
 
 ==Support==
-Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
-Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
+Community support: via the [support forums](https://wordpress.org/support/plugin/cf7-smtp/) on wordpress.org
+Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/cf7-smtp)
 
 = Contribute =
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
