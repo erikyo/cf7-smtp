@@ -40,12 +40,12 @@ class Mailer extends Base {
 
 		parent::initialize();
 
-		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing'  ) ) ) ) {
+		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
 			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_overrides' ), 11 );
 		}
 
 		if ( ! empty( $this->options['custom_template'] ) ) {
-			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template'), 10 );
+			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template' ), 10 );
 		}
 
 		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
@@ -320,12 +320,12 @@ class Mailer extends Base {
 		} else {
 			$password = '';
 		}
-		$host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
-		$port = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
-		$insecure = intval( $this->cf7_smtp_get_setting_by_key( 'insecure', $this->options ) );
+		$host      = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
+		$port      = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
+		$insecure  = intval( $this->cf7_smtp_get_setting_by_key( 'insecure', $this->options ) );
 		$from_mail = sanitize_email( $this->cf7_smtp_get_setting_by_key( 'from_mail' ) );
-		$from_name = sanitize_text_field($this->cf7_smtp_get_setting_by_key( 'from_name' ));
-		$reply_to = intval( $this->cf7_smtp_get_setting_by_key( 'replyTo', $this->options ) );
+		$from_name = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'from_name' ) );
+		$reply_to  = intval( $this->cf7_smtp_get_setting_by_key( 'replyTo', $this->options ) );
 
 		/* SSL or TLS, if necessary for your server */
 		if ( ! empty( $auth ) ) {
@@ -351,7 +351,7 @@ class Mailer extends Base {
 		}
 
 		/* Port */
-		if ( ! empty(  $port ) ) {
+		if ( ! empty( $port ) ) {
 			$phpmailer->Port = $port;
 		}
 
@@ -392,6 +392,12 @@ class Mailer extends Base {
 		}
 	}
 
+	/**
+	 * If the user has chosen a custom template, force the email to be sent as HTML if the email body contains the string
+	 * <html
+	 *
+	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer object that is being used to send the email.
+	 */
 	public function cf7_smtp_apply_template( PHPMailer\PHPMailer $phpmailer ) {
 		/* Force html if the user has chosen a custom template */
 		if ( ! empty( $this->options['custom_template'] ) ) {
