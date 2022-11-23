@@ -21,6 +21,18 @@ function cf7_smtp_get_settings(): array {
 }
 
 /**
+ * It updates the plugin's settings
+ *
+ * @param array $options An array of options to update.
+ *
+ * @return bool success or not
+ */
+function cf7_smtp_update_settings( array $options ): bool {
+	$new_options = array_merge( cf7_smtp_get_settings(), $options );
+	return update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
+}
+
+/**
  * It encrypts a string using the WordPress salt as the key
  *
  * @param string|int $value The value to encrypt.

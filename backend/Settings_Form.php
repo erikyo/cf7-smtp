@@ -536,6 +536,9 @@ class Settings_Form {
 	public function cf7_smtp_print_user_pass_callback() {
 		$user_pass     = $this->cf7_smtp_find_setting( 'user_pass', false );
 		$user_pass_val = esc_html( $user_pass['value'] );
+		if ( $user_pass['defined'] ) {
+			cf7_smtp_update_settings( array( 'user_pass' => '' ) );
+		}
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
 			empty( $user_pass['defined'] ) ? 'unsafe' : 'safe',
