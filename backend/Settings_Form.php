@@ -408,7 +408,7 @@ class Settings_Form {
 				'<label><input type="radio" name="cf7-smtp-options[auth]" class="auth-%s" value="%s"%s%s/>%s</label>',
 				esc_attr( $auth_name ),
 				esc_attr( $auth_name ),
-				$selected === $auth ? ' checked' : ' ',
+				$selected === $auth || ( $selected === '' && $auth === 'none' ) ? ' checked' : ' ',
 				! empty( $defined ) ? ' disabled ' : ' ',
 				$auth_name
 			);
