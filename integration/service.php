@@ -46,20 +46,21 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
         return true;
 	}
 
-	public function get_categories() {
-		return array( 'email_service' );
+	public function get_categories()
+	{
+		return array('email_services');
 	}
 
     public function icon() {
-		echo wpcf7_link(
-			'https://wordpress.org/plugins/cf7-smtp/',
-			'cf7-smtp'
-		);
+		echo '<div class="integration-icon">' . file_get_contents(CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg') . '</div>';
 	}
 
 
 	public function link() {
-		return '';
+		return wpcf7_link(
+			'https://wordpress.org/plugins/cf7-smtp/',
+			'cf7-smtp'
+		);
 	}
 
 	public function admin_notice( $message = '' ) {
@@ -130,7 +131,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
     private function display_setup( ) {
 
 		include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php' );
-		// include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php' );
+		include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php' );
 
 	}
 }

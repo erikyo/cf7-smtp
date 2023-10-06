@@ -2,7 +2,7 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/styles/main.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************/
 /* button template */
-#sendmail-testform form button, #cf7-smtp-settings input[type=submit] {
+#sendmail-testform form button, #cf7-smtp input[type=submit] {
   margin: 1rem 1rem 0 auto;
   display: flex;
 }
@@ -10,20 +10,32 @@
 /**
  * This stylesheet is used to style the settings page of the plugin.
  */
-#cf7-smtp-settings div#cf7-smtp-auth label {
+#cf7-smtp .integration-icon {
+  display: inline-block;
+  padding-block: inherit;
+  margin: 0 0 0 0.7em;
+  width: 30px;
+}
+#cf7-smtp .title {
+  display: inline-block;
+}
+#cf7-smtp .infobox {
+  display: inline-block;
+}
+#cf7-smtp div#cf7-smtp-auth label {
   display: block;
   margin-bottom: 10px;
 }
-#cf7-smtp-settings select,
-#cf7-smtp-settings input[type=email],
-#cf7-smtp-settings input[type=text],
-#cf7-smtp-settings input[type=number] {
+#cf7-smtp select,
+#cf7-smtp input[type=email],
+#cf7-smtp input[type=text],
+#cf7-smtp input[type=number] {
   width: 100%;
 }
-#cf7-smtp-settings input#cf7_smtp_user_pass.unsafe {
+#cf7-smtp input#cf7_smtp_user_pass.unsafe {
   box-shadow: 0 0 0 1px #f44336 inset;
 }
-#cf7-smtp-settings .tip.schedule {
+#cf7-smtp .tip.schedule {
   padding: 8px 16px;
   margin: 16px auto 0;
   display: flex;
@@ -32,11 +44,11 @@
   border: 1px solid #f44336;
   border-radius: 5px;
 }
-#cf7-smtp-settings .tip.schedule * {
+#cf7-smtp .tip.schedule * {
   margin: 0 8px;
   padding: 0;
 }
-#cf7-smtp-settings .tip.schedule h1 {
+#cf7-smtp .tip.schedule h1 {
   font-size: 30px;
 }
 

@@ -97,15 +97,15 @@ if ( ! wp_installing() ) {
 			new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
 
 
-			if ( defined( 'WPCF7_PLUGIN_MODULES_DIR' ) && file_exists( path_join( WPCF7_PLUGIN_MODULES_DIR, 'cf7-smtp' ) ) ) {
-				return;
-			}
+			// if ( defined( 'WPCF7_PLUGIN_MODULES_DIR' ) && file_exists( path_join( WPCF7_PLUGIN_MODULES_DIR, 'cf7-smtp' ) ) ) {
+			// 	return;
+			// }
 
 			if ( ! class_exists( 'WPCF7_Service' ) ) {
 				return;
 			}
 
-			$file = path_join( CF7_SMTP_PLUGIN_ROOT, 'modules/cf7-smtp/cf7-smtp.php' );
+			$file = path_join( CF7_SMTP_PLUGIN_ROOT, 'integration/integration.php' );
 
 			if ( file_exists( $file ) ) {
 				include_once $file;

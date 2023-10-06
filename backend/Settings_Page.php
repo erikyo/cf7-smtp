@@ -54,14 +54,14 @@ class Settings_Page extends Base {
 	 */
 	public function add_plugin_admin_menu() {
 
-		\add_submenu_page(
-			'wpcf7',
-			CF7_SMTP_NAME,
-			__( 'SMTP', CF7_SMTP_TEXTDOMAIN ),
-			'manage_options',
-			CF7_SMTP_TEXTDOMAIN,
-			array( $this, 'display_plugin_admin_page' )
-		);
+		// \add_submenu_page(
+		// 	'wpcf7',
+		// 	CF7_SMTP_NAME,
+		// 	__( 'SMTP', CF7_SMTP_TEXTDOMAIN ),
+		// 	'manage_options',
+		// 	CF7_SMTP_TEXTDOMAIN,
+		// 	array( $this, 'display_plugin_admin_page' )
+		// );
 
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_options_init' ) );
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_handle_actions' ), 1 );
@@ -75,7 +75,7 @@ class Settings_Page extends Base {
 	 * @return void
 	 */
 	public function display_plugin_admin_page() {
-		// include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
+		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
 		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php';
 	}
 

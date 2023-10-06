@@ -21,16 +21,49 @@ export const responseBox = document.querySelector('#sendmail-response pre');
 
 export function smtpAdmin() {
 	/**
-	 * This is the code that saves the settings when the user presses ctrl-s.
+	 *	JS logic to manipulate card transition
+	 *	This set of conditionals checks if we are in the integration page
+	 *	if yes then set a flag in localStorage to "remember" that we are in the current page
+	 *	on each page reload we will remove the transitions but set the max-width(maxWidth) to 1000
+	 *	when we leave the page we will remove the flag
+	 *	this code should not be changed unless Contact Form 7 will submit some major updates for the integration URLs
 	 */
-	if (document.querySelector('#cf7-smtp-settings')) {
-		// Save on ctrl-s keypress
-		document.addEventListener('keydown', (e) => {
-			if (e.ctrlKey && e.key === 's') {
-				e.preventDefault();
-				document.querySelector('#cf7-smtp-settings #submit').click();
-			}
+
+	const urlParams = new URLSearchParams(window.location.search);
+	const page = urlParams.get('page');
+	const service = urlParams.get('service');
+	const action = urlParams.get('action');
+
+	const cards = document.querySelectorAll('.card');
+
+	function disableTransition() {
+		cards.forEach((card) => {
+			card.style.transition = 'none';
 		});
+	}
+	function enableTransition() {
+		cards.forEach((card) => {
+			card.style.transition = 'max-width 1s ease';
+			card.style.maxWidth = '1000px';
+		});
+	}
+	if (
+		page === 'wpcf7-integration' &&
+		service === 'cf7-smtp' &&
+		action === 'setup'
+	) {
+		if (sessionStorage.getItem('disableTransition') === 'true') {
+			disableTransition();
+			cards.forEach((card) => {
+				card.style.maxWidth = '1000px';
+			});
+		} else {
+			enableTransition();
+			sessionStorage.setItem('disableTransition', 'true');
+		}
+	} else {
+		sessionStorage.removeItem('disableTransition');
+		disableTransition();
 	}
 
 	/**
@@ -133,5 +166,9 @@ export function smtpAdmin() {
 			});
 	});
 }
+
+/**
+ * Resize on submit=action in the integration panel from CF7
+ */
 
 window.onload = smtpAdmin();
