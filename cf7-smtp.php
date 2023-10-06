@@ -23,6 +23,8 @@
  * @link      https://modul-r.codekraft.it/
  */
 
+
+
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you can not directly access this file.' );
@@ -39,9 +41,9 @@ if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
-			'host'      => defined( 'CF7_SMTP_HOST' ) ? CF7_SMTP_HOST : null,
-			'port'      => defined( 'CF7_SMTP_PORT' ) ? CF7_SMTP_PORT : null,
-			'auth'      => defined( 'CF7_SMTP_AUTH' ) ? CF7_SMTP_AUTH : null,
+			'host'      => defined( 'CF7_SMTP_HOST' ) 	   ? CF7_SMTP_HOST 		: null,
+			'port'      => defined( 'CF7_SMTP_PORT' ) 	   ? CF7_SMTP_PORT 		: null,
+			'auth'      => defined( 'CF7_SMTP_AUTH' ) 	   ? CF7_SMTP_AUTH 		: null,
 			'user_name' => defined( 'CF7_SMTP_USER_NAME' ) ? CF7_SMTP_USER_NAME : null,
 			'user_pass' => defined( 'CF7_SMTP_USER_PASS' ) ? CF7_SMTP_USER_PASS : null,
 			'from_mail' => defined( 'CF7_SMTP_FROM_MAIL' ) ? CF7_SMTP_FROM_MAIL : null,
@@ -91,7 +93,22 @@ if ( ! wp_installing() ) {
 	add_action(
 		'plugins_loaded',
 		static function () use ( $cf7_smtp_libraries ) {
-			new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
-		}
-	);
+			//$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; 
+			//new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
+
+
+			if ( defined( 'WPCF7_PLUGIN_MODULES_DIR' ) && file_exists( path_join( WPCF7_PLUGIN_MODULES_DIR, 'cf7-smtp' ) ) ) {
+				return;
+			}
+
+			if ( ! class_exists( 'WPCF7_Service' ) ) {
+				return;
+			}
+
+			$file = path_join( CF7_SMTP_PLUGIN_ROOT, 'modules/cf7-smtp/cf7-smtp.php' );
+
+			if ( file_exists( $file ) ) {
+				include_once $file;
+			}
+		});
 }

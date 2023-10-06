@@ -20,6 +20,7 @@
 
 	<?php
 	do_action( 'cf7_smtp_dashboard' );
+	wp_nonce_field( 'cf7-smtp-setup' ); 
 	?>
 
 	<div class="cf7-smtp-options">
@@ -45,8 +46,9 @@
 			echo '<div class="card main-options">';
 			do_settings_sections( 'smtp-cron' );
 
-
-			if ( wp_next_scheduled( 'cf7_smtp_report' ) && CF7ANTISPAM_DEBUG ) {
+			/* EDIT: Commented the undefined constant */
+			/* This Prints the CRON job for mail reports */
+			if ( /*!empty(CF7ANTISPAM_DEBUG) &&*/ wp_next_scheduled( 'cf7_smtp_report' ) ) {
 				echo '<div class="tip schedule"><h1>⏰</h1>';
 				printf(
 					'<small class="monospace"><b>%s</b> %s <br/><b>%s</b> %s</small>',

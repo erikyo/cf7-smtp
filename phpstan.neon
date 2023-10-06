@@ -20,6 +20,13 @@ parameters:
         - tests/
         - node_modules/
     ignoreErrors:
+        - 'Constant CF7_SMTP_HOST not found.'
+        - 'Constant CF7_SMTP_PORT not found.'
+        - 'Constant CF7_SMTP_AUTH not found.'
+        - 'Constant CF7_SMTP_USER_NAME not found.'
+        - 'Constant CF7_SMTP_USER_PASS not found.'
+        - 'Constant CF7_SMTP_FROM_MAIL not found.'
+        - 'Constant CF7_SMTP_FROM_NAME not found.'
         - 'Constant CF7ANTISPAM_NAME not found.'
         - 'Constant CF7ANTISPAM_VERSION not found.'
         - 'Constant CF7ANTISPAM_PLUGIN not found.'

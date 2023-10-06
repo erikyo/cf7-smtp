@@ -79,6 +79,7 @@ class Context {
 	 */
 	public function is_amp(): bool {
 		return \function_exists( 'is_amp_endpoint' ) && \is_amp_endpoint();
+		//return \function_exists( 'is_amp_request' ) && \is_amp_request();
 	}
 
 	/**
