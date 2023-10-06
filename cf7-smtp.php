@@ -93,8 +93,8 @@ if ( ! wp_installing() ) {
 	add_action(
 		'plugins_loaded',
 		static function () use ( $cf7_smtp_libraries ) {
-			//$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; 
-			//new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
+			$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php';
+			new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
 
 
 			if ( defined( 'WPCF7_PLUGIN_MODULES_DIR' ) && file_exists( path_join( WPCF7_PLUGIN_MODULES_DIR, 'cf7-smtp' ) ) ) {

@@ -20,6 +20,8 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 
     private static $instance;
 
+    public $options;
+
     public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self;
@@ -29,8 +31,9 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 	}
 
     public function __construct() {
+	    $this->options = get_option( 'cf7-smtp-options' );
 
-        $integration = 'cf7-smtp'; 
+        $integration = 'cf7-smtp';
         add_action('load-' . $integration, array($this, 'wpcf7_load_integration_page'), 10, 0);
 
     }
@@ -42,7 +45,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
     public function is_active() {
         return true;
 	}
-    
+
 	public function get_categories() {
 		return array( 'email_service' );
 	}
@@ -61,7 +64,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 
 	public function admin_notice( $message = '' ) {
 	}
-	
+
     protected function menu_page_url( $args = '' ) {
 		$args = wp_parse_args( $args, array() );
 
@@ -82,7 +85,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 
 			if ( ! empty( $_POST['reset'] ) ) {
 				$redirect_to = $this->menu_page_url( 'action=setup' );
-			} 
+			}
 			wp_safe_redirect( $redirect_to );
 			exit();
 		}
@@ -93,7 +96,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
     public function display( $action = '') {
 		echo sprintf(
 			'<p>%s</p>',
-			esc_html( __( "SMTP stands for ‘Simple Mail Transfer Protocol’." 
+			esc_html( __( "SMTP stands for ‘Simple Mail Transfer Protocol’."
             . "It is a connection-oriented, text-based network protocol, "
             . "the purpose of this plugin is to send e-mails from a sender to a recipient through the use of a form", 'contact-form-7' ) )
 		);
@@ -126,9 +129,8 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 
     private function display_setup( ) {
 
-
-		include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php' ); 
-		include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php' ); 
+		include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php' );
+		// include_once( CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php' );
 
 	}
 }

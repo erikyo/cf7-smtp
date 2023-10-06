@@ -29,22 +29,22 @@ class Settings_Page extends Base {
 	 *
 	 * @return void|bool
 	 */
-	// public function initialize() {
+	public function initialize() {
 
-	// 	if ( ! parent::initialize() ) {
-	// 		return;
-	// 	}
+		if ( ! parent::initialize() ) {
+			return;
+		}
 
-	// 	$this->form = new Settings_Form();
+		$this->form = new Settings_Form();
 
-	// 	// Add the options page and menu item.
-	// 	//\add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		// Add the options page and menu item.
+		\add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
-	// 	$realpath        = (string) \realpath( \dirname( __FILE__ ) );
-	// 	$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . CF7_SMTP_TEXTDOMAIN . '.php' );
+		$realpath        = (string) \realpath( \dirname( __FILE__ ) );
+		$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . CF7_SMTP_TEXTDOMAIN . '.php' );
 
-	// 	//\add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
-	// }
+		\add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+	}
 
 	/**
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
@@ -75,7 +75,7 @@ class Settings_Page extends Base {
 	 * @return void
 	 */
 	public function display_plugin_admin_page() {
-		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
+		// include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
 		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php';
 	}
 
