@@ -106,8 +106,9 @@
 .smtp-style-chart h4 {
   text-align: center;
 }
-.smtp-style-chart #pie-chart {
-  margin: 50px;
+.smtp-style-chart #pie-container {
+  margin: auto;
+  width: 250px;
 }
 .smtp-style-chart span.chart-icon {
   display: block;

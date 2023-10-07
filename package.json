@@ -12,6 +12,8 @@
         "rest/*",
         "templates/*",
         "vendor/*",
+        "integration/*",
+        "public/*",
         "index.php",
         "cf7-smtp.php",
         "README.txt",

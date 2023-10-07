@@ -94,61 +94,68 @@ function smtpAdmin() {
   /**
    * Sets the values of the SMTP connection according to the value selected by the user.
    */
-  formSelectDefault.addEventListener('change', e => {
-    const selectedEl = e.target[e.target.selectedIndex];
-    if (selectedEl) {
-      const authRadio = document.querySelector('.auth-' + selectedEl.dataset.auth);
-      authRadio.checked = true;
-      formSelectHost.value = selectedEl.dataset.host;
-      formSelectPort.value = selectedEl.dataset.port;
-    }
-  });
+  if (!!formSelectDefault) {
+    formSelectDefault.addEventListener('change', e => {
+      const selectedEl = e.target[e.target.selectedIndex];
+      if (selectedEl) {
+        const authRadio = document.querySelector('.auth-' + selectedEl.dataset.auth);
+        authRadio.checked = true;
+        formSelectHost.value = selectedEl.dataset.host;
+        formSelectPort.value = selectedEl.dataset.port;
+      }
+    });
+  }
 
   /**
    * Enables the SMTP settings
    */
   const smtpEnabled = document.querySelector('#cf7_smtp_enabled');
   const formSmtpSection = document.querySelector('#cf7-smtp-settings .form-table:first-of-type');
-  (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
-  smtpEnabled.addEventListener('click', () => {
+  if (!!smtpEnabled) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
-  });
-
+    smtpEnabled.addEventListener('click', () => {
+      (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableAdvanced)([2, 3, 4, 5, 6, 7], formSmtpSection, smtpEnabled.checked);
+    });
+  }
   /* Initialize the response box and show a welcome message */
-  (0,_output__WEBPACK_IMPORTED_MODULE_4__.cleanOutput)(responseBox, '<code>' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Mail Server initialization completed!', 'cf7-smtp') + '</code>');
+  if (!!responseBox) {
+    (0,_output__WEBPACK_IMPORTED_MODULE_4__.cleanOutput)(responseBox, '<code>' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Mail Server initialization completed!', 'cf7-smtp') + '</code>');
+  }
 
   /**
    *  Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
    */
-  formElem.addEventListener('submit', e => {
-    e.preventDefault();
-    /* The form inputs data */
-    const formData = new FormData(e.target);
-    const data = {};
-    data.nonce = window.smtp_settings.nonce;
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-
-    /* clean the previous results*/
-    (0,_output__WEBPACK_IMPORTED_MODULE_4__.cleanOutput)(responseBox);
-    (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutput)(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Let's start a new server connection…", 'cf7-smtp')} <span class="mail-init animation-start">✉️</span></code>`);
-    _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
-      path: '/cf7-smtp/v1/sendmail',
-      method: 'POST',
-      data
-    }).then(r => {
-      if (r.status === 'success') {
-        (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutputMultiline)(responseBox, r.message, true);
+  if (!!formElem) {
+    formElem.addEventListener('submit', e => {
+      e.preventDefault();
+      /* The form inputs data */
+      const formData = new FormData(e.target);
+      const data = {};
+      data.nonce = window.smtp_settings.nonce;
+      for (const [key, value] of formData.entries()) {
+        data[key] = value;
       }
-      return r;
-    }).then(mailResp => {
-      return (0,_mailFetch__WEBPACK_IMPORTED_MODULE_3__.fetchAndRetry)(mailResp, 500, 5);
-    }).catch(errMsg => {
-      (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutput)(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('OOOPS something went wrong!', 'cf7-smtp')}`);
-      console.log(errMsg);
+
+      /* clean the previous results*/
+      (0,_output__WEBPACK_IMPORTED_MODULE_4__.cleanOutput)(responseBox);
+      (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutput)(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Let's start a new server connection…", 'cf7-smtp')} <span class="mail-init animation-start">✉️</span></code>`);
+      _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
+        path: '/cf7-smtp/v1/sendmail',
+        method: 'POST',
+        data
+      }).then(r => {
+        if (r.status === 'success') {
+          (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutputMultiline)(responseBox, r.message, true);
+        }
+        return r;
+      }).then(mailResp => {
+        return (0,_mailFetch__WEBPACK_IMPORTED_MODULE_3__.fetchAndRetry)(mailResp, 500, 5);
+      }).catch(errMsg => {
+        (0,_output__WEBPACK_IMPORTED_MODULE_4__.appendOutput)(responseBox, `<code>${(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('OOOPS something went wrong!', 'cf7-smtp')}`);
+        console.log(errMsg);
+      });
     });
-  });
+  }
 }
 
 /**
