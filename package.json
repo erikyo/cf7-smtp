@@ -24,7 +24,7 @@
         "start": "wp-scripts start",
         "build": "wp-scripts build",
         "plugin-zip": "wp-scripts plugin-zip",
-        "lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
+        "lint:js": "wp-scripts lint-js  ./src/",
         "packages-update": "wp-scripts packages-update",
         "wp-env:start": "wp-env start",
         "wp-env:stop": "wp-env stop",

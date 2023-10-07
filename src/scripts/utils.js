@@ -12,6 +12,7 @@ export function enableAdvanced(elements, formElem, enabled) {
 				enabled ? 'table-row' : 'none';
 		});
 	} else {
+		// eslint-disable-next-line no-console
 		console.log(
 			`Cannot find form element ${elements} of ${toString(formElem)}`
 		);

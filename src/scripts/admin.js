@@ -167,12 +167,12 @@ export function smtpAdmin() {
 				.then((mailResp) => {
 					return fetchAndRetry(mailResp, 500, 5);
 				})
-				.catch((errMsg) => {
+				.catch((/*errMsg*/) => {
 					appendOutput(
 						responseBox,
 						`<code>${__('OOOPS something went wrong!', 'cf7-smtp')}`
 					);
-					console.log(errMsg);
+					//console.log(errMsg);
 				});
 		});
 	}
