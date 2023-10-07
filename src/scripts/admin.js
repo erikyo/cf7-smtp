@@ -62,7 +62,7 @@ export function smtpAdmin() {
 			sessionStorage.setItem('disableTransition', 'true');
 		}
 	} else {
-		sessionStorage.removeItem('disableTransition');
+		sessionStorage.setItem('disableTransition', 'false');
 		disableTransition();
 	}
 
