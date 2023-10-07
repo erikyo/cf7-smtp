@@ -91,7 +91,7 @@ class Settings_Page extends Base {
 			array(
 				'settings' => sprintf(
 					'<a href="%s">%s</a>',
-					\admin_url( 'admin.php?page=' . CF7_SMTP_TEXTDOMAIN ),
+					\admin_url( 'admin.php?page=wpcf7-integration&service=' . CF7_SMTP_TEXTDOMAIN . '&action=setup' ),
 					\__( 'Settings', CF7_SMTP_TEXTDOMAIN )
 				),
 			),

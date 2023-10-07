@@ -15,7 +15,6 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
 }
 
 use WPCF7_Service as GlobalWPCF7_Service;
-
 Class WPCF7_SMTP extends GlobalWPCF7_Service {
 
     private static $instance;
@@ -43,7 +42,7 @@ Class WPCF7_SMTP extends GlobalWPCF7_Service {
 	}
 
     public function is_active() {
-        return true;
+        return $this->options['enabled'];
 	}
 
 	public function get_categories()

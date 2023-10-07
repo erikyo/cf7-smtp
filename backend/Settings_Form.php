@@ -11,6 +11,7 @@
 
 namespace cf7_smtp\Backend;
 
+
 /**
  * Create the settings page in the backend
  */

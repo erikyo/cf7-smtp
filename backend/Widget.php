@@ -40,7 +40,6 @@ Class Widget extends Base {
         $cf7_smtp_report = get_option( 'cf7-smtp-report', false );
         
         echo '<div class="smtp-style-chart">';
-        echo '<h2>' . esc_html__( 'Stats', CF7_SMTP_TEXTDOMAIN ) . '</h2>';
         if ( ! empty( $cf7_smtp_report ) ) {
             echo '<h4>' . esc_html__( 'Mail vs Time', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
             echo '<canvas id="line-chart"></canvas>';
