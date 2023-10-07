@@ -1,0 +1,58 @@
+<?php
+/**
+ * Represents the view for the administration dashboard.
+ *
+ * This includes the header, options, and other information that should provide
+ * The User Interface to the end user.
+ *
+ * @package   cf7_smtp
+ * @author    Erik Golinelli <erik@codekraft.it>
+ * @copyright 2022 Erik
+ * @license   GPL 2.0+
+ * @link      https://modul-r.codekraft.it/
+ */
+
+
+namespace cf7_smtp\Backend;
+use cf7_smtp\Engine\Base;
+
+
+Class Widget extends Base {
+
+    
+    /**
+     * Initialize the class.
+	 */
+	public function initialize() {
+		if ( ! parent::initialize() ) {
+            return;
+		}
+        add_action('wp_dashboard_setup' , array( $this, 'cf7_smtp_dashboard_widget' ), 1000, 0);
+	}
+    
+    
+    public function cf7_smtp_dashboard_widget() {  
+        wp_add_dashboard_widget( 'dashboard_widget', __( 'Stats for CF7 SMTP', 'cf7-smtp' ), array( $this, 'cf7_smtp_display' ) );
+    }
+    
+
+    public function cf7_smtp_display() {
+        $cf7_smtp_report = get_option( 'cf7-smtp-report', false );
+        
+        echo '<div class="card smtp-style-chart">';
+        echo '<h2>' . esc_html__( 'Stats', CF7_SMTP_TEXTDOMAIN ) . '</h2>';
+        if ( ! empty( $cf7_smtp_report ) ) {
+            echo '<h4>' . esc_html__( 'Mail vs Time', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+            echo '<canvas id="line-chart" width="480" height="250"></canvas>';
+            echo '<hr>';
+            echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+            echo '<canvas id="pie-chart" width="200" height="250"></canvas>';
+        
+            echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
+        } else {
+            echo '<span class="chart-icon">📊</span>';
+            echo '<h4 class="no-chart-title">' . esc_html__( 'No email sent (yet)', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+        }
+        echo '</div>';
+    }
+}

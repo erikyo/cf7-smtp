@@ -23,7 +23,7 @@ $cf7_smtp_from_mail = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail'
 
 <div class="wrap">
 
-	<div class="card" id="sendmail-testform">
+	<div id="sendmail-testform">
 		<h3><code class="alignright">SMTP: <?php echo $this->options['enabled'] ? esc_html__( 'on', CF7_SMTP_TEXTDOMAIN ) : esc_html__( 'off', CF7_SMTP_TEXTDOMAIN ); ?></code></h3>
 		<h3><?php echo esc_html__( 'Send A test Mail', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 
