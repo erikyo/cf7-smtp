@@ -378,9 +378,14 @@ class Mailer extends Base {
 			);
 		}
 
-		/* Setting the "from" (email and name). */
+		/**
+		 * Setting the "from" (email and name).
+		 *
+		 * The third parameter has to be set too to false in order to not override the Sender header
+		 * https://developer.wordpress.org/reference/hooks/phpmailer_init/#comment-2878
+		 */
 		if ( ! empty( $from_mail ) ) {
-			$phpmailer->setFrom( $from_mail, $from_name );
+			$phpmailer->setFrom( $from_mail, $from_name, false );
 		}
 
 		/* Reply to */
