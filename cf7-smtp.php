@@ -59,7 +59,7 @@ if ( ! defined( 'CF7_SMTP_FROM_NAME' ) ) {
 	define( 'CF7_SMTP_FROM_NAME', null );
 }
 
-if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
+if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
