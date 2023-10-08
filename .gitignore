@@ -1,6 +1,7 @@
 node_modules
 .vscode
 .idea
+.idea
 vendor
 composer.lock
 package-lock.json
