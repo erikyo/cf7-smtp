@@ -1,9 +1,9 @@
 === SMTP for Contact From 7 ===
-Contributors: codekraft
+Contributors: codekraft, gardenboi
 Tags: smtp, mail, wp mail smtp, mail template, phpmailer, contact form 7
 Requires PHP: 7.1
 Requires at least: 5.5
-Tested up to: 6.1
+Tested up to: 6.3.1
 Stable tag: 0.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
