@@ -1,6 +1,6 @@
 {
     "name": "cf7-smtp",
-    "version": "1.0.0",
+    "version": "0.0.2",
     "description": "",
     "author": "Erik Golinelli <erik@codekraft.it>",
     "files": [
@@ -12,6 +12,8 @@
         "rest/*",
         "templates/*",
         "vendor/*",
+        "integration/*",
+        "public/*",
         "index.php",
         "cf7-smtp.php",
         "README.txt",
@@ -22,7 +24,7 @@
         "start": "wp-scripts start",
         "build": "wp-scripts build",
         "plugin-zip": "wp-scripts plugin-zip",
-        "lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
+        "lint:js": "wp-scripts lint-js  ./src/",
         "packages-update": "wp-scripts packages-update",
         "wp-env:start": "wp-env start",
         "wp-env:stop": "wp-env stop",

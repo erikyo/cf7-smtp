@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP context class.
  *
@@ -18,6 +19,7 @@ use WP_User;
  * CF7-SMTP Context Methods.
  */
 class Context {
+
 
 	/**
 	 * WpContext Class
@@ -87,7 +89,8 @@ class Context {
 	 * @param WP_User|null $user The given user.
 	 * @return bool
 	 */
-	public static function is_user_admin( WP_User $user = null ): bool { // phpcs:ignore
+	public static function is_user_admin( WP_User $user = null ): bool
+	{ // phpcs:ignore
 		if ( \is_null( $user ) ) {
 			$user = \wp_get_current_user();
 		}
@@ -96,7 +99,6 @@ class Context {
 			\_doing_it_wrong( __METHOD__, 'To check if the user is admin is required a WP_User object.', '0.0.1' );
 		}
 
-		return \is_multisite() ? \user_can( $user, 'manage_network' ) : \user_can( $user, 'manage_options' ); // phpcs:ignore
+		return \is_multisite() ? \user_can($user, 'manage_network') : \user_can($user, 'manage_options'); // phpcs:ignore
 	}
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP the settings page
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine\Base;
  * Create the settings page in the backend
  */
 class Settings_Page extends Base {
+
 	/**
 	 * The settings form
 	 *
@@ -30,7 +32,6 @@ class Settings_Page extends Base {
 	 * @return void|bool
 	 */
 	public function initialize() {
-
 		if ( ! parent::initialize() ) {
 			return;
 		}
@@ -53,16 +54,6 @@ class Settings_Page extends Base {
 	 * @return void
 	 */
 	public function add_plugin_admin_menu() {
-
-		\add_submenu_page(
-			'wpcf7',
-			CF7_SMTP_NAME,
-			__( 'SMTP', CF7_SMTP_TEXTDOMAIN ),
-			'manage_options',
-			CF7_SMTP_TEXTDOMAIN,
-			array( $this, 'display_plugin_admin_page' )
-		);
-
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_options_init' ) );
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_handle_actions' ), 1 );
 	}
@@ -91,7 +82,7 @@ class Settings_Page extends Base {
 			array(
 				'settings' => sprintf(
 					'<a href="%s">%s</a>',
-					\admin_url( 'admin.php?page=' . CF7_SMTP_TEXTDOMAIN ),
+					\admin_url( 'admin.php?page=wpcf7-integration&service=' . CF7_SMTP_TEXTDOMAIN . '&action=setup' ),
 					\__( 'Settings', CF7_SMTP_TEXTDOMAIN )
 				),
 			),

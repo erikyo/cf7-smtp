@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP engine class
  *
@@ -15,6 +16,7 @@ namespace cf7_smtp\Engine;
  * Base skeleton of the plugin
  */
 class Base {
+
 
 	/**
 	 * The settings of the plugin.
@@ -33,5 +35,4 @@ class Base {
 
 		return true;
 	}
-
 }

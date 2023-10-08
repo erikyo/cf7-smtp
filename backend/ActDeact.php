@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP actiovation / deactivation class
  *
@@ -19,6 +20,7 @@ use WP_Site;
  */
 class ActDeact extends Base {
 
+
 	/**
 	 * Initialize the class.
 	 *
@@ -31,7 +33,6 @@ class ActDeact extends Base {
 
 		/* Activate plugin when new blog is added */
 		\add_action( 'wpmu_new_blog', array( $this, 'activate_new_site' ) );
-
 	}
 
 	/**
@@ -121,8 +122,7 @@ class ActDeact extends Base {
 	 * It sets the default options for the plugin.
 	 */
 	public static function default_options() {
-
-		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), - 2, 2, true ) ), PHP_URL_HOST );
+		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), -2, 2, true ) ), PHP_URL_HOST );
 
 		return array(
 			'version'         => 1,
@@ -165,13 +165,11 @@ class ActDeact extends Base {
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
 			update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
-
 		} else {
 			/* if the plugin options are missing Init the plugin with the default option + the default settings */
 
 			add_option( CF7_SMTP_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
 		}
-
 	}
 
 	/**
@@ -181,7 +179,6 @@ class ActDeact extends Base {
 	 * @return void
 	 */
 	private static function single_activate() {
-
 		/**
 		 * Clear the permalinks
 		 */
@@ -196,12 +193,10 @@ class ActDeact extends Base {
 	 * @return void
 	 */
 	private static function single_deactivate() {
-
 		/**
 		 * Clear the permalinks
 		 */
 		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.flush_rewrite_rules_flush_rewrite_rules
 		\flush_rewrite_rules();
 	}
-
 }
