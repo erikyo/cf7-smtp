@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP Enqueue style and scripts
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine\Base;
  * This class contain the Enqueue stuff for the backend
  */
 class Enqueue extends Base {
+
 
 	/**
 	 * Initialize the class.
@@ -39,12 +41,12 @@ class Enqueue extends Base {
 		$admin_page = \get_current_screen();
 		$styles     = array();
 
-		if ( ! \is_null( $admin_page ) && 
-			(
-				false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
+		if (
+			! \is_null( $admin_page ) &&
+			( false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
 				false !== strpos( $admin_page->id, 'dashboard' )
-			)		
-	   )  {
+			)
+		) {
 			$asset = include CF7_SMTP_PLUGIN_ROOT . 'build/smtp-settings.asset.php';
 			\wp_enqueue_style( CF7_SMTP_TEXTDOMAIN . '-settings-style', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.css', array(), $asset['version'] );
 		}
@@ -59,12 +61,12 @@ class Enqueue extends Base {
 		$admin_page = \get_current_screen();
 		$scripts    = array();
 
-		if ( ! \is_null( $admin_page ) && 
-			(
-				false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
+		if (
+			! \is_null( $admin_page ) &&
+			( false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
 				false !== strpos( $admin_page->id, 'dashboard' )
 			)
-			) {
+		) {
 
 			$asset = include CF7_SMTP_PLUGIN_ROOT . 'build/smtp-settings.asset.php';
 			\wp_enqueue_script( CF7_SMTP_TEXTDOMAIN . '-settings-script', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.js', $asset['dependencies'], $asset['version'], true );
@@ -78,5 +80,4 @@ class Enqueue extends Base {
 			);
 		}
 	}
-
 }

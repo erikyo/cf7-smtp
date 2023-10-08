@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP Cron
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine\Base;
  * The various Cron of this plugin
  */
 class Cron extends Base {
+
 
 	/**
 	 * Initialize the class.
@@ -120,7 +122,7 @@ class Cron extends Base {
 
 		$html .= ! empty( $report['storage'] )
 			? sprintf(
-			/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
+				/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
 				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
 				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
 				count( $report['storage'] ),
@@ -138,7 +140,6 @@ class Cron extends Base {
 	 * in the plugin settings
 	 */
 	public function cf7_smtp_send_report() {
-
 		/* get the stored report */
 		$options = cf7_smtp_get_settings();
 		$report  = get_option( 'cf7-smtp-report', false );
@@ -160,7 +161,7 @@ class Cron extends Base {
 
 		$mail['subject'] = esc_html(
 			sprintf(
-			/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
+				/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
 				__(
 					'%s Mail report',
 					CF7_SMTP_TEXTDOMAIN
@@ -202,7 +203,5 @@ class Cron extends Base {
 			cf7_smtp_log( 'Something went wrong while sending the report! 😓' );
 			cf7_smtp_log( $e );
 		}
-
 	}
-
 }

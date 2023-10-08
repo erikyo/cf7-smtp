@@ -36,28 +36,42 @@ define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 
-if (!defined('CF7_SMTP_HOST')) define('CF7_SMTP_HOST', null);
-if (!defined('CF7_SMTP_PORT')) define('CF7_SMTP_PORT', null);
-if (!defined('CF7_SMTP_AUTH')) define('CF7_SMTP_AUTH', null);
-if (!defined('CF7_SMTP_USER_NAME')) define('CF7_SMTP_USER_NAME', null);
-if (!defined('CF7_SMTP_USER_PASS')) define('CF7_SMTP_USER_PASS', null);
-if (!defined('CF7_SMTP_FROM_MAIL')) define('CF7_SMTP_FROM_MAIL', null);
-if (!defined('CF7_SMTP_FROM_NAME')) define('CF7_SMTP_FROM_NAME', null);
+if ( ! defined( 'CF7_SMTP_HOST' ) ) {
+	define( 'CF7_SMTP_HOST', null );
+}
+if ( ! defined( 'CF7_SMTP_PORT' ) ) {
+	define( 'CF7_SMTP_PORT', null );
+}
+if ( ! defined( 'CF7_SMTP_AUTH' ) ) {
+	define( 'CF7_SMTP_AUTH', null );
+}
+if ( ! defined( 'CF7_SMTP_USER_NAME' ) ) {
+	define( 'CF7_SMTP_USER_NAME', null );
+}
+if ( ! defined( 'CF7_SMTP_USER_PASS' ) ) {
+	define( 'CF7_SMTP_USER_PASS', null );
+}
+if ( ! defined( 'CF7_SMTP_FROM_MAIL' ) ) {
+	define( 'CF7_SMTP_FROM_MAIL', null );
+}
+if ( ! defined( 'CF7_SMTP_FROM_NAME' ) ) {
+	define( 'CF7_SMTP_FROM_NAME', null );
+}
 
 if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
-			'host'      => CF7_SMTP_HOST, 		
-			'port'      => CF7_SMTP_PORT, 		
-			'auth'      => CF7_SMTP_AUTH, 		
+			'host'      => CF7_SMTP_HOST,
+			'port'      => CF7_SMTP_PORT,
+			'auth'      => CF7_SMTP_AUTH,
 			'user_name' => CF7_SMTP_USER_NAME,
 			'user_pass' => CF7_SMTP_USER_PASS,
 			'from_mail' => CF7_SMTP_FROM_MAIL,
 			'from_name' => CF7_SMTP_FROM_NAME,
-			)
-		);
-	}
+		)
+	);
+}
 
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(
@@ -103,11 +117,6 @@ if ( ! wp_installing() ) {
 			$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php';
 			new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
 
-
-			// if ( defined( 'WPCF7_PLUGIN_MODULES_DIR' ) && file_exists( path_join( WPCF7_PLUGIN_MODULES_DIR, 'cf7-smtp' ) ) ) {
-			// 	return;
-			// }
-
 			if ( ! class_exists( 'WPCF7_Service' ) ) {
 				return;
 			}
@@ -117,5 +126,6 @@ if ( ! wp_installing() ) {
 			if ( file_exists( $file ) ) {
 				include_once $file;
 			}
-		});
+		}
+	);
 }

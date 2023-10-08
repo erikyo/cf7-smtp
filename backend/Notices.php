@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP notifications
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine\Base;
  * Everything that involves notification on the WordPress dashboard
  */
 class Notices extends Base {
+
 
 	/**
 	 * Initialize the class

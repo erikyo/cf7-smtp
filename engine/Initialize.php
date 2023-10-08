@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP plugin bootstrap
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine;
  * CF7_SMTP Initializer.
  */
 class Initialize {
+
 
 	/**
 	 * List of class to initialize.
@@ -164,7 +166,7 @@ class Initialize {
 	 */
 	private function scandir( string $folder ): array {
 		$temp_files = \scandir( $folder );
-			$files  = array();
+		$files      = array();
 
 		if ( \is_array( $temp_files ) ) {
 			$files = $temp_files;
@@ -206,5 +208,4 @@ class Initialize {
 			$this->find_classes( $sub_php_files, $folder . '/' . $php_file, $base . $php_file . '\\' );
 		}
 	}
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP MAILER
  *
@@ -22,6 +23,7 @@ use WPCF7_Mail;
  * Enqueue stuff on the frontend and backend
  */
 class Mailer extends Base {
+
 	/**
 	 * The mail log.
 	 *
@@ -35,7 +37,6 @@ class Mailer extends Base {
 	 * @return void
 	 */
 	public function initialize() {
-
 		$this->cf7_smtp_log = '';
 
 		parent::initialize();
@@ -91,7 +92,7 @@ class Mailer extends Base {
 			'id'        => $contact_form->id(),
 			'title'     => $contact_form->title(),
 		);
-		$report['failed']            = ++ $report['failed'];
+		$report['failed']            = ++$report['failed'];
 		update_option( 'cf7-smtp-report', $report );
 	}
 
@@ -360,7 +361,7 @@ class Mailer extends Base {
 		if ( $verbose ) {
 			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
 			$phpmailer->SMTPDebug   = SMTP::DEBUG_CONNECTION;
-			$phpmailer->Debugoutput = function( $str, $level ) {
+			$phpmailer->Debugoutput = function ( $str, $level ) {
 				$this->cf7_smtp_log .= "$level: $str\n";
 			};
 		}

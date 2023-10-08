@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP Rest api endpoints
  * provides cf7-smtp/v1/sendmail/ and cf7-smtp/v1/get_errors/
@@ -25,6 +26,7 @@ use WP_REST_Response;
  */
 class Rest_SendMail extends Base {
 
+
 	/**
 	 * Initialize the class and get the plugin settings
 	 */
@@ -32,7 +34,6 @@ class Rest_SendMail extends Base {
 		parent::initialize();
 
 		\add_action( 'rest_api_init', array( $this, 'add_sendmail_api' ) );
-
 	}
 
 	/**
@@ -61,7 +62,7 @@ class Rest_SendMail extends Base {
 			'/sendmail/',
 			array(
 				'methods'             => 'POST',
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
 				'callback'            => array( $this, 'smtp_sendmail' ),
@@ -77,7 +78,7 @@ class Rest_SendMail extends Base {
 			'/get_log/',
 			array(
 				'methods'             => 'POST',
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
 				'callback'            => array( $this, 'smtp_sendmail_get_log' ),
@@ -202,7 +203,6 @@ class Rest_SendMail extends Base {
 			$response->set_status( 500 );
 
 			return $response;
-
 		}
 
 		$err_msg = get_transient( 'cf7_smtp_testing_error' );
@@ -238,7 +238,6 @@ class Rest_SendMail extends Base {
 				)
 			);
 			$response->set_status( 200 );
-
 		}
 
 		return $response;
@@ -270,7 +269,6 @@ class Rest_SendMail extends Base {
 			$response->set_status( 500 );
 
 			return $response;
-
 		}
 
 		if ( ! empty( $json_params['email'] ) ) {
@@ -297,7 +295,6 @@ class Rest_SendMail extends Base {
 						'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
-
 			} else {
 
 				$response = \rest_ensure_response(
@@ -309,11 +306,9 @@ class Rest_SendMail extends Base {
 						'nonce'     => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
 					)
 				);
-
 			}
 
 			$response->set_status( 200 );
-
 		} else {
 
 			$response = \rest_ensure_response(
@@ -326,11 +321,8 @@ class Rest_SendMail extends Base {
 			);
 
 			$response->set_status( 500 );
-
 		}
 
 		return $response;
-
 	}
-
 }

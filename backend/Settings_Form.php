@@ -11,7 +11,6 @@
 
 namespace cf7_smtp\Backend;
 
-
 /**
  * Create the settings page in the backend
  */
@@ -543,7 +542,7 @@ class Settings_Form {
 		printf(
 			'<input type="text" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="%s" autocomplete="off" %s %s />',
 			empty( $user_pass['defined'] ) ? 'unsafe' : 'safe',
-			wp_kses( empty( $user_pass_val ) ? '' : 'placeholder=' . cf7_smtp_print_pass_placeholders($user_pass_val) . '', array( 'placeholder' => array() ) ),
+			wp_kses( empty( $user_pass_val ) ? '' : 'placeholder=' . cf7_smtp_print_pass_placeholders( $user_pass_val ) . '', array( 'placeholder' => array() ) ),
 			esc_html( 'defined' === $user_pass_val ? 'disabled' : '' )
 		);
 	}

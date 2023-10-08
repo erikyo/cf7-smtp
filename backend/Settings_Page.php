@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CF7_SMTP the settings page
  *
@@ -17,6 +18,7 @@ use cf7_smtp\Engine\Base;
  * Create the settings page in the backend
  */
 class Settings_Page extends Base {
+
 	/**
 	 * The settings form
 	 *
@@ -30,7 +32,6 @@ class Settings_Page extends Base {
 	 * @return void|bool
 	 */
 	public function initialize() {
-
 		if ( ! parent::initialize() ) {
 			return;
 		}
@@ -53,8 +54,6 @@ class Settings_Page extends Base {
 	 * @return void
 	 */
 	public function add_plugin_admin_menu() {
-
-
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_options_init' ) );
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_handle_actions' ), 1 );
 	}

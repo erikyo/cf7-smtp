@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Represents the view for the administration dashboard.
  *
@@ -42,7 +43,8 @@
 			/* This prints the cron options (mail report) */
 			do_settings_sections( 'smtp-cron' );
 			echo '<br>';
-			/* EDIT: Commented the undefined constant */
+			/*
+			 EDIT: Commented the undefined constant */
 			/* This Prints the CRON job for mail reports */
 			if ( wp_next_scheduled( 'cf7_smtp_report' ) ) {
 				echo '<div class="tip schedule"><h1>⏰</h1>';
