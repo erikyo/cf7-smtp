@@ -58,21 +58,6 @@ if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
 			)
 		);
 	}
-	// //old-script
-	// if ( ! defined( 'CF7_SMTP_SETTINGS' ) || defined( 'CF7_SMTP_USER_PASS' ) ) {
-	// 	define(
-	// 		'CF7_SMTP_SETTINGS',
-	// 		array(
-	// 			'host'      => defined( 'CF7_SMTP_HOST' ) 	   ? CF7_SMTP_HOST 		: null,
-	// 			'port'      => defined( 'CF7_SMTP_PORT' ) 	   ? CF7_SMTP_PORT 		: null,
-	// 			'auth'      => defined( 'CF7_SMTP_AUTH' ) 	   ? CF7_SMTP_AUTH 		: null,
-	// 			'user_name' => defined( 'CF7_SMTP_USER_NAME' ) ? CF7_SMTP_USER_NAME : null,
-	// 			'user_pass' => defined( 'CF7_SMTP_USER_PASS' ) ? CF7_SMTP_USER_PASS : null,
-	// 			'from_mail' => defined( 'CF7_SMTP_FROM_MAIL' ) ? CF7_SMTP_FROM_MAIL : null,
-	// 			'from_name' => defined( 'CF7_SMTP_FROM_NAME' ) ? CF7_SMTP_FROM_NAME : null,
-	// 		)
-	// 	);
-	// }
 
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(

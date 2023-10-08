@@ -32,19 +32,14 @@
 			settings_fields( CF7_SMTP_TEXTDOMAIN . '-settings' );
 
 			/* This prints out the smtp settings */
-			//echo '<div class="card smtp-settings-options">';
 			do_settings_sections( 'smtp-settings' );
 			submit_button();
-			//echo '</div>';
 			echo '<br>';
 			/* This prints the style options (template) */
-			//echo '<div class="card smtp-style-options">';
 			do_settings_sections( 'smtp-style' );
 			submit_button();
-			//echo '</div>';
 			echo '<br>';
 			/* This prints the cron options (mail report) */
-			//echo '<div class="card main-options">';
 			do_settings_sections( 'smtp-cron' );
 			echo '<br>';
 			/* EDIT: Commented the undefined constant */
@@ -61,7 +56,6 @@
 				echo '</div>';
 			}
 			submit_button();
-			//echo '</div>';
 			?>
 		</form>
 	</div>
