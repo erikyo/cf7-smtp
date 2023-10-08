@@ -80,9 +80,43 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 	 * The function "icon" echoes an SVG icon wrapped in a div with the class "integration-icon".
 	 */
 	public function icon() {
-		echo esc_html( '<div class="integration-icon">' . file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' ) . '</div>' );
+		$allowed_html = array(
+			'svg'    => array(
+				'xmlns'   => true,
+				'id'      => true,
+				'viewbox' => true,
+				'width'   => true,
+				'height'  => true,
+			),
+			'defs'   => array(),
+			'style'  => array(),
+			'g'      => array(
+				'id' => true,
+			),
+			'circle' => array(
+				'cx'        => true,
+				'cy'        => true,
+				'r'         => true,
+				'class'     => true,
+				'transform' => true,
+			),
+			'path'   => array(
+				'd'     => true,
+				'class' => true,
+				'fill'  => true,
+			),
+			'rect'   => array(
+				'width'  => true,
+				'height' => true,
+				'x'      => true,
+				'y'      => true,
+				'class'  => true,
+				'rx'     => true,
+				'ry'     => true,
+			),
+		);
+		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' ), $allowed_html ) . '</div>';
 	}
-
 
 	/**
 	 * The function returns a link to the WordPress plugin "cf7-smtp" on the WordPress.org website.
@@ -169,11 +203,10 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 
 		echo sprintf(
 			'<p><strong>%s</strong></p>',
-			esc_html(
-				wpcf7_link(
-					__( 'https://wordpress.org/plugins/cf7-smtp/', 'contact-form-7' ),
-					__( 'SMTP (v0.0.2)', 'contact-form-7' )
-				)
+			// phpcs:ignore
+			wpcf7_link(
+				esc_html__( 'https://wordpress.org/plugins/cf7-smtp/', 'contact-form-7' ),
+				esc_html__( 'SMTP (v0.0.2)', 'contact-form-7' )
 			)
 		);
 
