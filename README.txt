@@ -121,6 +121,11 @@ By contributing, you agree that your contributions will be licensed under its GP
 
 == Changelog ==
 
+= 0.0.2 =
+* The configuration panel has been integrated with Contact Form 7 forms
+* The widget which shows sent and unsent emails is now in the WordPress dashboard
+* Fix an issue about password being reset when saving the plugin options
+
 = 0.0.1 =
 * First Release
 
