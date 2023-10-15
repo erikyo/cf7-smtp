@@ -104,12 +104,12 @@ export function mailCharts() {
 		};
 
 		cf7aCharts.lineChart = new Chart(
-			document.getElementById('line-chart'),
+			document.querySelector('.smtp-style-chart #line-chart'),
 			lineConfig
 		);
 
 		cf7aCharts.pieChart = new Chart(
-			document.getElementById('pie-chart'),
+			document.querySelector('.smtp-style-chart #pie-chart'),
 			PieConfig
 		);
 
