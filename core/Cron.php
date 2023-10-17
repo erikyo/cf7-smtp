@@ -181,10 +181,13 @@ class Cron extends Base {
 			file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/report.html' )
 		);
 
+		/* Add filter for 3rd party access */
+		$mail['body'] = apply_filters( 'cf7_smtp_report_mailbody', $mail['body'] );
+
 		/* mail headers (if available) */
 		$headers = '';
 		if ( ! empty( $options['from_mail'] ) ) {
-			$headers = sprintf( "From: %s <%s>\r\n", $options['from_name'], $options['from_mail'] );
+			$headers = sprintf( "Content-Type: text/html; charset=utf-8\r\nFrom: %s <%s>\r\n", $options['from_name'], $options['from_mail'] );
 		}
 
 		try {
