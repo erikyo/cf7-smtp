@@ -667,7 +667,7 @@ class Settings_Form {
 		$new_input['user_name'] = isset( $input['user_name'] ) ? sanitize_text_field( $input['user_name'] ) : $new_input['user_name'];
 
 		/* SMTP Password */
-		$new_input['user_pass'] = isset( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
+		$new_input['user_pass'] = ! empty( $input['user_pass'] ) ? cf7_smtp_crypt( sanitize_text_field( $input['user_pass'] ) ) : $new_input['user_pass'];
 
 		/* Reply to */
 		$new_input['insecure'] = ! empty( $input['insecure'] );
