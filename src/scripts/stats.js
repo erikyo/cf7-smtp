@@ -1,7 +1,7 @@
 /* global smtpReportData */
 import Chart from 'chart.js/auto';
 
-export function mailCharts() {
+export function mailChartsSMTP() {
 	if (
 		typeof smtpReportData !== 'undefined' &&
 		0 !== Object.keys(smtpReportData).length
@@ -104,12 +104,14 @@ export function mailCharts() {
 		};
 
 		cf7aCharts.lineChart = new Chart(
-			document.querySelector('.smtp-style-chart #line-chart'),
+			document.querySelector('.smtp-style-chart > #line-chart'),
 			lineConfig
 		);
 
 		cf7aCharts.pieChart = new Chart(
-			document.querySelector('.smtp-style-chart #pie-chart'),
+			document.querySelector(
+				'.smtp-style-chart > #pie-container > #pie-chart'
+			),
 			PieConfig
 		);
 
@@ -117,4 +119,4 @@ export function mailCharts() {
 	}
 }
 
-window.onload = mailCharts();
+window.onload = mailChartsSMTP();

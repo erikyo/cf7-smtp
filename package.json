@@ -16,6 +16,7 @@
         "public/*",
         "index.php",
         "cf7-smtp.php",
+        "languages/cf7-smtp.pot",
         "README.txt",
         "LICENSE.txt",
         "uninstall.php"
@@ -23,7 +24,8 @@
     "scripts": {
         "start": "wp-scripts start",
         "build": "wp-scripts build",
-        "plugin-zip": "wp-scripts plugin-zip",
+        "preplugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build",
+		"plugin-zip": "wp-scripts plugin-zip",
         "lint:js": "wp-scripts lint-js  ./src/",
         "packages-update": "wp-scripts packages-update",
         "wp-env:start": "wp-env start",

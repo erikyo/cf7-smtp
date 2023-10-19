@@ -145,13 +145,12 @@ class Cron extends Base {
 	 * in the plugin settings
 	 */
 	public function cf7_smtp_send_report() {
-		/* get the stored report */
-		$options = cf7_smtp_get_settings();
-		$report  = get_option( 'cf7-smtp-report', false );
-
-		if ( empty( $report ) ) {
+		/* if report is disabled then return */
+		if ( ! get_option( 'cf7-smtp-report', false ) ) {
 			return;
 		}
+
+		$options = cf7_smtp_get_settings();
 
 		/* init the mail */
 		$smtp_mailer = new Mailer();
@@ -162,7 +161,7 @@ class Cron extends Base {
 		$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
 
 		/* build the report */
-		$report_formatted = $this->cf7_smtp_format_report( $report, $last_report );
+		$report_formatted = $this->cf7_smtp_format_report( get_option( 'cf7-smtp-report' ), $last_report );
 
 		$mail['subject'] = esc_html(
 			sprintf(

@@ -6,3 +6,4 @@ vendor
 composer.lock
 package-lock.json
 build
+cf7-smtp.zip
