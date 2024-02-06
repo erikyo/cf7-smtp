@@ -1,25 +1,28 @@
 .smtp-style-chart {
-  h4 {
-	text-align: center;
-  }
-  #pie-container {
-	margin: auto;
-	width:250px;
-  }
 
-  span.chart-icon {
-	display: block;
-	width: auto;
-	text-align: center;
-	font-size: 120px;
-	line-height: 1;
-  }
-  .no-chart-title {
-	font-size: 1.3rem;
-	font-style: italic;
-	text-align: center;
-	font-weight: lighter;
-	opacity: .5;
-  }
+	h4 {
+		text-align: center;
+	}
+
+	#pie-container {
+		margin: auto;
+		width: 250px;
+	}
+
+	span.chart-icon {
+		display: block;
+		width: auto;
+		text-align: center;
+		font-size: 120px;
+		line-height: 1;
+	}
+
+	.no-chart-title {
+		font-size: 1.3rem;
+		font-style: italic;
+		text-align: center;
+		font-weight: lighter;
+		opacity: 0.5;
+	}
 }
 

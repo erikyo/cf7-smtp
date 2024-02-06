@@ -56,5 +56,12 @@
     },
     "browserslist": [
         "extends @wordpress/browserslist-config"
-    ]
+    ],
+    "stylelint": {
+        "extends": [
+            "@wordpress/stylelint-config",
+            "@wordpress/stylelint-config/scss"
+        ]
+    },
+    "prettier": "@wordpress/prettier-config"
 }

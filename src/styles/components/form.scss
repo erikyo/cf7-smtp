@@ -1,63 +1,65 @@
 #sendmail-testform {
-  // the test form style
-  form {
-	clear: both;
-	label,
-	input,
-	textarea {
-	  display: flex;
-	  justify-content: space-between;
-	  width: 100%;
-	  margin-bottom: .4rem;
-	}
-	button {
-	  @extend %button
-	}
-  }
+	// the test form style
+	form {
+		clear: both;
 
-  // the test form output box
-  pre {
-	padding: 30px 20px;
-	box-sizing: border-box;
-	border-left: 3px solid $grayish_blue;
-	transition: 1s ease border-left-color;
-	background: $grayish_blue;
-	border-radius: 8px;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	gap: 8px;
+		label,
+		input,
+		textarea {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			margin-bottom: 0.4rem;
+		}
 
-	&.enabled {
-	  border-color: $blue;
+		button {
+
+			@extend %button; }
 	}
 
-	&.ok {
-	  border-color: $green;
-	}
+	// the test form output box
+	pre {
+		padding: 30px 20px;
+		box-sizing: border-box;
+		border-left: 3px solid $grayish_blue;
+		transition: 1s ease border-left-color;
+		background: $grayish_blue;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		gap: 8px;
 
-	&.error {
-	  border-color: $red;
-	}
+		&.enabled {
+			border-color: $blue;
+		}
 
-	code {
-	  white-space: break-spaces;
-	  font-size: .8rem;
-	  color: white;
-	  background: darken($grayish_blue, .10);
-	}
+		&.ok {
+			border-color: $green;
+		}
 
-	span.timestamp {
-	  text-align: right;
-	  font-size: 11px;
-	  font-weight: bold;
-	  color: white;
-	  background: $blue;
-	  display: block;
-	  margin: 4px 0 4px auto;
-	  padding: 2px 8px;
-	  border-radius: 4px;
-	  line-height: 1;
+		&.error {
+			border-color: $red;
+		}
+
+		code {
+			white-space: break-spaces;
+			font-size: 0.8rem;
+			color: white;
+			background: darken($grayish_blue, 0.1);
+		}
+
+		span.timestamp {
+			text-align: right;
+			font-size: 11px;
+			font-weight: 700;
+			color: white;
+			background: $blue;
+			display: block;
+			margin: 4px 0 4px auto;
+			padding: 2px 8px;
+			border-radius: 4px;
+			line-height: 1;
+		}
 	}
-  }
 }
