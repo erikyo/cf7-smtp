@@ -126,7 +126,7 @@ class ActDeact extends Base {
 
 		return array(
 			'version'         => 1,
-			'enabled'         => false,
+			'enabled'         => true,
 			'custom_template' => false,
 			'report_every'    => false,
 			'report_to'       => wp_get_current_user()->user_email ?? '',
@@ -154,7 +154,7 @@ class ActDeact extends Base {
 
 		$options = get_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
-		if ( false !== $options && ! $reset_options ) {
+		if ( false === $options || $reset_options ) {
 
 			/* update the plugin options but add the new options automatically */
 			if ( isset( $options['cf7_smtp_version'] ) ) {
