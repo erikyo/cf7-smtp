@@ -35,10 +35,7 @@
     "scripts": {
         "WPPCS-vips": "vendor/bin/phpcbf --standard=.wpcsVips.xml.dist -s --report=full,summary,source",
         "PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist -s --report=full,summary,source",
-        "PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=.phpcs.xml.dist  -s --report=full",
-        "phpstan": "vendor/bin/phpstan",
-        "psalm": "vendor/bin/psalm",
-        "psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run"
+        "PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=.phpcs.xml.dist  -s --report=full"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

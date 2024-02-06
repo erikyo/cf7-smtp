@@ -4,7 +4,7 @@ import Chart from 'chart.js/auto';
 export function mailChartsSMTP() {
 	if (
 		typeof smtpReportData !== 'undefined' &&
-		0 !== Object.keys(smtpReportData).length
+		0 !== Object.keys( smtpReportData ).length
 	) {
 		const cf7aCharts = {};
 		smtpReportData.lineData = {
@@ -16,23 +16,27 @@ export function mailChartsSMTP() {
 			failed: 0,
 		};
 
-		for (const timestamp in smtpReportData.storage) {
-			const day = new Date(timestamp * 1000)
-				.setHours(0, 0, 0, 0)
+		for ( const timestamp in smtpReportData.storage ) {
+			const day = new Date( timestamp * 1000 )
+				.setHours( 0, 0, 0, 0 )
 				.valueOf();
 
-			if (typeof smtpReportData.lineData.failed[day] === 'undefined') {
-				smtpReportData.lineData.failed[day] = 0;
+			if (
+				typeof smtpReportData.lineData.failed[ day ] === 'undefined'
+			) {
+				smtpReportData.lineData.failed[ day ] = 0;
 			}
-			if (typeof smtpReportData.lineData.success[day] === 'undefined') {
-				smtpReportData.lineData.success[day] = 0;
+			if (
+				typeof smtpReportData.lineData.success[ day ] === 'undefined'
+			) {
+				smtpReportData.lineData.success[ day ] = 0;
 			}
 
-			if (smtpReportData.storage[timestamp].mail_sent === true) {
-				smtpReportData.lineData.success[day]++;
+			if ( smtpReportData.storage[ timestamp ].mail_sent === true ) {
+				smtpReportData.lineData.success[ day ]++;
 				smtpReportData.pieData.success++;
 			} else {
-				smtpReportData.lineData.failed[day]++;
+				smtpReportData.lineData.failed[ day ]++;
 				smtpReportData.pieData.failed++;
 			}
 		}
@@ -43,22 +47,22 @@ export function mailChartsSMTP() {
 				datasets: [
 					{
 						label: 'Failed',
-						data: Object.values(smtpReportData.lineData.failed),
+						data: Object.values( smtpReportData.lineData.failed ),
 						fill: false,
 						borderColor: 'rgb(255, 99, 132)',
 						tension: 0.1,
 					},
 					{
 						label: 'Success',
-						data: Object.values(smtpReportData.lineData.success),
+						data: Object.values( smtpReportData.lineData.success ),
 						fill: false,
 						borderColor: 'rgb(54, 162, 235)',
 						tension: 0.1,
 					},
 				],
-				labels: Object.keys(smtpReportData.lineData.failed).map(
-					(label) => {
-						const step = new Date(parseInt(label, 10));
+				labels: Object.keys( smtpReportData.lineData.failed ).map(
+					( label ) => {
+						const step = new Date( parseInt( label, 10 ) );
 						return step.toLocaleDateString();
 					}
 				),
@@ -82,11 +86,11 @@ export function mailChartsSMTP() {
 		const PieConfig = {
 			type: 'pie',
 			data: {
-				labels: Object.keys(smtpReportData.pieData),
+				labels: Object.keys( smtpReportData.pieData ),
 				datasets: [
 					{
 						label: 'Total count',
-						data: Object.values(smtpReportData.pieData),
+						data: Object.values( smtpReportData.pieData ),
 						backgroundColor: [
 							'rgb(54, 162, 235)',
 							'rgb(255, 99, 132)',
@@ -104,7 +108,7 @@ export function mailChartsSMTP() {
 		};
 
 		cf7aCharts.lineChart = new Chart(
-			document.querySelector('.smtp-style-chart > #line-chart'),
+			document.querySelector( '.smtp-style-chart > #line-chart' ),
 			lineConfig
 		);
 

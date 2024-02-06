@@ -8,7 +8,7 @@ import { enableAdvanced } from './utils';
 import { fetchAndRetry } from './mailFetch';
 import { appendOutput, appendOutputMultiline, cleanOutput } from './output';
 
-apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
+apiFetch.use( apiFetch.createNonceMiddleware( window.smtp_settings.nonce ) );
 
 /**
  *  Email Response box
@@ -16,8 +16,8 @@ apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
  *  @member {HTMLElement} formElem - the Email form used to test email functionalities
  *  @member {HTMLElement} responseBox - the wrapper for the smtp server messages
  */
-export const formElem = document.querySelector('#sendmail-testform form');
-export const responseBox = document.querySelector('#sendmail-response pre');
+export const formElem = document.querySelector( '#sendmail-testform form' );
+export const responseBox = document.querySelector( '#sendmail-response pre' );
 
 export function smtpAdmin() {
 	/**
@@ -29,40 +29,40 @@ export function smtpAdmin() {
 	 *	this code should not be changed unless Contact Form 7 will submit some major updates for the integration URLs
 	 */
 
-	const urlParams = new URLSearchParams(window.location.search);
-	const page = urlParams.get('page');
-	const service = urlParams.get('service');
-	const action = urlParams.get('action');
+	const urlParams = new URLSearchParams( window.location.search );
+	const page = urlParams.get( 'page' );
+	const service = urlParams.get( 'service' );
+	const action = urlParams.get( 'action' );
 
-	const cards = document.querySelectorAll('.card');
+	const cards = document.querySelectorAll( '.card' );
 
 	function disableTransition() {
-		cards.forEach((card) => {
+		cards.forEach( ( card ) => {
 			card.style.transition = 'none';
-		});
+		} );
 	}
 	function enableTransition() {
-		cards.forEach((card) => {
+		cards.forEach( ( card ) => {
 			card.style.transition = 'max-width 1s ease';
 			card.style.maxWidth = '1000px';
-		});
+		} );
 	}
 	if (
 		page === 'wpcf7-integration' &&
 		service === 'cf7-smtp' &&
 		action === 'setup'
 	) {
-		if (sessionStorage.getItem('disableTransition') === 'true') {
+		if ( sessionStorage.getItem( 'disableTransition' ) === 'true' ) {
 			disableTransition();
-			cards.forEach((card) => {
+			cards.forEach( ( card ) => {
 				card.style.maxWidth = '1000px';
-			});
+			} );
 		} else {
 			enableTransition();
-			sessionStorage.setItem('disableTransition', 'true');
+			sessionStorage.setItem( 'disableTransition', 'true' );
 		}
 	} else {
-		sessionStorage.setItem('disableTransition', 'false');
+		sessionStorage.setItem( 'disableTransition', 'false' );
 		disableTransition();
 	}
 
@@ -73,17 +73,17 @@ export function smtpAdmin() {
 	 *  @member {HTMLElement} formSelectHost - cf7_smtp_host
 	 *  @member {HTMLElement} formSelectPort - cf7_smtp_port
 	 */
-	const formSelectDefault = document.getElementById('cf7_smtp_preset');
-	const formSelectHost = document.getElementById('cf7_smtp_host');
-	const formSelectPort = document.getElementById('cf7_smtp_port');
+	const formSelectDefault = document.getElementById( 'cf7_smtp_preset' );
+	const formSelectHost = document.getElementById( 'cf7_smtp_host' );
+	const formSelectPort = document.getElementById( 'cf7_smtp_port' );
 
 	/**
 	 * Sets the values of the SMTP connection according to the value selected by the user.
 	 */
-	if (!!formSelectDefault) {
-		formSelectDefault.addEventListener('change', (e) => {
-			const selectedEl = e.target[e.target.selectedIndex];
-			if (selectedEl) {
+	if ( !! formSelectDefault ) {
+		formSelectDefault.addEventListener( 'change', ( e ) => {
+			const selectedEl = e.target[ e.target.selectedIndex ];
+			if ( selectedEl ) {
 				const authRadio = document.querySelector(
 					'.auth-' + selectedEl.dataset.auth
 				);
@@ -91,37 +91,37 @@ export function smtpAdmin() {
 				formSelectHost.value = selectedEl.dataset.host;
 				formSelectPort.value = selectedEl.dataset.port;
 			}
-		});
+		} );
 	}
 
 	/**
 	 * Enables the SMTP settings
 	 */
-	const smtpEnabled = document.querySelector('#cf7_smtp_enabled');
+	const smtpEnabled = document.querySelector( '#cf7_smtp_enabled' );
 	const formSmtpSection = document.querySelector(
 		'#cf7-smtp-settings .form-table:first-of-type'
 	);
-	if (!!smtpEnabled) {
+	if ( !! smtpEnabled ) {
 		enableAdvanced(
-			[2, 3, 4, 5, 6, 7],
+			[ 2, 3, 4, 5, 6, 7 ],
 			formSmtpSection,
 			smtpEnabled.checked
 		);
 
-		smtpEnabled.addEventListener('click', () => {
+		smtpEnabled.addEventListener( 'click', () => {
 			enableAdvanced(
-				[2, 3, 4, 5, 6, 7],
+				[ 2, 3, 4, 5, 6, 7 ],
 				formSmtpSection,
 				smtpEnabled.checked
 			);
-		});
+		} );
 	}
 	/* Initialize the response box and show a welcome message */
-	if (!!responseBox) {
+	if ( !! responseBox ) {
 		cleanOutput(
 			responseBox,
 			'<code>' +
-				__('Mail Server initialization completed!', 'cf7-smtp') +
+				__( 'Mail Server initialization completed!', 'cf7-smtp' ) +
 				'</code>'
 		);
 	}
@@ -129,52 +129,54 @@ export function smtpAdmin() {
 	/**
 	 *  Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
 	 */
-	if (!!formElem) {
-		formElem.addEventListener('submit', (e) => {
+	if ( !! formElem ) {
+		formElem.addEventListener( 'submit', ( e ) => {
 			e.preventDefault();
 			/* The form inputs data */
-			const formData = new FormData(e.target);
+			const formData = new FormData( e.target );
 
 			const data = {};
 			data.nonce = window.smtp_settings.nonce;
 
-			for (const [key, value] of formData.entries()) {
-				data[key] = value;
+			for ( const [ key, value ] of formData.entries() ) {
+				data[ key ] = value;
 			}
 
 			/* clean the previous results*/
-			cleanOutput(responseBox);
+			cleanOutput( responseBox );
 
 			appendOutput(
 				responseBox,
-				`<code>${__(
+				`<code>${ __(
 					"Let's start a new server connection…",
 					'cf7-smtp'
-				)} <span class="mail-init animation-start">✉️</span></code>`
+				) } <span class="mail-init animation-start">✉️</span></code>`
 			);
 
-			apiFetch({
+			apiFetch( {
 				path: '/cf7-smtp/v1/sendmail',
 				method: 'POST',
 				data,
-			})
-				.then((r) => {
-					if (r.status === 'success') {
-						appendOutputMultiline(responseBox, r.message, true);
+			} )
+				.then( ( r ) => {
+					if ( r.status === 'success' ) {
+						appendOutputMultiline( responseBox, r.message, true );
 					}
 					return r;
-				})
-				.then((mailResp) => {
-					return fetchAndRetry(mailResp, 500, 5);
-				})
-				.catch((/*errMsg*/) => {
+				} )
+				.then( ( mailResp ) => {
+					return fetchAndRetry( mailResp, 500, 5 );
+				} )
+				.catch( ( /*errMsg*/ ) => {
 					appendOutput(
 						responseBox,
-						`<code>${__('OOOPS something went wrong!', 'cf7-smtp')}`
+						`<code>${ __(
+							'OOOPS something went wrong!',
+							'cf7-smtp'
+						) }`
 					);
-					//console.log(errMsg);
-				});
-		});
+				} );
+		} );
 	}
 }
 

@@ -7,17 +7,17 @@ import { extractData } from './utils';
  * @param {HTMLElement} logWrap   - The element that will contain the log messages.
  * @param {?string}     [message] - The message to be displayed in the log.
  */
-export function cleanOutput(logWrap, message = '') {
+export function cleanOutput( logWrap, message = '' ) {
 	const date = new Date();
 	logWrap.innerHTML =
-		`<code class="logdate alignright">${__(
+		`<code class="logdate alignright">${ __(
 			'Logs has been started in',
 			'cf7-smtp'
-		)} ${date}</code>` + message;
+		) } ${ date }</code>` + message;
 }
 
-export function appendOutput(logWrap, message = '') {
-	logWrap.insertAdjacentHTML('beforeend', message);
+export function appendOutput( logWrap, message = '' ) {
+	logWrap.insertAdjacentHTML( 'beforeend', message );
 }
 
 /**
@@ -27,41 +27,47 @@ export function appendOutput(logWrap, message = '') {
  * @param {string}       msg             - the message to be displayed
  * @param {boolean|null} mailSent        if the mail was sent or not
  */
-export function appendOutputMultiline(outputContainer, msg, mailSent = null) {
-	msg = msg.split(/\n|<br\s*\/?>/);
+export function appendOutputMultiline( outputContainer, msg, mailSent = null ) {
+	msg = msg.split( /\n|<br\s*\/?>/ );
 	let lastTimestamp = 0;
 
-	if (msg.length) {
-		msg.forEach((line, index) => {
+	if ( msg.length ) {
+		msg.forEach( ( line, index ) => {
 			// TODO: regex here to search for errors
 
-			const [raw, date, text] = extractData(line);
+			const [ raw, date, text ] = extractData( line );
 
 			/* will add the lines "softly" */
-			if (raw !== '')
-				setTimeout(() => {
-					if (!text) {
-						appendOutput(outputContainer, `<code>${raw}</code>`);
-					} else if (date === lastTimestamp) {
-						appendOutput(outputContainer, `<code>${text}</code>`);
+			if ( raw !== '' )
+				setTimeout( () => {
+					if ( ! text ) {
+						appendOutput(
+							outputContainer,
+							`<code>${ raw }</code>`
+						);
+					} else if ( date === lastTimestamp ) {
+						appendOutput(
+							outputContainer,
+							`<code>${ text }</code>`
+						);
 					} else {
 						// refresh the timestamp
 						lastTimestamp = date;
 						appendOutput(
 							outputContainer,
-							`<span class="timestamp">${date}</span><code>${text}</code>`
+							`<span class="timestamp">${ date }</span><code>${ text }</code>`
 						);
 					}
-				}, 50 * index);
-		});
+				}, 50 * index );
+		} );
 	}
 
 	// if the mailSent flag is set (true or false) update the container class
-	if (mailSent) {
-		outputContainer.classList.add('ok');
-		outputContainer.classList.remove('error');
+	if ( mailSent ) {
+		outputContainer.classList.add( 'ok' );
+		outputContainer.classList.remove( 'error' );
 	} else {
-		outputContainer.classList.add('error');
-		outputContainer.classList.remove('ok');
+		outputContainer.classList.add( 'error' );
+		outputContainer.classList.remove( 'ok' );
 	}
 }
