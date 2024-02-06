@@ -42,10 +42,7 @@ class Enqueue extends Base {
 		$styles     = array();
 
 		if (
-			! \is_null( $admin_page ) &&
-			( false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
-				false !== strpos( $admin_page->id, 'dashboard' )
-			)
+			! \is_null( $admin_page ) && false !== strpos( $admin_page->id, 'dashboard' )
 		) {
 			$asset = include CF7_SMTP_PLUGIN_ROOT . '/build/smtp-settings.asset.php';
 			\wp_enqueue_style( CF7_SMTP_TEXTDOMAIN . '-settings-style', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.css', array(), $asset['version'] );
@@ -62,10 +59,7 @@ class Enqueue extends Base {
 		$scripts    = array();
 
 		if (
-			! \is_null( $admin_page ) &&
-			( false !== strpos( $admin_page->id, 'contact_page_wpcf7-integration' ) ||
-				false !== strpos( $admin_page->id, 'dashboard' )
-			)
+			! \is_null( $admin_page ) && false !== strpos( $admin_page->id, 'dashboard' )
 		) {
 
 			$asset = include CF7_SMTP_PLUGIN_ROOT . '/build/smtp-settings.asset.php';
