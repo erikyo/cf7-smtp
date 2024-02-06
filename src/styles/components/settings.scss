@@ -6,58 +6,59 @@
 #cf7-smtp {
 
 
-  .integration-icon {
-    display: inline-block;
-    padding-block: inherit;
-    margin: 0 0 0 0.7em;
-    width: 30px;
-  }
+	.integration-icon {
+		display: inline-block;
+		padding-block: inherit;
+		margin: 0 0 0 0.7em;
+		width: 30px;
+	}
 
-  .title {
-    display: inline-block;
-  }
+	.title {
+		display: inline-block;
+	}
 
-  .infobox {
-    display: inline-block;
-  }
+	.infobox {
+		display: inline-block;
+	}
 
-  div#cf7-smtp-auth label {
-    display: block;
-    margin-bottom: 10px;
-  }
+	div#cf7-smtp-auth label {
+		display: block;
+		margin-bottom: 10px;
+	}
 
-  select,
-  input[type="email"],
-  input[type="text"],
-  input[type="number"] {
-    width: 100%;
-  }
+	select,
+	input[type="email"],
+	input[type="text"],
+	input[type="number"] {
+		width: 100%;
+	}
 
-  input#cf7_smtp_user_pass.unsafe {
-    box-shadow: 0 0 0 1px $red inset;
-  }
+	input#cf7_smtp_user_pass.unsafe {
+		box-shadow: 0 0 0 1px $red inset;
+	}
 
-  input[type="submit"] {
-    @extend %button;
-  }
+	input[type="submit"] {
 
-  .tip.schedule {
-    padding: 8px 16px;
-    margin: 16px auto 0;
-    display: flex;
-    justify-content: center;
-    background: #ffebeb;
-    border: 1px solid $red;
-    border-radius: 5px;
+		@extend %button;
+	}
 
-    * {
-      margin: 0 8px;
-      padding: 0;
-    }
+	.tip.schedule {
+		padding: 8px 16px;
+		margin: 16px auto 0;
+		display: flex;
+		justify-content: center;
+		background: #ffebeb;
+		border: 1px solid $red;
+		border-radius: 5px;
 
-    h1 {
-      font-size: 30px;
-    }
-  }
+		* {
+			margin: 0 8px;
+			padding: 0;
+		}
+
+		h1 {
+			font-size: 30px;
+		}
+	}
 
 }
