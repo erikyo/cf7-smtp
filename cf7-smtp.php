@@ -116,7 +116,11 @@ if ( ! wp_installing() ) {
 		'plugins_loaded',
 		static function () use ( $cf7_smtp_libraries ) {
 			$cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php';
-			new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
+			try {
+				new \cf7_smtp\Engine\Initialize( $cf7_smtp_libraries );
+			} catch ( Exception $e ) {
+				return;
+			}
 
 			if ( ! class_exists( 'WPCF7_Service' ) ) {
 				return;

@@ -9,16 +9,16 @@ import { delay } from './utils';
  *
  * @param {Object} res the nonce to get the next request
  */
-export function getSmtpLog(res) {
-	return apiFetch({
+export function getSmtpLog( res ) {
+	return apiFetch( {
 		path: '/cf7-smtp/v1/get_log',
 		method: 'POST',
 		data: {
 			nonce: res.nonce,
 		},
-	}).then((result) => {
+	} ).then( ( result ) => {
 		return result;
-	});
+	} );
 }
 
 /**
@@ -37,57 +37,58 @@ export function getSmtpLog(res) {
  *
  * @return {Promise} A promise that resolves to the smtp log for the given mail response.
  */
-export function fetchAndRetry(mailResp, waitTime, attempts) {
+export function fetchAndRetry( mailResp, waitTime, attempts ) {
 	/**
 	 * If the fetch fails, wait for a while and try again and try to get the error message if available
-	 *
-	 * @return {Promise} A promise that will either resolve or reject.
 	 */
 	function retry() {
-		if (attempts > 0) {
-			return delay(waitTime * (attempts + attempts)).then(() =>
-				fetchAndRetry(mailResp, waitTime, --attempts)
+		if ( attempts > 0 ) {
+			return delay( waitTime * ( attempts + attempts ) ).then( () =>
+				fetchAndRetry( mailResp, waitTime, --attempts )
 			);
 		}
 	}
 
-	return getSmtpLog(mailResp).then((logResp) => {
+	return getSmtpLog( mailResp ).then( ( logResp ) => {
 		// Error
-		if (logResp.status === 'error') {
+		if ( logResp.status === 'error' ) {
 			appendOutput(
 				responseBox,
-				`<code>${__('🆘 Failed!', 'cf7-smtp')}</code>`
+				`<code>${ __( '🆘 Failed!', 'cf7-smtp' ) }</code>`
 			);
 
-			if (logResp.message.length) {
+			if ( logResp.message.length ) {
 				const errorLog = logResp.message.join();
 				// then append the server response
-				return appendOutputMultiline(responseBox, errorLog);
+				return appendOutputMultiline( responseBox, errorLog );
 			}
-			return appendOutput(responseBox, `<code>${logResp.message}</code>`);
+			return appendOutput(
+				responseBox,
+				`<code>${ logResp.message }</code>`
+			);
 		}
 
 		// Quit
-		if (logResp.message.match(/CLIENT -> SERVER: QUIT/g)) {
+		if ( logResp.message.match( /CLIENT -> SERVER: QUIT/g ) ) {
 			return appendOutput(
 				responseBox,
-				`<code>${__(
+				`<code>${ __(
 					'💻 server has closed the connection!',
 					'cf7-smtp'
-				)}</code>`
+				) }</code>`
 			);
 		}
 
 		// Success
-		if (logResp.status === 'success') {
+		if ( logResp.status === 'success' ) {
 			return appendOutput(
 				responseBox,
-				`<code class="">${__('✅ Success!', 'cf7-smtp')}</code>`
+				`<code class="">${ __( '✅ Success!', 'cf7-smtp' ) }</code>`
 			);
 		}
 
 		// otherwise if nothing match output the server response
-		appendOutput(responseBox, `<code>${logResp.message}</code>`);
+		appendOutput( responseBox, `<code>${ logResp.message }</code>` );
 		return retry();
-	});
+	} );
 }

@@ -130,8 +130,8 @@ class Cron extends Base {
 			)
 			: esc_html__( 'No Mail in storage', CF7_SMTP_TEXTDOMAIN );
 
-		/* Add filter for 3rd party access, format your html as h3 or p tags */	
-		if( has_filter( 'cf7_smtp_report_mailbody' ) ){
+		/* Add filter for 3rd party access, format your html as h3 or p tags */
+		if ( has_filter( 'cf7_smtp_report_mailbody' ) ) {
 			$html = apply_filters( 'cf7_smtp_report_mailbody', $html, $last_report );
 		}
 

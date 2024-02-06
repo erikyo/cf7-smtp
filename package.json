@@ -26,7 +26,8 @@
         "build": "wp-scripts build",
         "preplugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build",
 		"plugin-zip": "wp-scripts plugin-zip",
-        "lint:js": "wp-scripts lint-js  ./src/",
+        "lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
+        "lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
         "packages-update": "wp-scripts packages-update",
         "wp-env:start": "wp-env start",
         "wp-env:stop": "wp-env stop",
@@ -34,12 +35,12 @@
         "postinstall": "npm run build"
     },
     "devDependencies": {
-        "chart.js": "^3.9.1",
-        "@babel/core": "^7.18.2",
-        "@wordpress/api-fetch": "^6.18.0",
-        "@wordpress/env": "^5.6.0",
-        "@wordpress/i18n": "^4.22.0",
-        "@wordpress/scripts": "^24.5.0"
+        "chart.js": "^4.4.1",
+        "@babel/core": "^7.23.9",
+        "@wordpress/api-fetch": "^6.47.0",
+        "@wordpress/env": "^9.2.0",
+        "@wordpress/i18n": "^4.50.0",
+        "@wordpress/scripts": "^27.1.0"
     },
     "engines": {
         "node": ">=14.0.0",
