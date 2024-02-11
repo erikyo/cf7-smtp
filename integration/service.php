@@ -122,8 +122,8 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 				'ry'     => true,
 			),
 		);
-		$style="<style>#cf7-smtp input { margin: 0 5px 0 0; } #cf7-smtp .integration-icon { display: inline-block; padding-block: inherit; margin: 0 0 0 0.7em; width: 30px; }</style>";
-		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' ), $allowed_html ) . $style .'</div>';
+		$style        = '<style>#cf7-smtp input { margin: 0 5px 0 0; } #cf7-smtp .integration-icon { display: inline-block; padding-block: inherit; margin: 0 0 0 0.7em; width: 30px; }</style>';
+		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' ), $allowed_html ) . $style . '</div>';
 	}
 
 	/**
@@ -145,7 +145,7 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 	 * The function `menu_page_url` generates a URL for a specific menu page with additional query
 	 * parameters.
 	 *
-	 * @param args The `` parameter is an optional array that allows you to add additional query
+	 * @param array $args The `` parameter is an optional array that allows you to add additional query
 	 * parameters to the URL. These query parameters can be used to pass data or settings to the page that
 	 * the URL points to.
 	 *
@@ -169,7 +169,7 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 	 * The function checks if the action is "setup" and the request method is "POST", and if so, it
 	 * performs some actions and redirects the user.
 	 *
-	 * @param action The "action" parameter is used to determine the specific action that needs to be
+	 * @param string $action The "action" parameter is used to determine the specific action that needs to be
 	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will execute
 	 * the code inside the if statement.
 	 */
@@ -227,30 +227,16 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 
 		// Get the current checkbox status from the options
 		$checked = $this->options['enabled'];
-		// Display the form
-		if ( 'setup' == $action ) {
-			$this->display_setup();
-		} else {
-			echo '<div class="wrap">';
-			echo '<form method="post" action="">';
-			printf(
-				'<input type="submit" name="cf7_smtp_submit" class="button button-primary" value="%s">',
-				$checked ? esc_html__( 'Disable', 'cf7-smtp' ) : esc_html__( 'Enable', 'cf7-smtp' )
-			);
-			if ( $checked ) {
-				printf( '<a class="button" href="%s">Settings Page</a>', esc_url_raw( admin_url( 'admin.php?page=cf7-smtp' ) ) );
-			}
-			echo '</form>';
-			echo '</div>';
+		echo '<div class="wrap">';
+		echo '<form method="post" action="">';
+		printf(
+			'<input type="submit" name="cf7_smtp_submit" class="button button-primary" value="%s">',
+			$checked ? esc_html__( 'Disable', 'cf7-smtp' ) : esc_html__( 'Enable', 'cf7-smtp' )
+		);
+		if ( $checked ) {
+			printf( '<a class="button" href="%s">Settings Page</a>', esc_url_raw( admin_url( 'admin.php?page=cf7-smtp' ) ) );
 		}
-	}
-
-	/**
-	 * The function "display_setup" includes two PHP files in order to display the admin and send mail
-	 * views.
-	 */
-	private function display_setup() {
-		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/admin.php';
-		include_once CF7_SMTP_PLUGIN_ROOT . 'backend/views/send_mail.php';
+		echo '</form>';
+		echo '</div>';
 	}
 }
