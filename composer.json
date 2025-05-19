@@ -33,6 +33,9 @@
         "composer/installers": "1.x"
     },
     "scripts": {
+        "dump-autoload": "composer dump-autoload --dev",
+        "install": "composer install --no-suggest --optimize-autoloader",
+        "install-no-deps": "composer install --no-dev --no-interaction --no-progress --no-suggest --optimize-autoloader",
         "WPPCS-vips": "vendor/bin/phpcbf --standard=.wpcsVips.xml.dist -s --report=full,summary,source",
         "PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist -s --report=full,summary,source",
         "PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=.phpcs.xml.dist  -s --report=full"
@@ -42,10 +45,11 @@
     "optimize-autoloader": true,
     "autoload": {
         "psr-4": {
+            "cf7_smtp\\Rest\\": "rest/",
             "cf7_smtp\\Backend\\": "backend/",
             "cf7_smtp\\Core\\": "core/",
             "cf7_smtp\\Engine\\": "engine/",
-            "cf7_smtp\\Rest\\": "rest/"
+            "cf7_smtp\\Integration\\": "integration/"
         }
     },
     "config": {
