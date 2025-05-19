@@ -1,5 +1,7 @@
 <?php
 
+namespace cf7_smtp\Integration;
+
 /**
  * CF7_SMTP context class.
  *
@@ -25,7 +27,7 @@ use WPCF7_Service as GlobalWPCF7_Service;
  * This Extention represents the skeleton of the integration API
  */
 
-class WPCF7_SMTP extends GlobalWPCF7_Service {
+class Service extends GlobalWPCF7_Service {
 
 	private static $instance;
 
@@ -46,9 +48,14 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 		$this->options = get_option( 'cf7-smtp-options' );
 
 		if ( isset( $_POST['cf7_smtp_submit'] ) ) {
-			$this->options['enabled'] = isset( $this->options['enabled'] );
+			$this->options['enabled'] = $_POST['cf7_smtp_submit'] === 'Enable';
 			update_option( 'cf7-smtp-options', $this->options );
-			echo '<div class="updated"><p>Settings saved.</p></div>';
+			// add a notice that the settings have been saved
+			add_action(
+				'admin_notices',
+				function () {
+					echo '<p>' . __( 'Settings saved.', 'cf7-smtp' ) . '</p>'; }
+			);
 		}
 
 		$integration = 'cf7-smtp';
@@ -62,7 +69,7 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 	 * @return string "SMTP" with the translation "Simple Mail Transfer Protocol".
 	 */
 	public function get_title() {
-		return __( 'SMTP', 'Simple Mail Transfer Protocol' );
+		return __( 'CF7 SMTP', 'cf7-smtp' );
 	}
 
 	/**
@@ -204,7 +211,7 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 					'SMTP stands for ‘Simple Mail Transfer Protocol’.'
 					. 'It is a connection-oriented, text-based network protocol, '
 					. 'the purpose of this plugin is to send e-mails from a sender to a recipient through the use of a form',
-					'contact-form-7'
+					'cf7-smtp'
 				)
 			)
 		);
@@ -213,27 +220,26 @@ class WPCF7_SMTP extends GlobalWPCF7_Service {
 			'<p><strong>%s</strong></p>',
 			// phpcs:ignore
 			wpcf7_link(
-				esc_html__( 'https://wordpress.org/plugins/cf7-smtp/', 'contact-form-7' ),
-				esc_html__( 'SMTP (v0.0.2)', 'contact-form-7' )
+				esc_html__( 'https://wordpress.org/plugins/cf7-smtp/', 'cf7-smtp' ),
+				'CF7 SMTP (' . CF7_SMTP_VERSION . ")"
 			)
 		);
 
 		if ( $this->is_active() ) {
 			echo sprintf(
 				'<p class="dashicons-before dashicons-yes">%s</p>',
-				esc_html( __( 'SMTP is active on this site.', 'contact-form-7' ) )
+				esc_html( __( 'CF7 SMTP is active on this site.', 'cf7-smtp' ) )
 			);
 		}
 
 		// Get the current checkbox status from the options
-		$checked = $this->options['enabled'];
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
 		printf(
 			'<input type="submit" name="cf7_smtp_submit" class="button button-primary" value="%s">',
-			$checked ? esc_html__( 'Disable', 'cf7-smtp' ) : esc_html__( 'Enable', 'cf7-smtp' )
+			$this->is_active() ? esc_html__( 'Disable', 'cf7-smtp' ) : esc_html__( 'Enable', 'cf7-smtp' )
 		);
-		if ( $checked ) {
+		if ( $this->is_active() ) {
 			printf( '<a class="button" href="%s">Settings Page</a>', esc_url_raw( admin_url( 'admin.php?page=cf7-smtp' ) ) );
 		}
 		echo '</form>';
