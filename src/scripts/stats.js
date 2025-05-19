@@ -108,13 +108,13 @@ export function mailChartsSMTP() {
 		};
 
 		cf7aCharts.lineChart = new Chart(
-			document.querySelector( '.smtp-style-chart > #line-chart' ),
+			document.querySelector( '.smtp-style-chart > #smtp-line-chart' ),
 			lineConfig
 		);
 
 		cf7aCharts.pieChart = new Chart(
 			document.querySelector(
-				'.smtp-style-chart > #pie-container > #pie-chart'
+				'.smtp-style-chart #smtp-pie-chart'
 			),
 			PieConfig
 		);

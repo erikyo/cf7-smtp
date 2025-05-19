@@ -1,6 +1,4 @@
-@import "vars";
-
-@import "components/settings";
-@import "components/form";
-@import "components/stats";
-@import "components/testmail";
+@use "components/settings.scss" as *;
+@use "components/form.scss" as *;
+@use "components/stats.scss" as *;
+@use "components/testmail.scss" as *;

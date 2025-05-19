@@ -43,9 +43,6 @@ class Context {
 			case 'backend':
 				return $this->context->isBackoffice();
 
-			case 'ajax':
-				return $this->context->isAjax();
-
 			case 'installing_wp':
 				return $this->context->isInstalling();
 
@@ -61,26 +58,11 @@ class Context {
 			case 'core':
 				return $this->context->isCore();
 
-			case 'cli':
-				return $this->context->isWpCli();
-
-			case 'amp':
-				return $this->is_amp();
-
 			default:
 				\_doing_it_wrong( __METHOD__, \esc_html( \sprintf( 'Unknown request type: %s', $type ) ), '1.0.0' );
 
 				return false;
 		}
-	}
-
-	/**
-	 * Is AMP
-	 *
-	 * @return bool
-	 */
-	public function is_amp(): bool {
-		return \function_exists( 'is_amp_endpoint' ) && \is_amp_endpoint();
 	}
 
 	/**

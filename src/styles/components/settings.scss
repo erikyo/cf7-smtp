@@ -1,17 +1,9 @@
+@use "../vars.scss" as *;
+
 /**
  * This stylesheet is used to style the settings page of the plugin.
  */
-
-
-#cf7-smtp {
-
-
-	.integration-icon {
-		display: inline-block;
-		padding-block: inherit;
-		margin: 0 0 0 0.7em;
-		width: 30px;
-	}
+#cf7-smtp-settings {
 
 	.title {
 		display: inline-block;

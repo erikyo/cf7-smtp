@@ -82,7 +82,13 @@ function cf7_smtp_log( $log_data ) {
 	}
 }
 
-
+/**
+ * It prints the password placeholders, the number of * is equal to the length of the password
+ *
+ * @param string $pass The password to print.
+ *
+ * @return string The password with * placeholders.
+ */
 function cf7_smtp_print_pass_placeholders( string $pass ) {
 	return '"' . str_repeat( '*', strlen( $pass ) ) . '"';
 }

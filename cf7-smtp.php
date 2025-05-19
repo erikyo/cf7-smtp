@@ -6,7 +6,7 @@
  * Plugin Name:     SMTP for Contact From 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
- * Version:         0.0.2
+ * Version:         1.0.0
  * Author:          codekraft
  * Contributors:    gardenboi
  * Author URI:      https://modul-r.codekraft.it/
@@ -32,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
 define( 'CF7_SMTP_TEXTDOMAIN', 'cf7-smtp' );
 define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
+define( 'CF7_SMTP_VERSION', '1.0.0' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -101,8 +102,11 @@ $cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; //ph
 
 require_once CF7_SMTP_PLUGIN_ROOT . 'functions/functions.php';
 
-// TODO: Add your new plugin [on the wiki](https://github.com/WPBP/WordPress-Plugin-Boilerplate-Powered/wiki/Plugin-made-with-this-Boilerplate).
-
+/**
+ * If the plugin is not being installed then
+ * register the activation and deactivation hooks
+ * and load the plugin
+ */
 if ( ! wp_installing() ) {
 
 	/* It's a hook that is called when the plugin is activated. */
@@ -125,12 +129,31 @@ if ( ! wp_installing() ) {
 			if ( ! class_exists( 'WPCF7_Service' ) ) {
 				return;
 			}
+		}
+	);
 
+	add_action(
+		'init',
+		static function() {
 			$file = path_join( CF7_SMTP_PLUGIN_ROOT, 'integration/integration.php' );
 
 			if ( file_exists( $file ) ) {
 				include_once $file;
 			}
 		}
+	);
+}
+
+/**
+ * call the integration action to mount our plugin as a component
+ * into the intefration page
+ */
+add_action( 'wpcf7_init', 'cf7_smtp_register_service', 1, 0 );
+function cf7_smtp_register_service() {
+	$integration = WPCF7_Integration::get_instance();
+	$integration->add_category( 'email_services', 'Email Services' );
+	$integration->add_service(
+		'cf7-smtp',
+		cf7_smtp\Integration\Service::get_instance()
 	);
 }

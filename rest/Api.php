@@ -15,7 +15,6 @@ namespace cf7_smtp\Rest;
 
 use cf7_smtp\Core\Mailer;
 use cf7_smtp\Engine\Base;
-
 use WP_Error;
 use WP_HTTP_Response;
 use WP_REST_Request;
@@ -24,7 +23,7 @@ use WP_REST_Response;
 /**
  * Example class for REST
  */
-class Rest_SendMail extends Base {
+class Api extends Base {
 
 
 	/**

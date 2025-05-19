@@ -59,7 +59,7 @@ class ActDeact extends Base {
 	 * @since 0.0.1
 	 * @return void
 	 */
-	public static function activate( $network_wide ) {
+	public static function activate( bool $network_wide ) {
 		if ( \function_exists( 'is_multisite' ) && \is_multisite() ) {
 			if ( $network_wide ) {
 				/**
@@ -121,12 +121,12 @@ class ActDeact extends Base {
 	/**
 	 * It sets the default options for the plugin.
 	 */
-	public static function default_options() {
+	public static function default_options(): array {
 		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), -2, 2, true ) ), PHP_URL_HOST );
 
 		return array(
 			'version'         => 1,
-			'enabled'         => false,
+			'enabled'         => true,
 			'custom_template' => false,
 			'report_every'    => false,
 			'report_to'       => wp_get_current_user()->user_email ?? '',
@@ -148,14 +148,16 @@ class ActDeact extends Base {
 	 *
 	 * @param bool $reset_options - whatever to force the reset.
 	 */
-	public static function update_options( $reset_options = false ) {
+	public static function update_options( bool $reset_options = false ) {
 
 		$default_cf7_smtp_options = self::default_options();
 
 		$options = get_option( CF7_SMTP_TEXTDOMAIN . '-options' );
 
-		if ( false !== $options && ! $reset_options ) {
-
+		if ( empty( $options ) || $reset_options ) {
+			/* if the plugin options are missing Init the plugin with the default option + the default settings */
+			add_option( CF7_SMTP_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
+		} else {
 			/* update the plugin options but add the new options automatically */
 			if ( isset( $options['cf7_smtp_version'] ) ) {
 				unset( $options['cf7_smtp_version'] );
@@ -165,10 +167,6 @@ class ActDeact extends Base {
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
 			update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
-		} else {
-			/* if the plugin options are missing Init the plugin with the default option + the default settings */
-
-			add_option( CF7_SMTP_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
 		}
 	}
 

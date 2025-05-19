@@ -51,11 +51,11 @@ class Widget extends Base {
 		echo '<div class="smtp-style-chart">';
 		if ( ! empty( $cf7_smtp_report ) ) {
 			echo '<h4>' . esc_html__( 'Mail vs Time', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
-			echo '<canvas id="line-chart"></canvas>';
+			echo '<canvas id="smtp-line-chart"></canvas>';
 			echo '<hr>';
 			echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
-			echo '<div id="pie-container">';
-			echo '<canvas id="pie-chart"></canvas>';
+			echo '<div id="smtp-pie-container">';
+			echo '<canvas id="smtp-pie-chart"></canvas>';
 			echo '</div>';
 			echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
 		} else {
