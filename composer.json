@@ -33,7 +33,7 @@
         "composer/installers": "1.x"
     },
     "scripts": {
-        "dump-autoload": "composer dump-autoload --dev",
+        "dump-autoload": "composer dumpautoload -o",
         "install": "composer install --no-suggest --optimize-autoloader",
         "install-no-deps": "composer install --no-dev --no-interaction --no-progress --no-suggest --optimize-autoloader",
         "WPPCS-vips": "vendor/bin/phpcbf --standard=.wpcsVips.xml.dist -s --report=full,summary,source",
