@@ -26,7 +26,7 @@
 	?>
 
 	<div class="cf7-smtp-options">
-		<h3><?php esc_html__( 'Options', CF7_SMTP_TEXTDOMAIN ); ?></h3>
+		<h3><?php echo esc_html__( 'Options', CF7_SMTP_TEXTDOMAIN ); ?></h3>
 		<form method="post" action="options.php" id="cf7-smtp-settings" class="form-table">
 			<?php
 
