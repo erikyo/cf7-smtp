@@ -94,43 +94,10 @@ class Service extends GlobalWPCF7_Service {
 	 * The function "icon" echoes an SVG icon wrapped in a div with the class "integration-icon".
 	 */
 	public function icon() {
-		$allowed_html = array(
-			'svg'    => array(
-				'xmlns'   => true,
-				'id'      => true,
-				'viewbox' => true,
-				'width'   => true,
-				'height'  => true,
-			),
-			'defs'   => array(),
-			'style'  => array(),
-			'g'      => array(
-				'id' => true,
-			),
-			'circle' => array(
-				'cx'        => true,
-				'cy'        => true,
-				'r'         => true,
-				'class'     => true,
-				'transform' => true,
-			),
-			'path'   => array(
-				'd'     => true,
-				'class' => true,
-				'fill'  => true,
-			),
-			'rect'   => array(
-				'width'  => true,
-				'height' => true,
-				'x'      => true,
-				'y'      => true,
-				'class'  => true,
-				'rx'     => true,
-				'ry'     => true,
-			),
+		printf(
+			'<img src="%s" class="integration-icon" style="width: 32px;margin: 10px;">',
+			esc_url( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' )
 		);
-		$style        = '<style>#cf7-smtp input { margin: 0 5px 0 0; } #cf7-smtp .integration-icon { display: inline-block; padding-block: inherit; margin: 0 0 0 0.7em; width: 30px; }</style>';
-		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'public/icon.svg' ), $allowed_html ) . $style . '</div>';
 	}
 
 	/**
