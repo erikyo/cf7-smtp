@@ -47,7 +47,7 @@ class Service extends GlobalWPCF7_Service {
 		 */
 		$this->options = get_option( 'cf7-smtp-options' );
 
-		if ( isset( $_POST['cf7_smtp_submit'] ) ) {
+		if ( isset( $_POST['cf7_smtp_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
 			$this->options['enabled'] = $_POST['cf7_smtp_submit'] === 'Enable';
 			update_option( 'cf7-smtp-options', $this->options );
 			// add a notice that the settings have been saved
@@ -235,6 +235,7 @@ class Service extends GlobalWPCF7_Service {
 		// Get the current checkbox status from the options
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
+		wp_nonce_field( 'cf7a_toggle', 'cf7a_nonce' );
 		printf(
 			'<input type="submit" name="cf7_smtp_submit" class="button button-primary" value="%s">',
 			$this->is_active() ? esc_html__( 'Disable', 'cf7-smtp' ) : esc_html__( 'Enable', 'cf7-smtp' )
