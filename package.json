@@ -29,7 +29,7 @@
         "lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
         "lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
         "packages-update": "wp-scripts packages-update",
-        "wp-env:start": "wp-env start",
+        "wp-env:start": "wp-env start --xdebug",
         "wp-env:stop": "wp-env stop",
         "wp-env:destroy": "wp-env destroy",
         "make-pot": "npx makepot",
