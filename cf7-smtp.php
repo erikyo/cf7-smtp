@@ -13,6 +13,7 @@
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
+ * Text Domain:     cf7-smtp
  * Domain Path:     /languages
  * Requires PHP:    7.1
  * WordPress-Plugin-Boilerplate-Powered: v3.3.0
