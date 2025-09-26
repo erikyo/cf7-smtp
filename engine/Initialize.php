@@ -13,6 +13,7 @@
 namespace cf7_smtp\Engine;
 
 use cf7_smtp\Engine;
+use Composer\Autoload\ClassLoader;
 
 /**
  * CF7_SMTP Initializer.
@@ -37,19 +38,19 @@ class Initialize {
 	/**
 	 * Composer autoload file list.
 	 *
-	 * @var \Composer\Autoload\ClassLoader
+	 * @var ClassLoader
 	 */
 	private $composer;
 
 	/**
-	 * The Constructor that load the entry classes
+	 * The Constructor that loads the entry classes
 	 *
-	 * @param \Composer\Autoload\ClassLoader $composer Composer autoload output.
+	 * @param ClassLoader $composer Composer autoload output.
 	 *
 	 * @throws \Exception - unable to load classes.
 	 * @since 0.0.1
 	 */
-	public function __construct( \Composer\Autoload\ClassLoader $composer ) {
+	public function __construct( ClassLoader $composer ) {
 		if ( defined( 'WPCF7_VERSION' ) ) {
 			$this->content  = new Engine\Context();
 			$this->composer = $composer;
@@ -105,14 +106,14 @@ class Initialize {
 				\do_action( 'cf7_smtp_initialize_failed', $err );
 
 				if ( WP_DEBUG ) {
-					throw new \Exception( $err->getMessage() );
+					throw new \Exception( esc_html( $err->getMessage()) );
 				}
 			}
 		}
 	}
 
 	/**
-	 * Based on the folder loads the classes automatically using the Composer autoload to detect the classes of a Namespace.
+	 * Based on the folder loads the classes automatically using the Composer autoloader to detect the classes of a Namespace.
 	 *
 	 * @param string $namespace Class name to find.
 	 * @since 0.0.1

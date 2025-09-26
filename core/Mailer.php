@@ -421,7 +421,7 @@ class Mailer extends Base {
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' ); // phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		} catch ( Exception $e ) {
-			error_log( 'CF7 SMTP Configuration Error: ' . $e->getMessage() );
+			error_log( 'CF7 SMTP Configuration Error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			throw $e;
 		}
 	}
