@@ -50,17 +50,17 @@ class Widget extends Base {
 
 		echo '<div class="smtp-style-chart">';
 		if ( ! empty( $cf7_smtp_report ) ) {
-			echo '<h4>' . esc_html__( 'Mail vs Time', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+			echo '<h4>' . esc_html__( 'Mail vs Time', 'cf7-smtp' ) . '</h4>';
 			echo '<canvas id="smtp-line-chart"></canvas>';
 			echo '<hr>';
-			echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+			echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', 'cf7-smtp' ) . '</h4>';
 			echo '<div id="smtp-pie-container">';
 			echo '<canvas id="smtp-pie-chart"></canvas>';
 			echo '</div>';
 			echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
 		} else {
 			echo '<span class="chart-icon">📊</span>';
-			echo '<h4 class="no-chart-title">' . esc_html__( 'No email sent (yet)', CF7_SMTP_TEXTDOMAIN ) . '</h4>';
+			echo '<h4 class="no-chart-title">' . esc_html__( 'No email sent (yet)', 'cf7-smtp' ) . '</h4>';
 		}
 		echo '</div>';
 	}

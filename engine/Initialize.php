@@ -73,10 +73,10 @@ class Initialize {
 				function () {
 					printf(
 						'<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
-						esc_html__( 'SMTP for Contact Form 7 need ', CF7_SMTP_TEXTDOMAIN ),
+						esc_html__( 'SMTP for Contact Form 7 need ', 'cf7-smtp' ),
 						esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
-						esc_html__( 'Contact Form 7', CF7_SMTP_TEXTDOMAIN ),
-						esc_html__( ' installed and enabled in order to work.', CF7_SMTP_TEXTDOMAIN )
+						esc_html__( 'Contact Form 7', 'cf7-smtp' ),
+						esc_html__( ' installed and enabled in order to work.', 'cf7-smtp' )
 					);
 				}
 			);
@@ -147,7 +147,7 @@ class Initialize {
 			$this->find_classes( $php_files, $folder, $namespace );
 
 			if ( ! WP_DEBUG ) {
-				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', CF7_SMTP_TEXTDOMAIN ) );
+				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', 'cf7-smtp' ) );
 			}
 
 			return $this->classes;

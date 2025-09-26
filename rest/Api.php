@@ -102,8 +102,8 @@ class Api extends Base {
 		$mailer = new Mailer();
 		return array(
 			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $mailer->cf7_smtp_get_setting_by_key( 'email', $this->options ),
-			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', CF7_SMTP_TEXTDOMAIN ),
-			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'Empty mail body', CF7_SMTP_TEXTDOMAIN ),
+			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', 'cf7-smtp' ),
+			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'Empty mail body', 'cf7-smtp' ),
 			'from_mail' => $mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options ),
 			'from_name' => $mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options ),
 		);
@@ -172,11 +172,11 @@ class Api extends Base {
 			 * email successfully. It just only means that the method used was able to
 			 * process the request without any errors.
 			 */
-			$mail_log = esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed without errors', CF7_SMTP_TEXTDOMAIN ) ) . PHP_EOL;
+			$mail_log = esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed without errors', 'cf7-smtp' ) ) . PHP_EOL;
 		}
 
 		if ( $mail_sent ) {
-			$mail_log .= esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail Sent ✅', CF7_SMTP_TEXTDOMAIN ) ) . PHP_EOL;
+			$mail_log .= esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail Sent ✅', 'cf7-smtp' ) ) . PHP_EOL;
 		}
 
 		return $mail_log;
@@ -192,7 +192,7 @@ class Api extends Base {
 	 */
 	public function smtp_sendmail_get_log( $request ) {
 
-		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), CF7_SMTP_TEXTDOMAIN ) ) {
+		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), 'cf7-smtp' ) ) {
 			$response = \rest_ensure_response( 'Wrong nonce' );
 
 			if ( \is_wp_error( $response ) ) {
@@ -233,7 +233,7 @@ class Api extends Base {
 			$response = \rest_ensure_response(
 				array(
 					'status'  => 'wait',
-					'message' => esc_html__( 'Still no Server response', CF7_SMTP_TEXTDOMAIN ) . PHP_EOL . $log,
+					'message' => esc_html__( 'Still no Server response', 'cf7-smtp' ) . PHP_EOL . $log,
 				)
 			);
 			$response->set_status( 200 );
@@ -258,7 +258,7 @@ class Api extends Base {
 
 		$options = cf7_smtp_get_settings();
 
-		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), CF7_SMTP_TEXTDOMAIN ) ) {
+		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), 'cf7-smtp' ) ) {
 			$response = \rest_ensure_response( 'Wrong nonce' );
 
 			if ( \is_wp_error( $response ) ) {
@@ -291,7 +291,7 @@ class Api extends Base {
 						'status'   => 'success',
 						'protocol' => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
 						'message'  => wp_unslash( $phpmailer_resp ),
-						'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+						'nonce'    => wp_create_nonce( 'cf7-smtp' ),
 					)
 				);
 			} else {
@@ -302,7 +302,7 @@ class Api extends Base {
 						'protocol'  => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
 						'message'   => 'success',
 						'mail_data' => $json_params,
-						'nonce'     => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+						'nonce'     => wp_create_nonce( 'cf7-smtp' ),
 					)
 				);
 			}
@@ -315,7 +315,7 @@ class Api extends Base {
 					'status'   => 'error',
 					'protocol' => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
 					'message'  => 'Destination Email missing',
-					'nonce'    => wp_create_nonce( CF7_SMTP_TEXTDOMAIN ),
+					'nonce'    => wp_create_nonce( 'cf7-smtp' ),
 				)
 			);
 
