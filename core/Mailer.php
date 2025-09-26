@@ -304,97 +304,127 @@ class Mailer extends Base {
 	 * @throws Exception May fail and throw an exception.
 	 */
 	public function cf7_smtp_overrides( PHPMailer\PHPMailer $phpmailer ) {
+		try {
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
-		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		if ( ! empty( $this->options['enabled'] ) ) {
-			$phpmailer->isSMTP();
-		}
-
-		$auth = $this->cf7_smtp_get_setting_by_key( 'auth', $this->options );
-		/* Provides the username if needed */
-		$username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name', $this->options ) );
-		/* Provides the password if needed */
-		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS['user_pass'] ) ) {
-			$password = CF7_SMTP_SETTINGS['user_pass'];
-		} elseif ( ! empty( $this->options['user_pass'] ) ) {
-			$password = cf7_smtp_decrypt( $this->options['user_pass'] );
-		} else {
-			$password = '';
-		}
-		$host      = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host', $this->options ) );
-		$port      = intval( $this->cf7_smtp_get_setting_by_key( 'port', $this->options ) );
-		$insecure  = intval( $this->cf7_smtp_get_setting_by_key( 'insecure', $this->options ) );
-		$from_mail = sanitize_email( $this->cf7_smtp_get_setting_by_key( 'from_mail' ) );
-		$from_name = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'from_name' ) );
-		$reply_to  = intval( $this->cf7_smtp_get_setting_by_key( 'replyTo', $this->options ) );
-
-		/* SSL or TLS, if necessary for your server */
-		if ( ! empty( $auth ) ) {
-			if ( 'tls' === $auth || 'ssl' === $auth ) {
-				$phpmailer->SMTPSecure = $auth;
+			// Check if SMTP is enabled
+			if ( empty( $this->options['enabled'] ) ) {
+				return; // Exit early if SMTP is not enabled
 			}
-		}
 
-		/* Force it to use Username and Password to authenticate */
-		if ( ! empty( $username ) && ! empty( $password ) ) {
+			$phpmailer->isSMTP();
 
-			/* Enables authentication */
-			$phpmailer->SMTPAuth = true;
+			// Get and validate settings
+			$auth = $this->cf7_smtp_get_setting_by_key( 'auth' );
+			$username = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'user_name' ) );
 
-			/* Provides the username and password if needed */
-			$phpmailer->Username = sanitize_text_field( $username );
-			$phpmailer->Password = $password;
-		}
+			// Get password with proper fallback
+			$password = '';
+			if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS['user_pass'] ) ) {
+				$password = CF7_SMTP_SETTINGS['user_pass'];
+			} elseif ( ! empty( $this->options['user_pass'] ) ) {
+				$password = cf7_smtp_decrypt( $this->options['user_pass'] );
+			}
 
-		/* Host */
-		if ( ! empty( $host ) ) {
-			$phpmailer->Host = sanitize_text_field( $host );
-		}
+			$host = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'host' ) );
+			$port = intval( $this->cf7_smtp_get_setting_by_key( 'port' ) );
+			$insecure = intval( $this->cf7_smtp_get_setting_by_key( 'insecure' ) );
+			$from_mail = sanitize_email( $this->cf7_smtp_get_setting_by_key( 'from_mail' ) );
+			$from_name = sanitize_text_field( $this->cf7_smtp_get_setting_by_key( 'from_name' ) );
+			$reply_to = intval( $this->cf7_smtp_get_setting_by_key( 'replyTo' ) );
 
-		/* Port */
-		if ( ! empty( $port ) ) {
-			$phpmailer->Port = $port;
-		}
+			// Validate required settings
+			if ( empty( $host ) ) {
+				throw new Exception( 'SMTP Host is required but not configured.' );
+			}
 
-		/* Enable verbose debug output */
-		$verbose = get_transient( 'cf7_smtp_testing' );
-		if ( $verbose ) {
-			/* in very rare case this could be more useful but for the moment level 3 is sufficient - $phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL; */
-			$phpmailer->SMTPDebug   = SMTP::DEBUG_CONNECTION;
-			$phpmailer->Debugoutput = function ( $str, $level ) {
-				$this->cf7_smtp_log .= "$level: $str\n";
-			};
-		}
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			// Set host
+			$phpmailer->Host = $host;
 
-		/* Reply to */
-		if ( ! empty( $insecure ) ) {
-			$phpmailer->SMTPAutoTLS = false;
-			$phpmailer->SMTPOptions = array(
-				'ssl' => array(
-					'verify_peer'       => false,
-					'verify_peer_name'  => false,
-					'allow_self_signed' => true,
-				),
-			);
-		}
+			// Set port with defaults based on an encryption type
+			if ( ! empty( $port ) && $port > 0 && $port <= 65535 ) {
+				$phpmailer->Port = $port;
+			} else {
+				// Set default ports based on encryption
+				if ( $auth === 'ssl' ) {
+					$phpmailer->Port = 465;
+				} elseif ( $auth === 'tls' ) {
+					$phpmailer->Port = 587;
+				} else {
+					$phpmailer->Port = 25;
+				}
+			}
 
-		/**
-		 * Setting the "from" (email and name).
-		 *
-		 * The third parameter has to be set too to false in order to not override the Sender header
-		 * https://developer.wordpress.org/reference/hooks/phpmailer_init/#comment-2878
-		 */
-		if ( ! empty( $from_mail ) ) {
-			$phpmailer->setFrom( $from_mail, $from_name, false );
-		}
+			// Handle encryption (your original $auth variable seems to contain an encryption type)
+			if ( ! empty( $auth ) ) {
+				if ( 'tls' === $auth || 'ssl' === $auth ) {
+					$phpmailer->SMTPSecure = $auth;
+				}
+			}
 
-		/* Reply to */
-		if ( ! empty( $reply_to ) ) {
-			/* set the user defined "from" otherwise the default sender */
-			$reply_to_mail = ! empty( $from_mail ) ? $from_mail : $phpmailer->Sender;
-			$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
-			$phpmailer->addReplyTo( $reply_to_mail, $reply_to_name );
+			// Set authentication - Enable if username and password are provided
+			if ( ! empty( $username ) && ! empty( $password ) ) {
+				$phpmailer->SMTPAuth = true;
+				$phpmailer->Username = $username;
+				$phpmailer->Password = $password;
+			}
+
+			// Handle insecure connections
+			if ( ! empty( $insecure ) ) {
+				$phpmailer->SMTPAutoTLS = false;
+				$phpmailer->SMTPOptions = array(
+					'ssl' => array(
+						'verify_peer'       => false,
+						'verify_peer_name'  => false,
+						'allow_self_signed' => true,
+					),
+				);
+			}
+
+			// Set timeout (important for some providers)
+			$phpmailer->Timeout = 30;
+
+			// Enable verbose debug output if testing
+			$verbose = get_transient( 'cf7_smtp_testing' );
+			if ( $verbose ) {
+				$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
+				$phpmailer->Debugoutput = function ( $str, $level ) {
+					$this->cf7_smtp_log .= "$level: $str\n";
+				};
+			}
+
+			/**
+			 * Set From address with validation (email and name).
+			 *
+			 * The third parameter has to be set too to false in order to not override the Sender header
+			 * https://developer.wordpress.org/reference/hooks/phpmailer_init/#comment-2878
+			 */
+			if ( ! empty( $from_mail ) && is_email( $from_mail ) ) {
+				$phpmailer->setFrom( $from_mail, $from_name, false );
+			} else {
+				// Use WordPress default if from_mail is invalid
+				$default_from = get_option( 'admin_email' );
+				if ( is_email( $default_from ) ) {
+					$phpmailer->setFrom( $default_from, get_bloginfo( 'name' ), false );
+				}
+			}
+
+			// Set Reply-To
+			if ( ! empty( $reply_to ) ) {
+				$reply_to_mail = ! empty( $from_mail ) && is_email( $from_mail ) ? $from_mail : $phpmailer->From;
+				$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
+
+				if ( is_email( $reply_to_mail ) ) {
+					$phpmailer->addReplyTo( $reply_to_mail, $reply_to_name );
+				}
+			}
+
+			// Set additional headers that some providers require
+			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' ); // phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+		} catch ( Exception $e ) {
+			error_log( 'CF7 SMTP Configuration Error: ' . $e->getMessage() );
+			throw $e;
 		}
 	}
 
