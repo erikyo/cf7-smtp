@@ -196,7 +196,7 @@ class Mailer extends Base {
 	 */
 	public function cf7_smtp_get_email_style( string $template_name, int $id, string $lang ) {
 
-		$theme_custom_dir    = CF7_SMTP_TEXTDOMAIN . '/';
+		$theme_custom_dir    = 'cf7-smtp/';
 		$plugin_template_dir = CF7_SMTP_PLUGIN_ROOT . 'templates/';
 
 		/* Look in yourtheme/cf7-smtp/template-name-id.php and yourtheme/cf7-smtp/template-name.php */
@@ -225,9 +225,8 @@ class Mailer extends Base {
 		 * @param string $template_name the name of the template
 		 * @param string $id the contact form id
 		 * @param string $lang the contact form language
-		 * @param string $CF7_SMTP_TEXTDOMAIN cf7-smtp slug
 		 */
-		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, CF7_SMTP_TEXTDOMAIN );
+		$template = apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp' );
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		return ! empty( $template ) ? file_get_contents( $template ) : '';
@@ -267,7 +266,6 @@ class Mailer extends Base {
 				 * @param string $template_name the name of the template
 				 * @param string $id the contact form id
 				 * @param string $lang the contact form language
-				 * @param string $CF7_SMTP_TEXTDOMAIN cf7-smtp slug
 				 */
 				apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail ),
 				self::cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() )
@@ -423,7 +421,7 @@ class Mailer extends Base {
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' ); // phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		} catch ( Exception $e ) {
-			error_log( 'CF7 SMTP Configuration Error: ' . $e->getMessage() );
+			error_log( 'CF7 SMTP Configuration Error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			throw $e;
 		}
 	}

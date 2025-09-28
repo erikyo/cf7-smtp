@@ -1,10 +1,11 @@
 === SMTP for Contact Form 7 ===
 Contributors: codekraft, gardenboi
-Tags: smtp, mail, wp mail smtp, mail template, phpmailer, contact form 7
+Tags: smtp, mail, wp mail, mail template, contact form 7
 Requires PHP: 7.1
 Requires at least: 5.5
-Tested up to: 6.3.1
+Tested up to: 6.8
 Stable tag: 1.0.0
+Requires plugins: Contact Form 7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

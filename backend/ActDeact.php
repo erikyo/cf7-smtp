@@ -152,11 +152,11 @@ class ActDeact extends Base {
 
 		$default_cf7_smtp_options = self::default_options();
 
-		$options = get_option( CF7_SMTP_TEXTDOMAIN . '-options' );
+		$options = get_option( 'cf7-smtp' . '-options' );
 
 		if ( empty( $options ) || $reset_options ) {
 			/* if the plugin options are missing Init the plugin with the default option + the default settings */
-			add_option( CF7_SMTP_TEXTDOMAIN . '-options', $default_cf7_smtp_options );
+			add_option( 'cf7-smtp' . '-options', $default_cf7_smtp_options );
 		} else {
 			/* update the plugin options but add the new options automatically */
 			if ( isset( $options['cf7_smtp_version'] ) ) {
@@ -166,7 +166,7 @@ class ActDeact extends Base {
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
-			update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
+			update_option( 'cf7-smtp' . '-options', $new_options );
 		}
 	}
 

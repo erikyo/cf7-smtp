@@ -100,15 +100,15 @@ class Settings_Form {
 
 		/* Group */
 		register_setting(
-			CF7_SMTP_TEXTDOMAIN . '-settings',
-			CF7_SMTP_TEXTDOMAIN . '-options',
+			'cf7-smtp-settings',
+			'cf7-smtp-options',
 			array( $this, 'cf7_smtp_sanitize_options' )
 		);
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
 			'smtp_data',
-			__( 'Smtp Server Setup', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Smtp Server Setup', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_section_main_subtitle' ),
 			'smtp-settings'
 		);
@@ -116,7 +116,7 @@ class Settings_Form {
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
 			'enabled',
-			__( 'Enable', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Enable', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_enable_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -125,7 +125,7 @@ class Settings_Form {
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
 			'preset',
-			__( 'SMTP configuration preset', CF7_SMTP_TEXTDOMAIN ),
+			__( 'SMTP configuration preset', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_preset_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -134,7 +134,7 @@ class Settings_Form {
 		/* Settings cf7_smtp auth */
 		add_settings_field(
 			'auth',
-			__( 'Auth', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Auth', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_auth_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -143,7 +143,7 @@ class Settings_Form {
 		/* Settings cf7_smtp host */
 		add_settings_field(
 			'host',
-			__( 'Host', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Host', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_host_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -152,7 +152,7 @@ class Settings_Form {
 		/* Settings cf7_smtp port */
 		add_settings_field(
 			'port',
-			__( 'Port', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Port', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_port_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -161,7 +161,7 @@ class Settings_Form {
 		/* Settings cf7_smtp user_name */
 		add_settings_field(
 			'user_name',
-			__( 'SMTP User Name', CF7_SMTP_TEXTDOMAIN ),
+			__( 'SMTP User Name', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_user_name_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -170,7 +170,7 @@ class Settings_Form {
 		/* Settings cf7_smtp user_pass */
 		add_settings_field(
 			'user_pass',
-			__( 'SMTP Password', CF7_SMTP_TEXTDOMAIN ),
+			__( 'SMTP Password', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_user_pass_callback' ),
 			'smtp-settings',
 			'smtp_data'
@@ -179,7 +179,7 @@ class Settings_Form {
 		/* smtp_advanced */
 		add_settings_section(
 			'smtp_advanced',
-			__( 'Advanced Options', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Advanced Options', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_advanced_callback' ),
 			'smtp-settings'
 		);
@@ -187,7 +187,7 @@ class Settings_Form {
 		/* allow insecure options */
 		add_settings_field(
 			'insecure',
-			__( 'Allow insecure options', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Allow insecure options', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_insecure_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -196,7 +196,7 @@ class Settings_Form {
 		/* Reply to */
 		add_settings_field(
 			'replyTo',
-			__( 'Add Reply To', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Add Reply To', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_replyTo_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -205,7 +205,7 @@ class Settings_Form {
 		/* Settings cf7_smtp from_mail */
 		add_settings_field(
 			'from_mail',
-			__( 'From mail', CF7_SMTP_TEXTDOMAIN ),
+			__( 'From mail', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_from_mail_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -214,7 +214,7 @@ class Settings_Form {
 		/* Settings cf7_smtp from_mail */
 		add_settings_field(
 			'from_name',
-			__( 'From name', CF7_SMTP_TEXTDOMAIN ),
+			__( 'From name', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_from_name_callback' ),
 			'smtp-settings',
 			'smtp_advanced'
@@ -223,7 +223,7 @@ class Settings_Form {
 		/* Section style */
 		add_settings_section(
 			'smtp_style',
-			__( 'Style', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Style', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_section_style_subtitle' ),
 			'smtp-style'
 		);
@@ -231,7 +231,7 @@ class Settings_Form {
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
 			'custom_template',
-			__( 'Custom Template', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Custom Template', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_custom_template_callback' ),
 			'smtp-style',
 			'smtp_style'
@@ -240,7 +240,7 @@ class Settings_Form {
 		/* Section cron */
 		add_settings_section(
 			'smtp_cron',
-			__( 'Cron', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Cron', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_section_cron_subtitle' ),
 			'smtp-cron'
 		);
@@ -248,7 +248,7 @@ class Settings_Form {
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
 			'report_every',
-			__( 'Schedule report every', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Schedule report every', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_report_every_callback' ),
 			'smtp-cron',
 			'smtp_cron'
@@ -257,7 +257,7 @@ class Settings_Form {
 		/* Settings cf7_smtp enabled */
 		add_settings_field(
 			'report_to',
-			__( 'Email report to', CF7_SMTP_TEXTDOMAIN ),
+			__( 'Email report to', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_report_to_callback' ),
 			'smtp-cron',
 			'smtp_cron'
@@ -270,7 +270,7 @@ class Settings_Form {
 	public function cf7_smtp_print_section_main_subtitle() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Welcome! Remember that you can activate and deactivate the smtp service simply by ticking the checkbox below', CF7_SMTP_TEXTDOMAIN )
+			esc_html__( 'Welcome! Remember that you can activate and deactivate the smtp service simply by ticking the checkbox below', 'cf7-smtp' )
 		);
 	}
 	/**
@@ -279,7 +279,7 @@ class Settings_Form {
 	public function cf7_smtp_print_section_style_subtitle() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Add an html template that wraps the email. (ps. You can enable a user-defined template, see the documentation for more information)', CF7_SMTP_TEXTDOMAIN )
+			esc_html__( 'Add an html template that wraps the email. (ps. You can enable a user-defined template, see the documentation for more information)', 'cf7-smtp' )
 		);
 	}
 	/**
@@ -288,7 +288,7 @@ class Settings_Form {
 	public function cf7_smtp_print_section_cron_subtitle() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Do you want to know if the mails are running smoothly? Let me occasionally e-mail a summary to verify the functionality.', CF7_SMTP_TEXTDOMAIN )
+			esc_html__( 'Do you want to know if the mails are running smoothly? Let me occasionally e-mail a summary to verify the functionality.', 'cf7-smtp' )
 		);
 	}
 
@@ -300,7 +300,7 @@ class Settings_Form {
 	public function cf7_smtp_print_advanced_callback() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Leave empty to NOT override the WordPress defaults (the one used can be different from the one you see below, if left blank the one set in Contact Form 7 will be used)', CF7_SMTP_TEXTDOMAIN )
+			esc_html__( 'Leave empty to NOT override the WordPress defaults (the one used can be different from the one you see below, if left blank the one set in Contact Form 7 will be used)', 'cf7-smtp' )
 		);
 	}
 
@@ -327,7 +327,7 @@ class Settings_Form {
 	public function cf7_smtp_form_array_to_options( array $options, $selected = '' ) {
 		$select_opt = '';
 
-		/* if is anna array add for array element an option */
+		// foreach option, add it to the select as an option
 		foreach ( $options as $option => $options_data ) {
 			$option_data = '';
 			foreach ( $options_data as $prop => $value ) {
@@ -403,7 +403,7 @@ class Settings_Form {
 	public function cf7_smtp_form_generate_radio( string $selected = '', bool $defined = false ): string {
 		$html = '';
 		foreach ( $this->auth_values as $auth ) {
-			$auth_name = 'tls' === $auth || 'ssl' === $auth ? $auth : esc_html__( 'none', CF7_SMTP_TEXTDOMAIN );
+			$auth_name = 'tls' === $auth || 'ssl' === $auth ? $auth : esc_html__( 'none', 'cf7-smtp' );
 			$html     .= sprintf(
 				'<label><input type="radio" name="cf7-smtp-options[auth]" class="auth-%s" value="%s"%s%s/>%s</label>',
 				esc_attr( $auth_name ),
@@ -620,7 +620,6 @@ class Settings_Form {
 			empty( $this->options['report_to'] ) ? esc_html( wp_get_current_user()->user_email ) : esc_html( $this->options['report_to'] )
 		);
 	}
-
 
 	/**
 	 * Sanitize each setting field as needed

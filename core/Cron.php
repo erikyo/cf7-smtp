@@ -40,13 +40,13 @@ class Cron extends Base {
 		if ( ! isset( $schedules['2weeks'] ) ) {
 			$schedules['2weeks'] = array(
 				'interval' => WEEK_IN_SECONDS * 2,
-				'display'  => __( 'Every 2 weeks', CF7_SMTP_TEXTDOMAIN ),
+				'display'  => __( 'Every 2 weeks', 'cf7-smtp' ),
 			);
 		}
 		if ( ! isset( $schedules['month'] ) ) {
 			$schedules['month'] = array(
 				'interval' => MONTH_IN_SECONDS,
-				'display'  => __( 'Every month', CF7_SMTP_TEXTDOMAIN ),
+				'display'  => __( 'Every month', 'cf7-smtp' ),
 			);
 		}
 		return $schedules;
@@ -81,7 +81,7 @@ class Cron extends Base {
 
 			$html .= sprintf(
 				'<h3>%s</h3>',
-				esc_html__( 'Mail sent since last update', CF7_SMTP_TEXTDOMAIN )
+				esc_html__( 'Mail sent since last update', 'cf7-smtp' )
 			);
 
 			foreach ( $report['storage'] as $date => $row ) {
@@ -107,16 +107,16 @@ class Cron extends Base {
 		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
 			$html = sprintf(
 				'<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>',
-				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
-				esc_html__( 'Sent with success', CF7_SMTP_TEXTDOMAIN ),
+				esc_html__( 'Email statistics', 'cf7-smtp' ),
+				esc_html__( 'Sent with success', 'cf7-smtp' ),
 				intval( $mail_list['recent']['success'] ),
-				esc_html__( 'Failed', CF7_SMTP_TEXTDOMAIN ),
+				esc_html__( 'Failed', 'cf7-smtp' ),
 				intval( $mail_list['recent']['failed'] )
 			) . $html;
 		} else {
 			$html = sprintf(
 				'<h3>%s</h3>',
-				esc_html__( 'No recent e-mails to show!', CF7_SMTP_TEXTDOMAIN )
+				esc_html__( 'No recent e-mails to show!', 'cf7-smtp' )
 			);
 		}
 
@@ -124,11 +124,11 @@ class Cron extends Base {
 			? sprintf(
 				/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
 				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
-				esc_html__( 'Email statistics', CF7_SMTP_TEXTDOMAIN ),
+				esc_html__( 'Email statistics', 'cf7-smtp' ),
 				count( $report['storage'] ),
 				$mail_list['count']
 			)
-			: esc_html__( 'No Mail in storage', CF7_SMTP_TEXTDOMAIN );
+			: esc_html__( 'No Mail in storage', 'cf7-smtp' );
 
 		/* Add filter for 3rd party access, format your html as h3 or p tags */
 		if ( has_filter( 'cf7_smtp_report_mailbody' ) ) {
@@ -168,7 +168,7 @@ class Cron extends Base {
 				/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
 				__(
 					'%s Mail report',
-					CF7_SMTP_TEXTDOMAIN
+					'cf7-smtp'
 				),
 				$schedules[ $options['report_every'] ]['display']
 			)

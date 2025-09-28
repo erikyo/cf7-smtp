@@ -17,7 +17,7 @@
  * @return array
  */
 function cf7_smtp_get_settings(): array {
-	return apply_filters( 'cf7_smtp_get_settings', get_option( CF7_SMTP_TEXTDOMAIN . '-options', array() ) );
+	return apply_filters( 'cf7_smtp_get_settings', get_option( 'cf7-smtp-options', array() ) );
 }
 
 /**
@@ -29,7 +29,7 @@ function cf7_smtp_get_settings(): array {
  */
 function cf7_smtp_update_settings( array $options ): bool {
 	$new_options = array_merge( cf7_smtp_get_settings(), $options );
-	return update_option( CF7_SMTP_TEXTDOMAIN . '-options', $new_options );
+	return update_option( 'cf7-smtp-options', $new_options );
 }
 
 /**

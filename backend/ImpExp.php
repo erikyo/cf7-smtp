@@ -56,8 +56,8 @@ class ImpExp extends Base {
 		}
 
 		$settings    = array();
-		$settings[0] = \get_option( CF7_SMTP_TEXTDOMAIN . '-options' );
-		$settings[1] = \get_option( CF7_SMTP_TEXTDOMAIN . '-settings-second' );
+		$settings[0] = \get_option( 'cf7-smtp' . '-options' );
+		$settings[1] = \get_option( 'cf7-smtp' . '-settings-second' );
 
 		\ignore_user_abort( true );
 
@@ -97,13 +97,13 @@ class ImpExp extends Base {
 		$extension       = \end( $file_name_parts );
 
 		if ( 'json' !== $extension ) {
-			\wp_die( \esc_html__( 'Please upload a valid .json file', CF7_SMTP_TEXTDOMAIN ) );
+			\wp_die( \esc_html__( 'Please upload a valid .json file', 'cf7-smtp' ) );
 		}
 
 		$import_file = $_FILES['c_import_file']['tmp_name']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
 		if ( empty( $import_file ) ) {
-			\wp_die( \esc_html__( 'Please upload a file to import', CF7_SMTP_TEXTDOMAIN ) );
+			\wp_die( \esc_html__( 'Please upload a file to import', 'cf7-smtp' ) );
 		}
 
 		// Retrieve the settings from the file and convert the json object to an array.
@@ -113,17 +113,17 @@ class ImpExp extends Base {
 			$settings = \json_decode( (string) $settings_file );
 
 			if ( \is_array( $settings ) ) {
-				\update_option( CF7_SMTP_TEXTDOMAIN . '-options', \get_object_vars( $settings[0] ) );
-				\update_option( CF7_SMTP_TEXTDOMAIN . '-settings-second', \get_object_vars( $settings[1] ) );
+				\update_option( 'cf7-smtp' . '-options', \get_object_vars( $settings[0] ) );
+				\update_option( 'cf7-smtp' . '-settings-second', \get_object_vars( $settings[1] ) );
 			}
 
-			\wp_safe_redirect( \admin_url( 'options-general.php?page=' . CF7_SMTP_TEXTDOMAIN ) );
+			\wp_safe_redirect( \admin_url( 'options-general.php?page=' . 'cf7-smtp' ) );
 			exit;
 		}
 
 		new \WP_Error(
 			'cf7_smtp_import_settings_failed',
-			\__( 'Failed to import the settings.', CF7_SMTP_TEXTDOMAIN )
+			\__( 'Failed to import the settings.', 'cf7-smtp' )
 		);
 
 	}

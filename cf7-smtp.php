@@ -3,7 +3,7 @@
  * SMTP for Contact From 7
  * A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  *
- * Plugin Name:     SMTP for Contact From 7
+ * Plugin Name:     SMTP for Contact Form 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  * Version:         1.0.0
@@ -13,6 +13,7 @@
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
+ * Text Domain:     cf7-smtp
  * Domain Path:     /languages
  * Requires PHP:    7.1
  * WordPress-Plugin-Boilerplate-Powered: v3.3.0
@@ -30,7 +31,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
-define( 'CF7_SMTP_TEXTDOMAIN', 'cf7-smtp' );
 define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
 define( 'CF7_SMTP_VERSION', '1.0.0' );
 
@@ -88,7 +88,7 @@ if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 			echo wp_kses_post(
 				sprintf(
 					'<div class="notice notice-error"><p>%s</p></div>',
-					esc_html__( 'SMTP for Contact Form 7 requires PHP 7.1 or newer.', CF7_SMTP_TEXTDOMAIN )
+					esc_html__( 'SMTP for Contact Form 7 requires PHP 7.1 or newer.', 'cf7-smtp' )
 				)
 			);
 		}
@@ -110,10 +110,10 @@ require_once CF7_SMTP_PLUGIN_ROOT . 'functions/functions.php';
 if ( ! wp_installing() ) {
 
 	/* It's a hook that is called when the plugin is activated. */
-	register_activation_hook( CF7_SMTP_TEXTDOMAIN . '/' . CF7_SMTP_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'activate' ) );
+	register_activation_hook( 'cf7-smtp/cf7-smtp.php', array( new \cf7_smtp\Backend\ActDeact(), 'activate' ) );
 
 	/* It's a hook that is called when the plugin is deactivated. */
-	register_deactivation_hook( CF7_SMTP_TEXTDOMAIN . '/' . CF7_SMTP_TEXTDOMAIN . '.php', array( new \cf7_smtp\Backend\ActDeact(), 'deactivate' ) );
+	register_deactivation_hook( 'cf7-smtp/cf7-smtp.php', array( new \cf7_smtp\Backend\ActDeact(), 'deactivate' ) );
 
 	/* It's a hook that is called when all plugins are loaded. */
 	add_action(

@@ -54,7 +54,7 @@ class Service extends GlobalWPCF7_Service {
 			add_action(
 				'admin_notices',
 				function () {
-					echo '<p>' . __( 'Settings saved.', 'cf7-smtp' ) . '</p>'; }
+					echo sprintf( "<p>%s</p>", esc_html__( 'Settings saved.', 'cf7-smtp' ) ); }
 			);
 		}
 
@@ -175,9 +175,7 @@ class Service extends GlobalWPCF7_Service {
 			'<p>%s</p>',
 			esc_html(
 				__(
-					'SMTP stands for ‘Simple Mail Transfer Protocol’.'
-					. 'It is a connection-oriented, text-based network protocol, '
-					. 'the purpose of this plugin is to send e-mails from a sender to a recipient through the use of a form',
+					'SMTP stands for ‘Simple Mail Transfer Protocol’.It is a connection-oriented, text-based network protocol, the purpose of this plugin is to send e-mails from a sender to a recipient through the use of a form',
 					'cf7-smtp'
 				)
 			)
@@ -195,7 +193,7 @@ class Service extends GlobalWPCF7_Service {
 		if ( $this->is_active() ) {
 			echo sprintf(
 				'<p class="dashicons-before dashicons-yes">%s</p>',
-				esc_html( __( 'CF7 SMTP is active on this site.', 'cf7-smtp' ) )
+				esc_html__( 'CF7 SMTP is active on this site.', 'cf7-smtp' )
 			);
 		}
 
