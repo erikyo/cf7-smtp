@@ -3,7 +3,7 @@
  * SMTP for Contact From 7
  * A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  *
- * Plugin Name:     SMTP for Contact From 7
+ * Plugin Name:     SMTP for Contact Form 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  * Version:         1.0.0
