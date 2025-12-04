@@ -262,6 +262,15 @@ class Settings_Form {
 			'smtp-cron',
 			'smtp_cron'
 		);
+
+		/* Settings cf7_smtp enabled */
+		add_settings_field(
+			'report_now',
+			__( 'Send report now', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_report_now_callback' ),
+			'smtp-cron',
+			'smtp_cron'
+		);
 	}
 
 	/**
@@ -618,6 +627,13 @@ class Settings_Form {
 		printf(
 			'<input type="text" id="cf7_smtp_report_to" name="cf7-smtp-options[report_to]" value="%s" />',
 			empty( $this->options['report_to'] ) ? esc_html( wp_get_current_user()->user_email ) : esc_html( $this->options['report_to'] )
+		);
+	}
+
+	public function cf7_smtp_print_report_now_callback() {
+		printf(
+			'<button id="cf7_smtp_report_now" class="button" />%s</button>',
+			esc_html__( 'Send Report Now', 'cf7-smtp' )
 		);
 	}
 
