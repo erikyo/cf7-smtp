@@ -185,3 +185,26 @@ export function smtpAdmin() {
  */
 
 window.onload = smtpAdmin();
+
+const reportNow = document.getElementById( 'cf7_smtp_report_now' );
+reportNow.addEventListener( 'click', () => {
+	apiFetch( {
+		path: '/cf7-smtp/v1/report',
+		method: 'POST',
+		data: {
+			nonce: window.smtp_settings.nonce,
+		},
+	} )
+		.then( ( r ) => {
+			if ( r.status === 'success' ) {
+				alert( r.message );
+			}
+			return r;
+		} )
+		.catch( ( /*errMsg*/ ) => {
+			appendOutput(
+				responseBox,
+				`<code>${ __( 'OOOPS something went wrong!', 'cf7-smtp' ) }`
+			);
+		} );
+} );
