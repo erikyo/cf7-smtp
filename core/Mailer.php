@@ -609,12 +609,9 @@ class Mailer extends Base
 	 */
 	private function configure_from_address(PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name)
 	{
-		cf7_smtp_log("Configuring From Address. Input: '$from_mail'");
-
 		try {
 			$phpmailer->setFrom($from_mail, $from_name, false);
 			$phpmailer->Sender = $from_mail;
-			cf7_smtp_log("Set From and Sender to: $from_mail");
 			return;
 		} catch (\Exception $e) {
 			cf7_smtp_log("Failed to set From and Sender: " . $e->getMessage());
