@@ -106,13 +106,13 @@ class Cron extends Base {
 		/* Checking if the report has valid or failed emails. Note: in order to move the report after the list of mail the previous html will be concatenated at the end of this string */
 		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
 			$html = sprintf(
-				'<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>',
-				esc_html__( 'Email statistics', 'cf7-smtp' ),
-				esc_html__( 'Sent with success', 'cf7-smtp' ),
-				intval( $mail_list['recent']['success'] ),
-				esc_html__( 'Failed', 'cf7-smtp' ),
-				intval( $mail_list['recent']['failed'] )
-			) . $html;
+				        '<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>',
+				        esc_html__( 'Email statistics', 'cf7-smtp' ),
+				        esc_html__( 'Sent with success', 'cf7-smtp' ),
+				        intval( $mail_list['recent']['success'] ),
+				        esc_html__( 'Failed', 'cf7-smtp' ),
+				        intval( $mail_list['recent']['failed'] )
+			        ) . $html;
 		} else {
 			$html = sprintf(
 				'<h3>%s</h3>',
@@ -122,7 +122,7 @@ class Cron extends Base {
 
 		$html .= ! empty( $report['storage'] )
 			? sprintf(
-				/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
+			/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
 				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
 				esc_html__( 'Email statistics', 'cf7-smtp' ),
 				count( $report['storage'] ),
@@ -138,74 +138,31 @@ class Cron extends Base {
 		return $html;
 	}
 
-
-
 	/**
 	 * It sends a report of the number of successful and failed emails sent by Contact Form 7 to the email address specified
 	 * in the plugin settings
 	 */
 	public function cf7_smtp_send_report() {
-		/* if report is disabled then return */
-		if ( ! get_option( 'cf7-smtp-report', false ) ) {
+		// get the options
+		$options = cf7_smtp_get_settings();
+
+		/* if the report is disabled, then return */
+		if ( empty($options['report_every']) ) {
 			return;
 		}
 
-		$options = cf7_smtp_get_settings();
-
-		/* init the mail */
-		$smtp_mailer = new Mailer();
-		$mail        = array();
+		// get the schedules
+		$schedules   = wp_get_schedules();
 
 		/* the subject */
-		$schedules   = wp_get_schedules();
 		$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
 
 		/* build the report */
-		$report_formatted = $this->cf7_smtp_format_report( get_option( 'cf7-smtp-report' ), $last_report );
+		$stats = new Stats();
+		$report_formatted = $this->cf7_smtp_format_report( $stats->get_report(), $last_report );
 
-		$mail['subject'] = esc_html(
-			sprintf(
-				/* translators: %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence */
-				__(
-					'%s Mail report',
-					'cf7-smtp'
-				),
-				$schedules[ $options['report_every'] ]['display']
-			)
-		);
-
-		/* the mail message */
-		$mail['body'] = $smtp_mailer->cf7_smtp_form_template(
-			array(
-				'body'    => $report_formatted,
-				'title'   => get_bloginfo( 'name' ),
-				'subject' => $mail['subject'],
-			),
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			file_get_contents( CF7_SMTP_PLUGIN_ROOT . 'templates/report.html' )
-		);
-
-		/* mail headers (if available) */
-		$headers = '';
-		if ( ! empty( $options['from_mail'] ) ) {
-			$headers = sprintf( "Content-Type: text/html; charset=utf-8\r\nFrom: %s <%s>\r\n", $options['from_name'], $options['from_mail'] );
-		}
-
-		try {
-			// phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
-			if ( wp_mail(
-				$options['report_to'],
-				$mail['subject'],
-				$mail['body'],
-				$headers
-			) ) {
-				$report['failed']  = 0;
-				$report['success'] = 0;
-				update_option( 'cf7-smtp-report', $report );
-			}
-		} catch ( \PHPMailer\PHPMailer\Exception $e ) {
-			cf7_smtp_log( 'Something went wrong while sending the report! 😓' );
-			cf7_smtp_log( $e );
-		}
+		/* init the mail */
+		$smtp_mailer = new Mailer();
+		$smtp_mailer->send_report($report_formatted);
 	}
 }

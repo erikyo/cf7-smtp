@@ -15,11 +15,11 @@
 
 global $current_user;
 
-use cf7_smtp\Core\Mailer as Mailer;
+use cf7_smtp\Core\Mailer;
 
 $cf7_smtp_mailer    = new Mailer();
-$cf7_smtp_from_name = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_name', $this->options );
-$cf7_smtp_from_mail = $cf7_smtp_mailer->cf7_smtp_get_setting_by_key( 'from_mail', $this->options );
+$cf7_smtp_from_name = $cf7_smtp_mailer->get_setting_by_key( 'from_name', $this->options );
+$cf7_smtp_from_mail = $cf7_smtp_mailer->get_setting_by_key( 'from_mail', $this->options );
 ?>
 
 <div class="wrap">

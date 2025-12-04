@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2025-09-28T17:15:45.957Z\n"
+"POT-Creation-Date: 2025-12-04T22:26:14.284Z\n"
 "PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
 "Last-Translator: codekraft <erik@codekraft.it>\n"
 "Language-Team: codekraft <erik@codekraft.it>\n"
@@ -41,27 +41,27 @@ msgstr ""
 msgid "https://modul-r.codekraft.it/"
 msgstr ""
 
-#: cf7-smtp.php:91
+#: cf7-smtp.php:92
 msgid "SMTP for Contact Form 7 requires PHP 7.1 or newer."
 msgstr ""
 
-#: rest/Api.php:105
+#: rest/Api.php:126
 msgid "no subject provided"
 msgstr ""
 
-#: rest/Api.php:106
+#: rest/Api.php:127
 msgid "Empty mail body"
 msgstr ""
 
-#: rest/Api.php:175
-msgid "Mail processed without errors"
+#: rest/Api.php:168
+msgid "Mail Processed with success ?"
 msgstr ""
 
-#: rest/Api.php:179
-msgid "Mail Sent ?"
+#: rest/Api.php:170
+msgid "Mail processed with errors"
 msgstr ""
 
-#: rest/Api.php:236
+#: rest/Api.php:226
 msgid "Still no Server response"
 msgstr ""
 
@@ -110,6 +110,11 @@ msgstr ""
 msgid " installed and enabled in order to work."
 msgstr ""
 
+# %s site name
+#: core/Mailer.php:427
+msgid "%s Mail report"
+msgstr ""
+
 #: core/Cron.php:43
 msgid "Every 2 weeks"
 msgstr ""
@@ -143,27 +148,19 @@ msgstr ""
 msgid "No Mail in storage"
 msgstr ""
 
-# %s scheduled time of recurrence (e.g. monthly report, weekly report, daily report) or "website" (e.g. website mail report) in case it fail to get the recurrence
-#: core/Cron.php:169
-msgid "%s Mail report"
-msgstr ""
-
-#: backend/Widget.php:41
+#: backend/Widget.php:42
 msgid "Stats for CF7 SMTP"
 msgstr ""
 
-#: backend/Widget.php:53
-#: backend/views/admin.php:75
+#: backend/Widget.php:54
 msgid "Mail vs Time"
 msgstr ""
 
-#: backend/Widget.php:56
-#: backend/views/admin.php:78
+#: backend/Widget.php:57
 msgid "Mail sent vs Mail failed"
 msgstr ""
 
-#: backend/Widget.php:63
-#: backend/views/admin.php:84
+#: backend/Widget.php:64
 msgid "No email sent (yet)"
 msgstr ""
 
@@ -239,33 +236,41 @@ msgstr ""
 msgid "Email report to"
 msgstr ""
 
-#: backend/Settings_Form.php:273
+#: backend/Settings_Form.php:269
+msgid "Send report now"
+msgstr ""
+
+#: backend/Settings_Form.php:282
 msgid ""
 "Welcome! Remember that you can activate and deactivate the smtp service "
 "simply by ticking the checkbox below"
 msgstr ""
 
-#: backend/Settings_Form.php:282
+#: backend/Settings_Form.php:291
 msgid ""
 "Add an html template that wraps the email. (ps. You can enable a "
 "user-defined template, see the documentation for more information)"
 msgstr ""
 
-#: backend/Settings_Form.php:291
+#: backend/Settings_Form.php:300
 msgid ""
 "Do you want to know if the mails are running smoothly? Let me occasionally "
 "e-mail a summary to verify the functionality."
 msgstr ""
 
-#: backend/Settings_Form.php:303
+#: backend/Settings_Form.php:312
 msgid ""
 "Leave empty to NOT override the WordPress defaults (the one used can be "
 "different from the one you see below, if left blank the one set in Contact "
 "Form 7 will be used)"
 msgstr ""
 
-#: backend/Settings_Form.php:406
+#: backend/Settings_Form.php:415
 msgid "none"
+msgstr ""
+
+#: backend/Settings_Form.php:636
+msgid "Send Report Now"
 msgstr ""
 
 #: src/scripts/output.js:13
@@ -293,6 +298,7 @@ msgid "Let's start a new server connection?"
 msgstr ""
 
 #: src/scripts/admin.js:173
+#: src/scripts/admin.js:207
 msgid "OOOPS something went wrong!"
 msgstr ""
 
@@ -318,18 +324,18 @@ msgid ""
 "will be used"
 msgstr ""
 
-#: backend/views/admin.php:29
+#: backend/views/admin.php:31
 msgid "Options"
 msgstr ""
 
-#: backend/views/admin.php:57
+#: backend/views/admin.php:59
 msgid "Next report:"
 msgstr ""
 
-#: backend/views/admin.php:59
+#: backend/views/admin.php:61
 msgid "Server time:"
 msgstr ""
 
-#: backend/views/admin.php:73
+#: backend/views/admin.php:72
 msgid "Stats"
 msgstr ""
