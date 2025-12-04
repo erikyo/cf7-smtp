@@ -16,6 +16,7 @@
 
 namespace cf7_smtp\Backend;
 
+use cf7_smtp\Core\Stats;
 use cf7_smtp\Engine\Base;
 
 /**
@@ -38,18 +39,18 @@ class Widget extends Base {
 	 * The function adds a dashboard widget for displaying statistics related to CF7 SMTP.
 	 */
 	public function cf7_smtp_dashboard_widget() {
-		\wp_add_dashboard_widget( 'dashboard_widget', __( 'Stats for CF7 SMTP', 'cf7-smtp' ), array( $this, 'cf7_smtp_display' ) );
+		\wp_add_dashboard_widget( 'dashboard_widget', __( 'Stats for CF7 SMTP', 'cf7-smtp' ), array( $this, 'display_charts' ) );
 	}
 
 	/**
 	 * The function `cf7_smtp_display` displays a chart showing the number of emails sent and failed over
 	 * time, using data stored in the `cf7-smtp-report` option.
 	 */
-	public function cf7_smtp_display() {
-		$cf7_smtp_report = get_option( 'cf7-smtp-report', false );
+	public function display_charts() {
+		$stats = new Stats();
 
 		echo '<div class="smtp-style-chart">';
-		if ( ! empty( $cf7_smtp_report ) ) {
+		if ( $stats->has_report() ) {
 			echo '<h4>' . esc_html__( 'Mail vs Time', 'cf7-smtp' ) . '</h4>';
 			echo '<canvas id="smtp-line-chart"></canvas>';
 			echo '<hr>';
@@ -57,7 +58,7 @@ class Widget extends Base {
 			echo '<div id="smtp-pie-container">';
 			echo '<canvas id="smtp-pie-chart"></canvas>';
 			echo '</div>';
-			echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
+			echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $stats->get_report() ) . '</script>';
 		} else {
 			echo '<span class="chart-icon">📊</span>';
 			echo '<h4 class="no-chart-title">' . esc_html__( 'No email sent (yet)', 'cf7-smtp' ) . '</h4>';
