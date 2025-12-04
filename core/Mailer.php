@@ -648,8 +648,12 @@ class Mailer extends Base
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$reply_to_name = !empty($from_name) ? $from_name : $phpmailer->FromName;
 
-		if (is_email($reply_to_mail)) {
-			$phpmailer->addReplyTo($reply_to_mail, $reply_to_name);
+		try {
+			if (is_email($reply_to_mail)) {
+				$phpmailer->addReplyTo($reply_to_mail, $reply_to_name);
+			}
+		} catch (\Exception $e) {
+			cf7_smtp_log("Failed to set Reply-To: " . $e->getMessage());
 		}
 	}
 
@@ -729,7 +733,7 @@ class Mailer extends Base
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo('version');
 
 		} catch (Exception $e) {
-			throw $e;
+			cf7_smtp_log("Failed to configure SMTP: " . $e->getMessage());
 		}
 	}
 }
