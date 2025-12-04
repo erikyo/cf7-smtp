@@ -13,6 +13,8 @@
  * @link      https://modul-r.codekraft.it/
  */
 
+use cf7_smtp\Core\Stats;
+
 
 ?>
 
@@ -50,7 +52,7 @@
 			do_settings_sections( 'smtp-cron' );
 
 
-			if ( wp_next_scheduled( 'cf7_smtp_report' ) && CF7ANTISPAM_DEBUG ) {
+			if ( wp_next_scheduled( 'cf7_smtp_report' ) ) {
 				echo '<div class="tip schedule"><h1>⏰</h1>';
 				printf(
 					'<small class="monospace"><b>%s</b> %s <br/><b>%s</b> %s</small>',
@@ -62,27 +64,14 @@
 				echo '</div>';
 			}
 
-
 			submit_button();
 			echo '</div>';
 
-
-			$cf7_smtp_report = get_option( 'cf7-smtp-report', false );
-
+			/* This prints the stats */
 			echo '<div class="card smtp-style-chart">';
 			echo '<h2>' . esc_html__( 'Stats', 'cf7-smtp' ) . '</h2>';
-			if ( ! empty( $cf7_smtp_report ) ) {
-				echo '<h4>' . esc_html__( 'Mail vs Time', 'cf7-smtp' ) . '</h4>';
-				echo '<canvas id="line-chart" width="480" height="250"></canvas>';
-				echo '<hr>';
-				echo '<h4>' . esc_html__( 'Mail sent vs Mail failed', 'cf7-smtp' ) . '</h4>';
-				echo '<canvas id="pie-chart" width="200" height="250"></canvas>';
-
-				echo '<script id="smtpReport">var smtpReportData =' . wp_json_encode( $cf7_smtp_report ) . '</script>';
-			} else {
-				echo '<span class="chart-icon">📊</span>';
-				echo '<h4 class="no-chart-title">' . esc_html__( 'No email sent (yet)', 'cf7-smtp' ) . '</h4>';
-			}
+			$widget = new \cf7_smtp\Backend\Widget();
+			$widget->display_charts();
 			echo '</div>';
 			?>
 		</form>
