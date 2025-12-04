@@ -24,8 +24,8 @@
     "scripts": {
         "start": "wp-scripts start",
         "build": "wp-scripts build",
-        "pre-----plugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build",
         "plugin-zip": "wp-scripts plugin-zip",
+        "preplugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build",
         "lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
         "lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
         "packages-update": "wp-scripts packages-update",

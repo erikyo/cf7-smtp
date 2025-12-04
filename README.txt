@@ -3,7 +3,7 @@ Contributors: codekraft, gardenboi
 Tags: smtp, mail, wp mail, mail template, contact form 7
 Requires PHP: 7.1
 Requires at least: 5.5
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 1.0.0
 Requires plugins: Contact Form 7
 License: GPLv2 or later
