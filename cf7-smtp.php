@@ -16,6 +16,7 @@
  * Text Domain:     cf7-smtp
  * Domain Path:     /languages
  * Requires PHP:    7.1
+ * Requires Plugins: contact-form-7
  * WordPress-Plugin-Boilerplate-Powered: v3.3.0
  *
  * @package   cf7_smtp
