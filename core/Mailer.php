@@ -611,18 +611,26 @@ class Mailer extends Base
 	{
 		cf7_smtp_log("Configuring From Address. Input: '$from_mail'");
 
-		if (!empty($from_mail) && is_email($from_mail)) {
+		try {
 			$phpmailer->setFrom($from_mail, $from_name, false);
-			cf7_smtp_log("Set From to: $from_mail");
+			$phpmailer->Sender = $from_mail;
+			cf7_smtp_log("Set From and Sender to: $from_mail");
 			return;
+		} catch (\Exception $e) {
+			cf7_smtp_log("Failed to set From and Sender: " . $e->getMessage());
 		}
 
 		// Use WordPress default if from_mail is invalid
 		$default_from = get_option('admin_email');
 		cf7_smtp_log("From mail empty/invalid. Fallback to admin_email: $default_from");
 
-		if (is_email($default_from)) {
-			$phpmailer->setFrom($default_from, get_bloginfo('name'), false);
+		try {
+			if (is_email($default_from)) {
+				$phpmailer->setFrom($default_from, get_bloginfo('name'), false);
+				$phpmailer->Sender = $default_from;
+			}
+		} catch (\Exception $e) {
+			cf7_smtp_log("Failed to set From and Sender: " . $e->getMessage());
 		}
 	}
 
