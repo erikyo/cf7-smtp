@@ -122,6 +122,10 @@ By contributing, you agree that your contributions will be licensed under its GP
 
 == Changelog ==
 
+= 1.0.0 =
+* Cleaner code, updated dependencies
+* @DAnn2012 has contributed fixin a bug in a translation string
+
 = 0.0.2 =
 * The configuration panel has been integrated with Contact Form 7 forms
 * The widget which shows sent and unsent emails is now in the WordPress dashboard
