@@ -14,6 +14,7 @@
 namespace cf7_smtp\Rest;
 
 use cf7_smtp\Core\Mailer;
+use cf7_smtp\Core\Stats;
 use cf7_smtp\Engine\Base;
 use WP_Error;
 use WP_HTTP_Response;
@@ -232,9 +233,17 @@ class Api extends Base
 		return $response;
 	}
 
-	private function smtp_report()
+	public function smtp_report($request)
 	{
+		$stats = new Stats();
+		$stats->send_report();
 
+		return \rest_ensure_response(
+			array(
+				'status' => 'success',
+				'message' => 'Report sent',
+			)
+		);
 	}
 
 
