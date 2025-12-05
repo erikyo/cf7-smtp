@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2025-12-04T22:26:14.284Z\n"
+"POT-Creation-Date: 2025-12-05T01:05:42.160Z\n"
 "PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
 "Last-Translator: codekraft <erik@codekraft.it>\n"
 "Language-Team: codekraft <erik@codekraft.it>\n"
@@ -45,23 +45,23 @@ msgstr ""
 msgid "SMTP for Contact Form 7 requires PHP 7.1 or newer."
 msgstr ""
 
-#: rest/Api.php:126
+#: rest/Api.php:127
 msgid "no subject provided"
 msgstr ""
 
-#: rest/Api.php:127
+#: rest/Api.php:128
 msgid "Empty mail body"
 msgstr ""
 
-#: rest/Api.php:168
+#: rest/Api.php:169
 msgid "Mail Processed with success ?"
 msgstr ""
 
-#: rest/Api.php:170
+#: rest/Api.php:171
 msgid "Mail processed with errors"
 msgstr ""
 
-#: rest/Api.php:226
+#: rest/Api.php:227
 msgid "Still no Server response"
 msgstr ""
 
@@ -110,42 +110,42 @@ msgstr ""
 msgid " installed and enabled in order to work."
 msgstr ""
 
-# %s site name
-#: core/Mailer.php:427
-msgid "%s Mail report"
-msgstr ""
-
-#: core/Cron.php:43
-msgid "Every 2 weeks"
-msgstr ""
-
-#: core/Cron.php:49
-msgid "Every month"
-msgstr ""
-
-#: core/Cron.php:84
+#: core/Stats.php:148
 msgid "Mail sent since last update"
 msgstr ""
 
-#: core/Cron.php:110
-#: core/Cron.php:127
+#: core/Stats.php:174
+#: core/Stats.php:191
 msgid "Email statistics"
 msgstr ""
 
-#: core/Cron.php:111
+#: core/Stats.php:175
 msgid "Sent with success"
 msgstr ""
 
-#: core/Cron.php:113
+#: core/Stats.php:177
 msgid "Failed"
 msgstr ""
 
-#: core/Cron.php:119
+#: core/Stats.php:183
 msgid "No recent e-mails to show!"
 msgstr ""
 
-#: core/Cron.php:131
+#: core/Stats.php:195
 msgid "No Mail in storage"
+msgstr ""
+
+# %s site name
+#: core/Mailer.php:435
+msgid "%s Mail report"
+msgstr ""
+
+#: core/Cron.php:46
+msgid "Every 2 weeks"
+msgstr ""
+
+#: core/Cron.php:52
+msgid "Every month"
 msgstr ""
 
 #: backend/Widget.php:42
