@@ -236,7 +236,16 @@ class Api extends Base
 	public function smtp_report($request)
 	{
 		$stats = new Stats();
-		$stats->send_report();
+		$res = $stats->send_report(true);
+
+		if (!$res) {
+			return \rest_ensure_response(
+				array(
+					'status' => 'error',
+					'message' => 'Report not sent',
+				)
+			);
+		}
 
 		return \rest_ensure_response(
 			array(

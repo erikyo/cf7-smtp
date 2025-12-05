@@ -119,11 +119,11 @@ class Stats extends Base
 	 * It takes the report data and formats it into a human-readable HTML string
 	 *
 	 * @param array $report The array of emails.
-	 * @param bool  $last_report the time of last report (unix timestamp).
+	 * @param bool $last_report the time of last report (unix timestamp).
 	 *
 	 * @return string
 	 */
-	public function format_report($report, $last_report = false)
+	public function format_report( array $report, bool $last_report = false)
 	{
 
 		if (!$last_report) {
@@ -205,15 +205,19 @@ class Stats extends Base
 	/**
 	 * It sends a report of the number of successful and failed emails sent by Contact Form 7 to the email address specified
 	 * in the plugin settings
+	 *
+	 * @param bool $force Whether to force the report to be sent.
+	 *
+	 * @return bool Whether the report was sent successfully.
 	 */
-	public function send_report()
+	public function send_report($force = false)
 	{
 		// get the options
 		$options = cf7_smtp_get_settings();
 
-		/* if the report is disabled, then return */
-		if (empty($options['report_every'])) {
-			return;
+		/* if the report is not forced or is disabled, then return */
+		if ($force || empty($options['report_every'])) {
+			return false;
 		}
 
 		// get the schedules
@@ -227,6 +231,9 @@ class Stats extends Base
 
 		/* init the mail */
 		$smtp_mailer = new Mailer();
-		$smtp_mailer->send_report($report_formatted);
+		$smtp_mailer->initialize();
+
+		/* send the report */
+		return $smtp_mailer->send_report($report_formatted);
 	}
 }
