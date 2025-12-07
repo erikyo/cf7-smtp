@@ -240,7 +240,7 @@ class Settings_Form {
 		/* Section cron */
 		add_settings_section(
 			'smtp_cron',
-			__( 'Cron', 'cf7-smtp' ),
+			__( 'Report', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_section_cron_subtitle' ),
 			'smtp-cron'
 		);
@@ -250,6 +250,24 @@ class Settings_Form {
 			'report_every',
 			__( 'Schedule report every', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_report_every_callback' ),
+			'smtp-cron',
+			'smtp_cron'
+		);
+
+		/* Settings cf7_smtp log retain days */
+		add_settings_field(
+			'log_retain_days',
+			__( 'Log retention days', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_log_retain_days_callback' ),
+			'smtp-cron',
+			'smtp_cron'
+		);
+
+		/* Flush logs */
+		add_settings_field(
+			'flush_logs',
+			__( 'Flush logs', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_flush_logs_callback' ),
 			'smtp-cron',
 			'smtp_cron'
 		);
@@ -609,6 +627,26 @@ class Settings_Form {
 	}
 
 	/**
+	 * It prints a text input field with the id of cf7_smtp_log_retain_days and the name of cf7-smtp-options[log_retain_days] and the value of the log_retain_days option
+	 */
+	function cf7_smtp_print_log_retain_days_callback() {
+		printf(
+			'<input type="number" id="cf7_smtp_log_retain_days" name="cf7-smtp-options[log_retain_days]" value="%s" min="0" max="365" step="1" />',
+			esc_attr( empty( $this->options['log_retain_days'] ) ? '' : intval( $this->options['log_retain_days'] ) )
+		);
+	}
+
+	/**
+	 * It prints a button with the id of cf7_smtp_flush_logs and the name of cf7-smtp-options[flush_logs]
+	 */
+	function cf7_smtp_print_flush_logs_callback() {
+		printf(
+			'<button id="cf7_smtp_flush_logs" class="button" />%s</button>',
+			esc_html__( 'Flush Logs', 'cf7-smtp' )
+		);
+	}
+
+	/**
 	 * It prints a checkbox with the id of cf7_smtp_custom_template and the name of cf7-smtp-options[custom_template] and if
 	 * the custom_template option is not empty, it adds the checked="true" attribute to the checkbox
 	 */
@@ -722,6 +760,9 @@ class Settings_Form {
 				wp_clear_scheduled_hook( 'cf7_smtp_report' );
 			}
 		}
+
+		/* SMTP log retain days */
+		$new_input['log_retain_days'] = ! empty( $input['log_retain_days'] ) ? intval( $input['log_retain_days'] ) : $new_input['log_retain_days'];
 
 		/* SMTP send report to */
 		$new_input['report_to'] = empty( $input['report_to'] ) ? $new_input['report_to'] : sanitize_text_field( $input['report_to'] );

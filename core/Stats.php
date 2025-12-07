@@ -63,13 +63,27 @@ class Stats extends Base
 		return $this->report;
 	}
 
+	/**
+	 * Reset the report
+	 *
+	 * @return void
+	 */
 	public function reset_report()
 	{
-		$this->report = array(
+		// Reset the report success and failed to 0
+		$this->report = array_merge($this->report, array(
 			'success' => 0,
-			'failed' => 0,
-			'storage' => $this->report['storage']
-		);
+			'failed' => 0
+		));
+
+		// Clean up the storage if needed
+		$options = cf7_smtp_get_settings();
+		$retain_days = intval($options['log_retain_days']);
+		if ($retain_days) {
+			$this->cleanup_storage(time() - $retain_days * 24 * 60 * 60);
+		}
+
+		// update the report
 		update_option('cf7-smtp-report', $this->report);
 	}
 
@@ -234,6 +248,13 @@ class Stats extends Base
 		$smtp_mailer->initialize();
 
 		/* send the report */
-		return $smtp_mailer->send_report($report_formatted);
+		$response = $smtp_mailer->send_report($report_formatted);
+
+		/* if the report is sent, reset the report */
+		if ($response) {
+			$this->reset_report();
+		}
+
+		return $response;
 	}
 }

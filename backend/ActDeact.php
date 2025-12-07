@@ -140,6 +140,7 @@ class ActDeact extends Base {
 			'user_pass'       => '',
 			'from_mail'       => '',
 			'from_name'       => '',
+			'log_retain_days' => 30,
 		);
 	}
 
