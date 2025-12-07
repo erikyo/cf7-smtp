@@ -80,19 +80,23 @@ class Settings_Page extends Base {
 	}
 
 	/**
-	 * Add settings action link to the plugins page.
+	 * Add a settings action link to the plugin page.
 	 *
 	 * @since {{plugin_version}}
 	 * @param array $links Array of links.
 	 * @return array
 	 */
 	public function add_action_links( array $links ) {
+		$plugin_option = get_option( 'cf7-smtp' . '-options' );
+		$service_enabled = $plugin_option['service_enabled'] ?? false;
+		$url = $service_enabled ? 'admin.php?page=cf7-smtp' : 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup';
+		$label = $service_enabled ? __( 'Setup SMTP', 'cf7-smtp' ) : __( 'Settings', 'cf7-smtp' );
 		return \array_merge(
 			array(
 				'settings' => sprintf(
 					'<a href="%s">%s</a>',
-					\admin_url( 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup' ),
-					\__( 'Settings', 'cf7-smtp' )
+					\admin_url( $url ),
+					$label
 				),
 			),
 			$links
