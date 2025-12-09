@@ -24,18 +24,17 @@ use WP_REST_Response;
 /**
  * Example class for REST
  */
-class Api extends Base
-{
+class Api extends Base {
+
 
 
 	/**
 	 * Initialize the class and get the plugin settings
 	 */
-	public function initialize()
-	{
+	public function initialize() {
 		parent::initialize();
 
-		\add_action('rest_api_init', array($this, 'add_sendmail_api'));
+		\add_action( 'rest_api_init', array( $this, 'add_sendmail_api' ) );
 	}
 
 	/**
@@ -44,8 +43,7 @@ class Api extends Base
 	 * @return void
 	 * @since 0.0.1
 	 */
-	public function add_sendmail_api()
-	{
+	public function add_sendmail_api() {
 		$this->add_smtp_mail_route();
 	}
 
@@ -59,18 +57,17 @@ class Api extends Base
 	 *  call this method and test on the command line with
 	 * `curl http://example.com/wp-json/wp/v2/calc?first=1&second=2`
 	 */
-	public function add_smtp_mail_route()
-	{
+	public function add_smtp_mail_route() {
 		\register_rest_route(
 			'cf7-smtp/v1',
 			'/sendmail/',
 			array(
-				'methods' => 'POST',
+				'methods'             => 'POST',
 				'permission_callback' => function () {
-					return current_user_can('manage_options');
+					return current_user_can( 'manage_options' );
 				},
-				'callback' => array($this, 'smtp_sendmail'),
-				'args' => array(
+				'callback'            => array( $this, 'smtp_sendmail' ),
+				'args'                => array(
 					'nonce' => array(
 						'required' => true,
 					),
@@ -81,12 +78,12 @@ class Api extends Base
 			'cf7-smtp/v1',
 			'/get_log/',
 			array(
-				'methods' => 'POST',
+				'methods'             => 'POST',
 				'permission_callback' => function () {
-					return current_user_can('manage_options');
+					return current_user_can( 'manage_options' );
 				},
-				'callback' => array($this, 'smtp_sendmail_get_log'),
-				'args' => array(
+				'callback'            => array( $this, 'smtp_sendmail_get_log' ),
+				'args'                => array(
 					'nonce' => array(
 						'required' => true,
 					),
@@ -97,12 +94,12 @@ class Api extends Base
 			'cf7-smtp/v1',
 			'/report/',
 			array(
-				'methods' => 'POST',
+				'methods'             => 'POST',
 				'permission_callback' => function () {
-					return current_user_can('manage_options');
+					return current_user_can( 'manage_options' );
 				},
-				'callback' => array($this, 'smtp_report'),
-				'args' => array(
+				'callback'            => array( $this, 'smtp_report' ),
+				'args'                => array(
 					'nonce' => array(
 						'required' => true,
 					),
@@ -119,16 +116,15 @@ class Api extends Base
 	 *
 	 * @return array an array of the email, subject, body
 	 */
-	private function cf7_smtp_testmailer_fill_data(array $mail_data)
-	{
+	private function cf7_smtp_testmailer_fill_data( array $mail_data ) {
 		$mailer = new Mailer();
 		return array(
-			'email' => !empty($mail_data['email']) ? sanitize_email($mail_data['email']) : $mailer->get_setting_by_key('email', $this->options),
-			'subject' => !empty($mail_data['subject']) ? sanitize_text_field($mail_data['subject']) : esc_html__('no subject provided', 'cf7-smtp'),
-			'body' => !empty($mail_data['body']) ? wp_kses_post($mail_data['body']) : esc_html__('Empty mail body', 'cf7-smtp'),
-			'from_mail' => $mailer->get_setting_by_key('from_mail', $this->options),
-			'from_name' => $mailer->get_setting_by_key('from_name', $this->options),
-			'headers' => '',
+			'email'     => ! empty( $mail_data['email'] ) ? sanitize_email( $mail_data['email'] ) : $mailer->get_setting_by_key( 'email', $this->options ),
+			'subject'   => ! empty( $mail_data['subject'] ) ? sanitize_text_field( $mail_data['subject'] ) : esc_html__( 'no subject provided', 'cf7-smtp' ),
+			'body'      => ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : esc_html__( 'Empty mail body', 'cf7-smtp' ),
+			'from_mail' => $mailer->get_setting_by_key( 'from_mail', $this->options ),
+			'from_name' => $mailer->get_setting_by_key( 'from_name', $this->options ),
+			'headers'   => '',
 		);
 	}
 
@@ -140,35 +136,35 @@ class Api extends Base
 	 *
 	 * @return string The log of wp_mail
 	 */
-	private function cf7_smtp_testmailer(array $mail_data)
-	{
+	private function cf7_smtp_testmailer( array $mail_data ) {
 
-		$mail = $this->cf7_smtp_testmailer_fill_data($mail_data);
+		$mail = $this->cf7_smtp_testmailer_fill_data( $mail_data );
 
 		/* the destination mail is mandatory */
-		if (empty($mail['email'])) {
-			cf7_smtp_log('you need to fill the "email" field in order to decide where the mail has to be received');
+		if ( empty( $mail['email'] ) ) {
+			cf7_smtp_log( 'you need to fill the "email" field in order to decide where the mail has to be received' );
 			return "⚠️ The recipient mail is missing!\r\n";
 		}
-		/* allows to change the "from" if the user has chosen to override WordPress data */
+		/*
+		allows to change the "from" if the user has chosen to override WordPress data */
 		/* Setting the "from" (email and name). */
-		if (!empty($mail['from_mail'])) {
-			$mail['headers'] = sprintf("From: %s <%s>\r\n", $mail['from_name'] ?? 'WordPress', $mail['from_mail']);
+		if ( ! empty( $mail['from_mail'] ) ) {
+			$mail['headers'] = sprintf( "From: %s <%s>\r\n", $mail['from_name'] ?? 'WordPress', $mail['from_mail'] );
 		}
 
 		$smtp_mailer = new Mailer();
-		$res = $smtp_mailer->send_email($mail);
+		$res         = $smtp_mailer->send_email( $mail );
 
 		// Get the log from the mailer instance and set transient
 		$log = $smtp_mailer->get_log();
-		if (!empty($log)) {
-			set_transient('cf7_smtp_testing_log', $log, MINUTE_IN_SECONDS);
+		if ( ! empty( $log ) ) {
+			set_transient( 'cf7_smtp_testing_log', $log, MINUTE_IN_SECONDS );
 		}
 
-		if ($res) {
-			return esc_html(gmdate('Y-m-d h:i:s') . ' ' . esc_html__('Mail Processed with success ✅', 'cf7-smtp')) . PHP_EOL;
+		if ( $res ) {
+			return esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail Processed with success ✅', 'cf7-smtp' ) ) . PHP_EOL;
 		} else {
-			return esc_html(gmdate('Y-m-d h:i:s') . ' ' . esc_html__('Mail processed with errors', 'cf7-smtp')) . PHP_EOL;
+			return esc_html( gmdate( 'Y-m-d h:i:s' ) . ' ' . esc_html__( 'Mail processed with errors', 'cf7-smtp' ) ) . PHP_EOL;
 		}
 	}
 
@@ -180,68 +176,66 @@ class Api extends Base
 	 *
 	 * @return WP_Error|WP_HTTP_Response|WP_REST_Response The response is being returned.
 	 */
-	public function smtp_sendmail_get_log($request)
-	{
+	public function smtp_sendmail_get_log( $request ) {
 
-		if (!\wp_verify_nonce(\strval($request['nonce']), 'cf7-smtp')) {
-			$response = \rest_ensure_response('Wrong nonce');
+		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), 'cf7-smtp' ) ) {
+			$response = \rest_ensure_response( 'Wrong nonce' );
 
-			if (\is_wp_error($response)) {
+			if ( \is_wp_error( $response ) ) {
 				return $response;
 			}
 
-			$response->set_status(500);
+			$response->set_status( 500 );
 
 			return $response;
 		}
 
-		$err_msg = get_transient('cf7_smtp_testing_error');
-		if (!empty($err_msg)) {
+		$err_msg = get_transient( 'cf7_smtp_testing_error' );
+		if ( ! empty( $err_msg ) ) {
 
 			$response = \rest_ensure_response(
 				array(
-					'status' => 'error',
+					'status'  => 'error',
 					'message' => $err_msg,
 				)
 			);
-			$response->set_status(200);
-			delete_transient('cf7_smtp_testing_error');
+			$response->set_status( 200 );
+			delete_transient( 'cf7_smtp_testing_error' );
 
 			return $response;
 		}
 
-		$log = get_transient('cf7_smtp_testing_log');
-		if (!empty($log)) {
+		$log = get_transient( 'cf7_smtp_testing_log' );
+		if ( ! empty( $log ) ) {
 			$response = \rest_ensure_response(
 				array(
-					'status' => 'log',
-					'message' => esc_html($log),
+					'status'  => 'log',
+					'message' => esc_html( $log ),
 				)
 			);
-			$response->set_status(200);
-			delete_transient('cf7_smtp_testing_log');
+			$response->set_status( 200 );
+			delete_transient( 'cf7_smtp_testing_log' );
 		} else {
 			$response = \rest_ensure_response(
 				array(
-					'status' => 'wait',
-					'message' => esc_html__('Still no Server response', 'cf7-smtp') . PHP_EOL . $log,
+					'status'  => 'wait',
+					'message' => esc_html__( 'Still no Server response', 'cf7-smtp' ) . PHP_EOL . $log,
 				)
 			);
-			$response->set_status(200);
+			$response->set_status( 200 );
 		}
 
 		return $response;
 	}
 
-	public function smtp_report($request)
-	{
+	public function smtp_report( $request ) {
 		$stats = new Stats();
-		$res = $stats->send_report(true);
+		$res   = $stats->send_report( true );
 
-		if (!$res) {
+		if ( ! $res ) {
 			return \rest_ensure_response(
 				array(
-					'status' => 'error',
+					'status'  => 'error',
 					'message' => 'Report not sent',
 				)
 			);
@@ -249,7 +243,7 @@ class Api extends Base
 
 		return \rest_ensure_response(
 			array(
-				'status' => 'success',
+				'status'  => 'success',
 				'message' => 'Report sent',
 			)
 		);
@@ -265,73 +259,72 @@ class Api extends Base
 	 *
 	 * @since 0.0.1
 	 */
-	public function smtp_sendmail(WP_REST_Request $request)
-	{
+	public function smtp_sendmail( WP_REST_Request $request ) {
 
 		$json_params = $request->get_json_params();
 
 		$options = cf7_smtp_get_settings();
 
-		if (!\wp_verify_nonce(\strval($request['nonce']), 'cf7-smtp')) {
-			$response = \rest_ensure_response('Wrong nonce');
+		if ( ! \wp_verify_nonce( \strval( $request['nonce'] ), 'cf7-smtp' ) ) {
+			$response = \rest_ensure_response( 'Wrong nonce' );
 
-			if (\is_wp_error($response)) {
+			if ( \is_wp_error( $response ) ) {
 				return $response;
 			}
 
-			$response->set_status(500);
+			$response->set_status( 500 );
 
 			return $response;
 		}
 
-		if (!empty($json_params['email'])) {
+		if ( ! empty( $json_params['email'] ) ) {
 
-			set_transient('cf7_smtp_testing', true, MINUTE_IN_SECONDS);
+			set_transient( 'cf7_smtp_testing', true, MINUTE_IN_SECONDS );
 
 			$phpmailer_resp = self::cf7_smtp_testmailer(
 				array(
-					'email' => $json_params['email'],
-					'subject' => !empty($json_params['subject']) ? $json_params['subject'] : 'Test message works! 🎉',
-					'body' => !empty($json_params['body']) ? $json_params['body'] : '',
+					'email'   => $json_params['email'],
+					'subject' => ! empty( $json_params['subject'] ) ? $json_params['subject'] : 'Test message works! 🎉',
+					'body'    => ! empty( $json_params['body'] ) ? $json_params['body'] : '',
 				)
 			);
 
-			if (!empty($phpmailer_resp)) {
+			if ( ! empty( $phpmailer_resp ) ) {
 
 				$response = \rest_ensure_response(
 					array(
-						'status' => 'success',
-						'protocol' => !empty($options['enabled']) ? 'SMTP' : 'PHPMAILER',
-						'message' => wp_unslash($phpmailer_resp),
-						'nonce' => wp_create_nonce('cf7-smtp'),
+						'status'   => 'success',
+						'protocol' => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
+						'message'  => wp_unslash( $phpmailer_resp ),
+						'nonce'    => wp_create_nonce( 'cf7-smtp' ),
 					)
 				);
 			} else {
 
 				$response = \rest_ensure_response(
 					array(
-						'status' => 'log',
-						'protocol' => !empty($options['enabled']) ? 'SMTP' : 'PHPMAILER',
-						'message' => 'success',
+						'status'    => 'log',
+						'protocol'  => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
+						'message'   => 'success',
 						'mail_data' => $json_params,
-						'nonce' => wp_create_nonce('cf7-smtp'),
+						'nonce'     => wp_create_nonce( 'cf7-smtp' ),
 					)
 				);
 			}
 
-			$response->set_status(200);
+			$response->set_status( 200 );
 		} else {
 
 			$response = \rest_ensure_response(
 				array(
-					'status' => 'error',
-					'protocol' => !empty($options['enabled']) ? 'SMTP' : 'PHPMAILER',
-					'message' => 'Destination Email missing',
-					'nonce' => wp_create_nonce('cf7-smtp'),
+					'status'   => 'error',
+					'protocol' => ! empty( $options['enabled'] ) ? 'SMTP' : 'PHPMAILER',
+					'message'  => 'Destination Email missing',
+					'nonce'    => wp_create_nonce( 'cf7-smtp' ),
 				)
 			);
 
-			$response->set_status(500);
+			$response->set_status( 500 );
 		}
 
 		return $response;

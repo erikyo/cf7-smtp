@@ -79,13 +79,13 @@ if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(
 		'admin_init',
-		static function() {
+		static function () {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 		}
 	);
 	add_action(
 		'admin_notices',
-		static function() {
+		static function () {
 			echo wp_kses_post(
 				sprintf(
 					'<div class="notice notice-error"><p>%s</p></div>',
@@ -135,7 +135,7 @@ if ( ! wp_installing() ) {
 
 	add_action(
 		'init',
-		static function() {
+		static function () {
 			$file = path_join( CF7_SMTP_PLUGIN_ROOT, 'integration/integration.php' );
 
 			if ( file_exists( $file ) ) {

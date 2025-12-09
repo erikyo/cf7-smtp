@@ -125,7 +125,5 @@ class ImpExp extends Base {
 			'cf7_smtp_import_settings_failed',
 			\__( 'Failed to import the settings.', 'cf7-smtp' )
 		);
-
 	}
-
 }

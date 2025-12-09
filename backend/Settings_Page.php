@@ -87,10 +87,10 @@ class Settings_Page extends Base {
 	 * @return array
 	 */
 	public function add_action_links( array $links ) {
-		$plugin_option = get_option( 'cf7-smtp' . '-options' );
+		$plugin_option   = get_option( 'cf7-smtp' . '-options' );
 		$service_enabled = $plugin_option['service_enabled'] ?? false;
-		$url = $service_enabled ? 'admin.php?page=cf7-smtp' : 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup';
-		$label = $service_enabled ? __( 'Setup SMTP', 'cf7-smtp' ) : __( 'Settings', 'cf7-smtp' );
+		$url             = $service_enabled ? 'admin.php?page=cf7-smtp' : 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup';
+		$label           = $service_enabled ? __( 'Setup SMTP', 'cf7-smtp' ) : __( 'Settings', 'cf7-smtp' );
 		return \array_merge(
 			array(
 				'settings' => sprintf(

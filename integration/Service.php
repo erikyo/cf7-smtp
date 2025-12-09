@@ -54,7 +54,7 @@ class Service extends GlobalWPCF7_Service {
 			add_action(
 				'admin_notices',
 				function () {
-					echo sprintf( "<p>%s</p>", esc_html__( 'Settings saved.', 'cf7-smtp' ) ); }
+					printf( '<p>%s</p>', esc_html__( 'Settings saved.', 'cf7-smtp' ) ); }
 			);
 		}
 
@@ -171,7 +171,7 @@ class Service extends GlobalWPCF7_Service {
 	 * "display" function. It is a string that can have two possible values:
 	 */
 	public function display( $action = '' ) {
-		echo sprintf(
+		printf(
 			'<p>%s</p>',
 			esc_html(
 				__(
@@ -181,17 +181,17 @@ class Service extends GlobalWPCF7_Service {
 			)
 		);
 
-		echo sprintf(
+		printf(
 			'<p><strong>%s</strong></p>',
 			// phpcs:ignore
 			wpcf7_link(
 				esc_html__( 'https://wordpress.org/plugins/cf7-smtp/', 'cf7-smtp' ),
-				'CF7 SMTP (' . CF7_SMTP_VERSION . ")"
+				'CF7 SMTP (' . CF7_SMTP_VERSION . ')'
 			)
 		);
 
 		if ( $this->is_active() ) {
-			echo sprintf(
+			printf(
 				'<p class="dashicons-before dashicons-yes">%s</p>',
 				esc_html__( 'CF7 SMTP is active on this site.', 'cf7-smtp' )
 			);

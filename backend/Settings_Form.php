@@ -797,5 +797,4 @@ class Settings_Form {
 			exit();
 		}
 	}
-
 }

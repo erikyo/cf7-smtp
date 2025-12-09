@@ -106,7 +106,7 @@ class Initialize {
 				\do_action( 'cf7_smtp_initialize_failed', $err );
 
 				if ( WP_DEBUG ) {
-					throw new \Exception( esc_html( $err->getMessage()) );
+					throw new \Exception( esc_html( $err->getMessage() ) );
 				}
 			}
 		}

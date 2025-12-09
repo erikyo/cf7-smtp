@@ -92,4 +92,3 @@ function cf7_smtp_log( $log_data ) {
 function cf7_smtp_print_pass_placeholders( string $pass ) {
 	return '"' . str_repeat( '*', strlen( $pass ) ) . '"';
 }
-

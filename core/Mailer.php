@@ -22,8 +22,8 @@ use WPCF7_Mail;
 /**
  * Enqueue stuff on the frontend and backend
  */
-class Mailer extends Base
-{
+class Mailer extends Base {
+
 
 	/**
 	 * The mail log.
@@ -39,23 +39,22 @@ class Mailer extends Base
 	 */
 	private array $default_headers;
 
-	public function __construct()
-	{
+	public function __construct() {
 		parent::initialize();
 
 		// Get from_mail with fallback to admin_email
-		$from_mail = !empty($this->options['from_mail']) && is_email($this->options['from_mail'])
+		$from_mail = ! empty( $this->options['from_mail'] ) && is_email( $this->options['from_mail'] )
 			? $this->options['from_mail']
-			: get_option('admin_email');
+			: get_option( 'admin_email' );
 
-		$from_name = !empty($this->options['from_name'])
+		$from_name = ! empty( $this->options['from_name'] )
 			? $this->options['from_name']
-			: get_bloginfo('name');
+			: get_bloginfo( 'name' );
 
 		$this->default_headers = array(
-			'From' => "{$from_name} <{$from_mail}>",
+			'From'         => "{$from_name} <{$from_mail}>",
 			'Content-Type' => 'text/html',
-			'Reply-To' => get_option('admin_email'),
+			'Reply-To'     => get_option( 'admin_email' ),
 		);
 	}
 
@@ -64,21 +63,20 @@ class Mailer extends Base
 	 *
 	 * @return void
 	 */
-	public function initialize()
-	{
-		if (!empty($this->options['enabled'] || !empty(get_transient('cf7_smtp_testing')))) {
-			\add_action('phpmailer_init', array($this, 'smtp_overrides'), 11);
+	public function initialize() {
+		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
+			\add_action( 'phpmailer_init', array( $this, 'smtp_overrides' ), 11 );
 		}
 
-		if (!empty($this->options['custom_template'])) {
-			\add_action('phpmailer_init', array($this, 'cf7_smtp_apply_template'), 10);
+		if ( ! empty( $this->options['custom_template'] ) ) {
+			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template' ), 10 );
 		}
 
-		\add_action('wpcf7_mail_sent', array($this, 'cf7_smtp_wp_mail_succeeded'));
-		\add_action('wpcf7_mail_failed', array($this, 'cf7_smtp_wp_mail_failed'));
-		\add_action('wp_mail_succeeded', array($this, 'cf7_smtp_wp_mail_log'));
-		\add_action('wp_mail_failed', array($this, 'cf7_smtp_wp_mail_catch_errors'));
-		\add_filter('wpcf7_mail_components', array($this, 'cf7_smtp_email_style'), 99, 3);
+		\add_action( 'wpcf7_mail_sent', array( $this, 'cf7_smtp_wp_mail_succeeded' ) );
+		\add_action( 'wpcf7_mail_failed', array( $this, 'cf7_smtp_wp_mail_failed' ) );
+		\add_action( 'wp_mail_succeeded', array( $this, 'cf7_smtp_wp_mail_log' ) );
+		\add_action( 'wp_mail_failed', array( $this, 'cf7_smtp_wp_mail_catch_errors' ) );
+		\add_filter( 'wpcf7_mail_components', array( $this, 'cf7_smtp_email_style' ), 99, 3 );
 	}
 
 	/**
@@ -89,21 +87,23 @@ class Mailer extends Base
 	 *
 	 * @return void
 	 */
-	private function log_contact_form_stats(WPCF7_ContactForm $contact_form, bool $success)
-	{
+	private function log_contact_form_stats( WPCF7_ContactForm $contact_form, bool $success ) {
 		$stats = new Stats();
 
-		if ($success) {
+		if ( $success ) {
 			$stats->add_success();
 		} else {
 			$stats->add_failed();
 		}
 
-		$stats->add_field_to_storage(time(), array(
-			'mail_sent' => $success,
-			'form_id' => $contact_form->id(),
-			'title' => $contact_form->title(),
-		));
+		$stats->add_field_to_storage(
+			time(),
+			array(
+				'mail_sent' => $success,
+				'form_id'   => $contact_form->id(),
+				'title'     => $contact_form->title(),
+			)
+		);
 
 		$stats->store();
 	}
@@ -115,9 +115,8 @@ class Mailer extends Base
 	 *
 	 * @return void
 	 */
-	public function cf7_smtp_wp_mail_succeeded($contact_form)
-	{
-		$this->log_contact_form_stats($contact_form, true);
+	public function cf7_smtp_wp_mail_succeeded( $contact_form ) {
+		$this->log_contact_form_stats( $contact_form, true );
 	}
 
 	/**
@@ -127,9 +126,8 @@ class Mailer extends Base
 	 *
 	 * @return void
 	 */
-	public function cf7_smtp_wp_mail_failed($contact_form)
-	{
-		$this->log_contact_form_stats($contact_form, false);
+	public function cf7_smtp_wp_mail_failed( $contact_form ) {
+		$this->log_contact_form_stats( $contact_form, false );
 	}
 
 	/**
@@ -137,26 +135,24 @@ class Mailer extends Base
 	 *
 	 * @param \WP_Error $error - The error message that was returned by wp_mail().
 	 */
-	public function cf7_smtp_wp_mail_catch_errors($error)
-	{
+	public function cf7_smtp_wp_mail_catch_errors( $error ) {
 		$error_msgs = $error->get_error_messages();
-		foreach ($error_msgs as $msg) {
-			error_log('CF7 SMTP Error: ' . $msg);
+		foreach ( $error_msgs as $msg ) {
+			error_log( 'CF7 SMTP Error: ' . $msg );
 		}
 
-		cf7_smtp_log("WP Mail Failed! Error Messages:");
-		cf7_smtp_log($error_msgs);
-		cf7_smtp_log("Error Data:");
-		cf7_smtp_log($error->get_all_error_data());
-		set_transient('cf7_smtp_testing_error', $error_msgs, MINUTE_IN_SECONDS);
+		cf7_smtp_log( 'WP Mail Failed! Error Messages:' );
+		cf7_smtp_log( $error_msgs );
+		cf7_smtp_log( 'Error Data:' );
+		cf7_smtp_log( $error->get_all_error_data() );
+		set_transient( 'cf7_smtp_testing_error', $error_msgs, MINUTE_IN_SECONDS );
 	}
 
 	/**
 	 * It sets a transient for the log file.
 	 */
-	public function cf7_smtp_wp_mail_log()
-	{
-		set_transient('cf7_smtp_testing_log', $this->cf7_smtp_log, MINUTE_IN_SECONDS);
+	public function cf7_smtp_wp_mail_log() {
+		set_transient( 'cf7_smtp_testing_log', $this->cf7_smtp_log, MINUTE_IN_SECONDS );
 	}
 
 	/**
@@ -164,8 +160,7 @@ class Mailer extends Base
 	 *
 	 * @return string The debug log.
 	 */
-	public function get_log(): string
-	{
+	public function get_log(): string {
 		return $this->cf7_smtp_log;
 	}
 
@@ -177,14 +172,13 @@ class Mailer extends Base
 	 *
 	 * @return array Template replacements.
 	 */
-	private function get_template_replacements(array $mail_data, string $template_name): array
-	{
+	private function get_template_replacements( array $mail_data, string $template_name ): array {
 		return apply_filters(
 			'cf7_smtp_mail_template_replacements',
 			array(
-				'title' => !empty($mail_data['title']) ? esc_html($mail_data['title']) : '',
-				'subject' => !empty($mail_data['subject']) ? esc_html($mail_data['subject']) : '',
-				'language' => !empty($mail_data['language']) ? sanitize_text_field($mail_data['language']) : get_bloginfo('language'),
+				'title'     => ! empty( $mail_data['title'] ) ? esc_html( $mail_data['title'] ) : '',
+				'subject'   => ! empty( $mail_data['subject'] ) ? esc_html( $mail_data['subject'] ) : '',
+				'language'  => ! empty( $mail_data['language'] ) ? sanitize_text_field( $mail_data['language'] ) : get_bloginfo( 'language' ),
 
 				/**
 				 * Set the mail logo image shown at the top of the email
@@ -193,8 +187,8 @@ class Mailer extends Base
 				 *
 				 * @param string $mail_logo the url of the image
 				 */
-				'site_logo' => apply_filters('cf7_smtp_mail_logo', wp_get_attachment_image_url(get_theme_mod('custom_logo'), 'full')) ?? '',
-				'site_name' => apply_filters('cf7_smtp_mail_logo_alt', esc_html(get_bloginfo('name'))),
+				'site_logo' => apply_filters( 'cf7_smtp_mail_logo', wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'full' ) ) ?? '',
+				'site_name' => apply_filters( 'cf7_smtp_mail_logo_alt', esc_html( get_bloginfo( 'name' ) ) ),
 
 				/**
 				 * Set the mail logo link url (what happens when you click on the image at the top of the email)
@@ -203,9 +197,9 @@ class Mailer extends Base
 				 *
 				 * @param string $mail_url the url of the image
 				 */
-				'site_url' => apply_filters('cf7_smtp_mail_logo_url', get_site_url()) ?? '',
+				'site_url'  => apply_filters( 'cf7_smtp_mail_logo_url', get_site_url() ) ?? '',
 			),
-			sanitize_file_name($template_name . '.html')
+			sanitize_file_name( $template_name . '.html' )
 		);
 	}
 
@@ -217,19 +211,18 @@ class Mailer extends Base
 	 *
 	 * @return string The body of the email.
 	 */
-	public function cf7_smtp_form_template(array $mail_data, string $template): string
-	{
-		if (empty($template)) {
+	public function cf7_smtp_form_template( array $mail_data, string $template ): string {
+		if ( empty( $template ) ) {
 			return $mail_data['body'];
 		}
 
-		$mail_body = !empty($mail_data['body']) ? wp_kses_post($mail_data['body']) : '';
-		$mail_body = $mail_data['body'] ? str_replace('{{message}}', $mail_body, $template) : $template;
+		$mail_body = ! empty( $mail_data['body'] ) ? wp_kses_post( $mail_data['body'] ) : '';
+		$mail_body = $mail_data['body'] ? str_replace( '{{message}}', $mail_body, $template ) : $template;
 
-		$replacements = $this->get_template_replacements($mail_data, basename($template, '.html'));
+		$replacements = $this->get_template_replacements( $mail_data, basename( $template, '.html' ) );
 
-		foreach ($replacements as $key => $value) {
-			$mail_body = str_replace('{{' . $key . '}}', $value, $mail_body);
+		foreach ( $replacements as $key => $value ) {
+			$mail_body = str_replace( '{{' . $key . '}}', $value, $mail_body );
 		}
 
 		return $mail_body;
@@ -244,35 +237,38 @@ class Mailer extends Base
 	 *
 	 * @return string The template file path.
 	 */
-	private function get_template_path(string $template_name, int $id, string $lang): string
-	{
-		$theme_custom_dir = 'cf7-smtp/';
+	private function get_template_path( string $template_name, int $id, string $lang ): string {
+		$theme_custom_dir    = 'cf7-smtp/';
 		$plugin_template_dir = CF7_SMTP_PLUGIN_ROOT . 'templates/';
 
 		// Look in theme directories
-		if ($id) {
-			$template = locate_template(array(
-				"{$template_name}-{$id}.html",
-				$theme_custom_dir . "{$template_name}-{$id}.html"
-			));
+		if ( $id ) {
+			$template = locate_template(
+				array(
+					"{$template_name}-{$id}.html",
+					$theme_custom_dir . "{$template_name}-{$id}.html",
+				)
+			);
 		} else {
-			$template = locate_template(array(
-				"{$template_name}.html",
-				$theme_custom_dir . "{$template_name}.html"
-			));
+			$template = locate_template(
+				array(
+					"{$template_name}.html",
+					$theme_custom_dir . "{$template_name}.html",
+				)
+			);
 		}
 
 		// Fallback to plugin templates
-		if (!empty($template) && $id) {
+		if ( ! empty( $template ) && $id ) {
 			$template = $plugin_template_dir . "{$template_name}-{$id}.html";
 		}
 
 		/* Get default template_name.php */
-		if (!empty($template) && file_exists($plugin_template_dir . "{$template_name}.html")) {
+		if ( ! empty( $template ) && file_exists( $plugin_template_dir . "{$template_name}.html" ) ) {
 			$template = $plugin_template_dir . "{$template_name}.html";
 		}
 
-		return apply_filters('cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp');
+		return apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp' );
 	}
 
 	/**
@@ -284,11 +280,10 @@ class Mailer extends Base
 	 *
 	 * @return string The contents of the file.
 	 */
-	public function cf7_smtp_get_email_style(string $template_name, int $id, string $lang): string
-	{
-		$template = $this->get_template_path($template_name, $id, $lang);
+	public function cf7_smtp_get_email_style( string $template_name, int $id, string $lang ): string {
+		$template = $this->get_template_path( $template_name, $id, $lang );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		return !empty($template) ? file_get_contents($template) : '';
+		return ! empty( $template ) ? file_get_contents( $template ) : '';
 	}
 
 	/**
@@ -300,22 +295,21 @@ class Mailer extends Base
 	 *
 	 * @return array The modified components.
 	 */
-	public function cf7_smtp_email_style(array $components, WPCF7_ContactForm $contact_form, WPCF7_Mail $mail): array
-	{
-		if (empty($this->options['custom_template']) || empty($components['body'])) {
+	public function cf7_smtp_email_style( array $components, WPCF7_ContactForm $contact_form, WPCF7_Mail $mail ): array {
+		if ( empty( $this->options['custom_template'] ) || empty( $components['body'] ) ) {
 			return $components;
 		}
 
 		$email_data = array(
-			'body' => nl2br($components['body']),
-			'subject' => $components['subject'],
+			'body'     => nl2br( $components['body'] ),
+			'subject'  => $components['subject'],
 			'language' => $contact_form->locale(),
 		);
 
-		$email_data = apply_filters('cf7_smtp_mail_components', $email_data, $contact_form, $mail);
-		$template = $this->cf7_smtp_get_email_style('default', $contact_form->id(), $contact_form->locale());
+		$email_data = apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail );
+		$template   = $this->cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() );
 
-		$components['body'] = $this->cf7_smtp_form_template($email_data, $template);
+		$components['body'] = $this->cf7_smtp_form_template( $email_data, $template );
 
 		return $components;
 	}
@@ -325,9 +319,8 @@ class Mailer extends Base
 	 *
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer object.
 	 */
-	public function cf7_smtp_apply_template(PHPMailer\PHPMailer $phpmailer)
-	{
-		if (!empty($this->options['custom_template']) && preg_match('/<html /mi', $phpmailer->Body)) {
+	public function cf7_smtp_apply_template( PHPMailer\PHPMailer $phpmailer ) {
+		if ( ! empty( $this->options['custom_template'] ) && preg_match( '/<html /mi', $phpmailer->Body ) ) {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->isHTML();
 		}
@@ -341,15 +334,14 @@ class Mailer extends Base
 	 *
 	 * @return string The value of the key.
 	 */
-	public function get_setting_by_key(string $key, $options = false): string
-	{
-		$options = !empty($options) ? $options : $this->options;
+	public function get_setting_by_key( string $key, $options = false ): string {
+		$options = ! empty( $options ) ? $options : $this->options;
 
-		if (defined('CF7_SMTP_SETTINGS') && isset(CF7_SMTP_SETTINGS[$key])) {
-			return CF7_SMTP_SETTINGS[$key];
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && isset( CF7_SMTP_SETTINGS[ $key ] ) ) {
+			return CF7_SMTP_SETTINGS[ $key ];
 		}
 
-		return $options[$key] ?? '';
+		return $options[ $key ] ?? '';
 	}
 
 	/**
@@ -357,17 +349,16 @@ class Mailer extends Base
 	 *
 	 * @return string The headers for the email.
 	 */
-	private function get_headers(): string
-	{
+	private function get_headers(): string {
 		$header_lines = array_map(
-			function ($key, $value) {
+			function ( $key, $value ) {
 				return "{$key}: {$value}";
 			},
-			array_keys($this->default_headers),
+			array_keys( $this->default_headers ),
 			$this->default_headers
 		);
 
-		return implode("\n", $header_lines);
+		return implode( "\n", $header_lines );
 	}
 
 	/**
@@ -381,16 +372,15 @@ class Mailer extends Base
 	 *
 	 * @return bool Whether the email was sent successfully.
 	 */
-	private function send($to, $subject, $body, $headers = '', $attachments = array())
-	{
+	private function send( $to, $subject, $body, $headers = '', $attachments = array() ) {
 		try {
-			if (!wp_mail($to, $subject, $body, $headers, $attachments)) {
-				cf7_smtp_log('Unable to send email ' . $to . ' ' . $subject . ' ' . $body . ' ' . $headers);
+			if ( ! wp_mail( $to, $subject, $body, $headers, $attachments ) ) {
+				cf7_smtp_log( 'Unable to send email ' . $to . ' ' . $subject . ' ' . $body . ' ' . $headers );
 				return false;
 			}
 			return true;
-		} catch (\PHPMailer\PHPMailer\Exception $e) {
-			cf7_smtp_log('Email sending failed: ' . $e->getMessage());
+		} catch ( \PHPMailer\PHPMailer\Exception $e ) {
+			cf7_smtp_log( 'Email sending failed: ' . $e->getMessage() );
 			return false;
 		}
 	}
@@ -403,18 +393,17 @@ class Mailer extends Base
 	 *
 	 * @return array Prepared email data.
 	 */
-	private function prepare_email_with_template(array $data, string $template_file): array
-	{
-		if (empty($this->options['template']) && empty($this->options['custom_template'])) {
+	private function prepare_email_with_template( array $data, string $template_file ): array {
+		if ( empty( $this->options['template'] ) && empty( $this->options['custom_template'] ) ) {
 			return $data;
 		}
 
 		$template_path = CF7_SMTP_PLUGIN_ROOT . 'templates/' . $template_file;
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$template = file_exists($template_path) ? file_get_contents($template_path) : '';
+		$template = file_exists( $template_path ) ? file_get_contents( $template_path ) : '';
 
-		if ($template) {
-			$data['body'] = $this->cf7_smtp_form_template($data, $template);
+		if ( $template ) {
+			$data['body'] = $this->cf7_smtp_form_template( $data, $template );
 		}
 
 		return $data;
@@ -427,28 +416,27 @@ class Mailer extends Base
 	 *
 	 * @return bool Whether the report was sent successfully.
 	 */
-	public function send_report($report)
-	{
+	public function send_report( $report ) {
 		$subject = esc_html(
 			sprintf(
 				/* translators: %s site name */
-				__('%s Mail report', 'cf7-smtp'),
-				get_bloginfo('name')
+				__( '%s Mail report', 'cf7-smtp' ),
+				get_bloginfo( 'name' )
 			)
 		);
 
 		$mail_data = $this->prepare_email_with_template(
 			array(
-				'body' => $report,
-				'title' => get_bloginfo('name'),
+				'body'    => $report,
+				'title'   => get_bloginfo( 'name' ),
 				'subject' => $subject,
 			),
 			'report.html'
 		);
 
 		// Fallback to plain text if no template
-		if (empty($this->options['template'])) {
-			$mail_data['body'] = sprintf("%s %s\r\n\r\n%s", $subject, get_bloginfo('name'), $report);
+		if ( empty( $this->options['template'] ) ) {
+			$mail_data['body'] = sprintf( "%s %s\r\n\r\n%s", $subject, get_bloginfo( 'name' ), $report );
 		}
 
 		return $this->send(
@@ -466,21 +454,20 @@ class Mailer extends Base
 	 *
 	 * @return bool|string Mail result or log.
 	 */
-	public function send_email($mail)
-	{
+	public function send_email( $mail ) {
 		// Use headers from $mail array if provided, otherwise empty
-		$headers = !empty($mail['headers']) ? $mail['headers'] : '';
+		$headers = ! empty( $mail['headers'] ) ? $mail['headers'] : '';
 
 		// Apply custom template if enabled
-		if (!empty($this->options['custom_template'])) {
+		if ( ! empty( $this->options['custom_template'] ) ) {
 			// Append template headers if not already set
-			if (empty($headers)) {
+			if ( empty( $headers ) ) {
 				$headers = $this->get_headers();
 			}
 
 			$mail_data = $this->prepare_email_with_template(
 				array(
-					'body' => $mail['body'],
+					'body'    => $mail['body'],
 					'subject' => $mail['subject'],
 				),
 				'test.html'
@@ -501,7 +488,7 @@ class Mailer extends Base
 
 		$mail_log = ob_get_clean();
 
-		return !empty($mail_log) ? $mail_log : $mail_sent;
+		return ! empty( $mail_log ) ? $mail_log : $mail_sent;
 	}
 
 	/**
@@ -509,14 +496,13 @@ class Mailer extends Base
 	 *
 	 * @return string The decrypted password.
 	 */
-	private function get_smtp_password(): string
-	{
-		if (!empty(CF7_SMTP_SETTINGS) && isset(CF7_SMTP_SETTINGS['user_pass'])) {
+	private function get_smtp_password(): string {
+		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS['user_pass'] ) ) {
 			return CF7_SMTP_SETTINGS['user_pass'];
 		}
 
-		if (!empty($this->options['user_pass'])) {
-			return cf7_smtp_decrypt($this->options['user_pass']);
+		if ( ! empty( $this->options['user_pass'] ) ) {
+			return cf7_smtp_decrypt( $this->options['user_pass'] );
 		}
 
 		return '';
@@ -529,9 +515,8 @@ class Mailer extends Base
 	 * @param string              $username SMTP username.
 	 * @param string              $password SMTP password.
 	 */
-	private function configure_smtp_auth(PHPMailer\PHPMailer $phpmailer, string $username, string $password)
-	{
-		if (!empty($username) && !empty($password)) {
+	private function configure_smtp_auth( PHPMailer\PHPMailer $phpmailer, string $username, string $password ) {
+		if ( ! empty( $username ) && ! empty( $password ) ) {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->SMTPAuth = true;
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -548,9 +533,8 @@ class Mailer extends Base
 	 * @param int                 $port User-defined port.
 	 * @param string              $auth Encryption type.
 	 */
-	private function configure_smtp_port(PHPMailer\PHPMailer $phpmailer, int $port, string $auth)
-	{
-		if (!empty($port) && $port > 0 && $port <= 65535) {
+	private function configure_smtp_port( PHPMailer\PHPMailer $phpmailer, int $port, string $auth ) {
+		if ( ! empty( $port ) && $port > 0 && $port <= 65535 ) {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Port = $port;
 			return;
@@ -563,7 +547,7 @@ class Mailer extends Base
 		);
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$phpmailer->Port = $default_ports[$auth] ?? 25;
+		$phpmailer->Port = $default_ports[ $auth ] ?? 25;
 	}
 
 	/**
@@ -571,15 +555,14 @@ class Mailer extends Base
 	 *
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
 	 */
-	private function configure_insecure_connection(PHPMailer\PHPMailer $phpmailer)
-	{
+	private function configure_insecure_connection( PHPMailer\PHPMailer $phpmailer ) {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->SMTPAutoTLS = false;
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->SMTPOptions = array(
 			'ssl' => array(
-				'verify_peer' => false,
-				'verify_peer_name' => false,
+				'verify_peer'       => false,
+				'verify_peer_name'  => false,
 				'allow_self_signed' => true,
 			),
 		);
@@ -590,12 +573,11 @@ class Mailer extends Base
 	 *
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
 	 */
-	private function configure_smtp_debug(PHPMailer\PHPMailer $phpmailer)
-	{
+	private function configure_smtp_debug( PHPMailer\PHPMailer $phpmailer ) {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$phpmailer->Debugoutput = function ($str, $level) {
+		$phpmailer->Debugoutput = function ( $str, $level ) {
 			$this->cf7_smtp_log .= "$level: $str\n";
 		};
 	}
@@ -607,27 +589,26 @@ class Mailer extends Base
 	 * @param string              $from_mail From email address.
 	 * @param string              $from_name From name.
 	 */
-	private function configure_from_address(PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name)
-	{
+	private function configure_from_address( PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name ) {
 		try {
-			$phpmailer->setFrom($from_mail, $from_name, false);
+			$phpmailer->setFrom( $from_mail, $from_name, false );
 			$phpmailer->Sender = $from_mail;
 			return;
-		} catch (\Exception $e) {
-			cf7_smtp_log("Failed to set From and Sender: " . $e->getMessage());
+		} catch ( \Exception $e ) {
+			cf7_smtp_log( 'Failed to set From and Sender: ' . $e->getMessage() );
 		}
 
 		// Use WordPress default if from_mail is invalid
-		$default_from = get_option('admin_email');
-		cf7_smtp_log("From mail empty/invalid. Fallback to admin_email: $default_from");
+		$default_from = get_option( 'admin_email' );
+		cf7_smtp_log( "From mail empty/invalid. Fallback to admin_email: $default_from" );
 
 		try {
-			if (is_email($default_from)) {
-				$phpmailer->setFrom($default_from, get_bloginfo('name'), false);
+			if ( is_email( $default_from ) ) {
+				$phpmailer->setFrom( $default_from, get_bloginfo( 'name' ), false );
 				$phpmailer->Sender = $default_from;
 			}
-		} catch (\Exception $e) {
-			cf7_smtp_log("Failed to set From and Sender: " . $e->getMessage());
+		} catch ( \Exception $e ) {
+			cf7_smtp_log( 'Failed to set From and Sender: ' . $e->getMessage() );
 		}
 	}
 
@@ -638,19 +619,18 @@ class Mailer extends Base
 	 * @param string              $from_mail From email address.
 	 * @param string              $from_name From name.
 	 */
-	private function configure_reply_to(PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name)
-	{
+	private function configure_reply_to( PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name ) {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$reply_to_mail = !empty($from_mail) && is_email($from_mail) ? $from_mail : $phpmailer->From;
+		$reply_to_mail = ! empty( $from_mail ) && is_email( $from_mail ) ? $from_mail : $phpmailer->From;
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$reply_to_name = !empty($from_name) ? $from_name : $phpmailer->FromName;
+		$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
 
 		try {
-			if (is_email($reply_to_mail)) {
-				$phpmailer->addReplyTo($reply_to_mail, $reply_to_name);
+			if ( is_email( $reply_to_mail ) ) {
+				$phpmailer->addReplyTo( $reply_to_mail, $reply_to_name );
 			}
-		} catch (\Exception $e) {
-			cf7_smtp_log("Failed to set Reply-To: " . $e->getMessage());
+		} catch ( \Exception $e ) {
+			cf7_smtp_log( 'Failed to set Reply-To: ' . $e->getMessage() );
 		}
 	}
 
@@ -662,50 +642,49 @@ class Mailer extends Base
 	 *
 	 * @throws Exception May fail and throw an exception.
 	 */
-	public function smtp_overrides(PHPMailer\PHPMailer $phpmailer)
-	{
+	public function smtp_overrides( PHPMailer\PHPMailer $phpmailer ) {
 		try {
 			// Check if SMTP is enabled
-			if (empty($this->options['enabled'])) {
+			if ( empty( $this->options['enabled'] ) ) {
 				return;
 			}
 
 			$phpmailer->isSMTP();
 
 			// Get settings
-			$auth = $this->get_setting_by_key('auth');
-			$username = sanitize_text_field($this->get_setting_by_key('user_name'));
-			$password = $this->get_smtp_password();
-			$host = sanitize_text_field($this->get_setting_by_key('host'));
-			$port = intval($this->get_setting_by_key('port'));
-			$insecure = intval($this->get_setting_by_key('insecure'));
-			$from_mail = sanitize_email($this->get_setting_by_key('from_mail'));
-			$from_name = sanitize_text_field($this->get_setting_by_key('from_name'));
-			$reply_to = intval($this->get_setting_by_key('replyTo'));
+			$auth      = $this->get_setting_by_key( 'auth' );
+			$username  = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
+			$password  = $this->get_smtp_password();
+			$host      = sanitize_text_field( $this->get_setting_by_key( 'host' ) );
+			$port      = intval( $this->get_setting_by_key( 'port' ) );
+			$insecure  = intval( $this->get_setting_by_key( 'insecure' ) );
+			$from_mail = sanitize_email( $this->get_setting_by_key( 'from_mail' ) );
+			$from_name = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
+			$reply_to  = intval( $this->get_setting_by_key( 'replyTo' ) );
 
 			// Validate required settings
-			if (empty($host)) {
-				throw new Exception('SMTP Host is required but not configured.');
+			if ( empty( $host ) ) {
+				throw new Exception( 'SMTP Host is required but not configured.' );
 			}
 
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Host = $host;
 
 			// Configure port
-			$this->configure_smtp_port($phpmailer, $port, $auth);
+			$this->configure_smtp_port( $phpmailer, $port, $auth );
 
 			// Configure encryption
-			if (!empty($auth) && in_array($auth, array('tls', 'ssl'), true)) {
+			if ( ! empty( $auth ) && in_array( $auth, array( 'tls', 'ssl' ), true ) ) {
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$phpmailer->SMTPSecure = $auth;
 			}
 
 			// Configure authentication
-			$this->configure_smtp_auth($phpmailer, $username, $password);
+			$this->configure_smtp_auth( $phpmailer, $username, $password );
 
 			// Handle insecure connections
-			if (!empty($insecure)) {
-				$this->configure_insecure_connection($phpmailer);
+			if ( ! empty( $insecure ) ) {
+				$this->configure_insecure_connection( $phpmailer );
 			}
 
 			// Set timeout
@@ -713,24 +692,24 @@ class Mailer extends Base
 			$phpmailer->Timeout = 30;
 
 			// Enable debug output if testing
-			if (get_transient('cf7_smtp_testing')) {
-				$this->configure_smtp_debug($phpmailer);
+			if ( get_transient( 'cf7_smtp_testing' ) ) {
+				$this->configure_smtp_debug( $phpmailer );
 			}
 
 			// Configure From address
-			$this->configure_from_address($phpmailer, $from_mail, $from_name);
+			$this->configure_from_address( $phpmailer, $from_mail, $from_name );
 
 			// Configure Reply-To
-			if (!empty($reply_to)) {
-				$this->configure_reply_to($phpmailer, $from_mail, $from_name);
+			if ( ! empty( $reply_to ) ) {
+				$this->configure_reply_to( $phpmailer, $from_mail, $from_name );
 			}
 
 			// Set XMailer header
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$phpmailer->XMailer = 'WordPress/' . get_bloginfo('version');
+			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' );
 
-		} catch (Exception $e) {
-			cf7_smtp_log("Failed to configure SMTP: " . $e->getMessage());
+		} catch ( Exception $e ) {
+			cf7_smtp_log( 'Failed to configure SMTP: ' . $e->getMessage() );
 		}
 	}
 }
