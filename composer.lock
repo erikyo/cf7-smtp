@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a37b6cd1f9e63ec7fd8f01b094237cc7",
+    "content-hash": "f02a19d6479f52390ab59bf800e2d1c7",
     "packages": [
         {
             "name": "inpsyde/wp-context",
@@ -4734,10 +4734,9 @@
     "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=7.1"
-    },
+    "platform": {},
     "platform-dev": {
+        "php": ">=7.4",
         "ext-dom": "*",
         "ext-libxml": "*"
     },
