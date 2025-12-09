@@ -67,10 +67,13 @@ class Stats extends Base {
 	 */
 	public function reset_report() {
 		// Reset the report success and failed to 0
-		$this->report = array_merge($this->report, array(
-			'success' => 0,
-			'failed' => 0
-		));
+		$this->report = array_merge(
+			$this->report,
+			array(
+				'success' => 0,
+				'failed'  => 0,
+			)
+		);
 
 		// Clean up the storage if needed
 		$options     = cf7_smtp_get_settings();
@@ -152,13 +155,13 @@ class Stats extends Base {
 				esc_html__( 'Mail sent since last update', 'cf7-smtp' )
 			);
 
-			foreach ($report['storage'] as $date => $row) {
-				if ($last_report > $date) {
-					$mail_list['old']++;
+			foreach ( $report['storage'] as $date => $row ) {
+				if ( $last_report > $date ) {
+					++$mail_list['old'];
 					continue;
 				} else {
-					$mail_list['recent'][$row['mail_sent']]++;
-					$mail_list['count']++;
+					++$mail_list['recent'][ $row['mail_sent'] ];
+					++$mail_list['count'];
 				}
 
 				$html .= sprintf(

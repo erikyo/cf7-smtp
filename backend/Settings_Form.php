@@ -632,7 +632,7 @@ class Settings_Form {
 	function cf7_smtp_print_log_retain_days_callback() {
 		printf(
 			'<input type="number" id="cf7_smtp_log_retain_days" name="cf7-smtp-options[log_retain_days]" value="%s" min="0" max="365" step="1" />',
-			esc_attr( empty( $this->options['log_retain_days'] ) ? '' : intval( $this->options['log_retain_days'] ) )
+			esc_attr( ! empty( $this->options['log_retain_days'] ) ? intval( $this->options['log_retain_days'] ) : 30 )
 		);
 	}
 
