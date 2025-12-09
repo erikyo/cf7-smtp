@@ -48,7 +48,6 @@ class Widget extends Base {
 	 */
 	public function display_charts() {
 		$stats = new Stats();
-
 		echo '<div class="smtp-style-chart">';
 		if ( $stats->has_report() ) {
 			echo '<h4>' . esc_html__( 'Mail vs Time', 'cf7-smtp' ) . '</h4>';

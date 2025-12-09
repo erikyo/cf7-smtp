@@ -13,8 +13,6 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-use cf7_smtp\Core\Stats;
-
 
 ?>
 
