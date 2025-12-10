@@ -41,12 +41,14 @@ export function smtpAdmin() {
 			card.style.transition = 'none';
 		} );
 	}
+
 	function enableTransition() {
 		cards.forEach( ( card ) => {
 			card.style.transition = 'max-width 1s ease';
 			card.style.maxWidth = '1000px';
 		} );
 	}
+
 	if (
 		page === 'wpcf7-integration' &&
 		service === 'cf7-smtp' &&
@@ -178,6 +180,29 @@ export function smtpAdmin() {
 				} );
 		} );
 	}
+
+	const flushLogs = document.getElementById( 'cf7_smtp_flush_logs' );
+	flushLogs?.addEventListener( 'click', () => {
+		apiFetch( {
+			path: '/cf7-smtp/v1/flush-logs',
+			method: 'POST',
+			data: {
+				nonce: window.smtp_settings.nonce,
+			},
+		} )
+			.then( ( r ) => {
+				if ( r.status === 'success' ) {
+					alert( r.message );
+				}
+				return r;
+			} )
+			.catch( ( /*errMsg*/ ) => {
+				appendOutput(
+					responseBox,
+					`<code>${ __( 'OOOPS something went wrong!', 'cf7-smtp' ) }`
+				);
+			} );
+	} );
 
 	const reportNow = document.getElementById( 'cf7_smtp_report_now' );
 	reportNow?.addEventListener( 'click', () => {
