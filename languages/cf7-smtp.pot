@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2025-12-09T16:54:17.957Z\n"
+"POT-Creation-Date: 2025-12-10T02:00:14.458Z\n"
 "PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
 "Last-Translator: codekraft <erik@codekraft.it>\n"
 "Language-Team: codekraft <erik@codekraft.it>\n"
@@ -45,23 +45,23 @@ msgstr ""
 msgid "SMTP for Contact Form 7 requires PHP 7.1 or newer."
 msgstr ""
 
-#: rest/Api.php:127
+#: rest/Api.php:139
 msgid "no subject provided"
 msgstr ""
 
-#: rest/Api.php:128
+#: rest/Api.php:140
 msgid "Empty mail body"
 msgstr ""
 
-#: rest/Api.php:169
+#: rest/Api.php:181
 msgid "Mail Processed with success ?"
 msgstr ""
 
-#: rest/Api.php:171
+#: rest/Api.php:183
 msgid "Mail processed with errors"
 msgstr ""
 
-#: rest/Api.php:227
+#: rest/Api.php:238
 msgid "Still no Server response"
 msgstr ""
 
@@ -110,41 +110,41 @@ msgstr ""
 msgid " installed and enabled in order to work."
 msgstr ""
 
-#: core/Stats.php:162
+#: core/Stats.php:175
 msgid "Mail sent since last update"
 msgstr ""
 
-#: core/Stats.php:188
-#: core/Stats.php:205
+#: core/Stats.php:201
+#: core/Stats.php:218
 msgid "Email statistics"
 msgstr ""
 
-#: core/Stats.php:189
+#: core/Stats.php:202
 msgid "Sent with success"
 msgstr ""
 
-#: core/Stats.php:191
+#: core/Stats.php:204
 msgid "Failed"
 msgstr ""
 
-#: core/Stats.php:197
+#: core/Stats.php:210
 msgid "No recent e-mails to show!"
 msgstr ""
 
-#: core/Stats.php:209
+#: core/Stats.php:222
 msgid "No Mail in storage"
 msgstr ""
 
 # %s site name
-#: core/Mailer.php:435
+#: core/Mailer.php:423
 msgid "%s Mail report"
 msgstr ""
 
-#: core/Cron.php:46
+#: core/Cron.php:44
 msgid "Every 2 weeks"
 msgstr ""
 
-#: core/Cron.php:52
+#: core/Cron.php:50
 msgid "Every month"
 msgstr ""
 
@@ -152,15 +152,15 @@ msgstr ""
 msgid "Stats for CF7 SMTP"
 msgstr ""
 
-#: backend/Widget.php:54
+#: backend/Widget.php:53
 msgid "Mail vs Time"
 msgstr ""
 
-#: backend/Widget.php:57
+#: backend/Widget.php:56
 msgid "Mail sent vs Mail failed"
 msgstr ""
 
-#: backend/Widget.php:64
+#: backend/Widget.php:63
 msgid "No email sent (yet)"
 msgstr ""
 
@@ -309,16 +309,17 @@ msgstr ""
 msgid "? Success!"
 msgstr ""
 
-#: src/scripts/admin.js:124
+#: src/scripts/admin.js:126
 msgid "Mail Server initialization completed!"
 msgstr ""
 
-#: src/scripts/admin.js:150
+#: src/scripts/admin.js:152
 msgid "Let's start a new server connection?"
 msgstr ""
 
-#: src/scripts/admin.js:173
-#: src/scripts/admin.js:207
+#: src/scripts/admin.js:175
+#: src/scripts/admin.js:202
+#: src/scripts/admin.js:225
 msgid "OOOPS something went wrong!"
 msgstr ""
 
@@ -344,18 +345,18 @@ msgid ""
 "will be used"
 msgstr ""
 
-#: backend/views/admin.php:31
+#: backend/views/admin.php:29
 msgid "Options"
 msgstr ""
 
-#: backend/views/admin.php:59
+#: backend/views/admin.php:57
 msgid "Next report:"
 msgstr ""
 
-#: backend/views/admin.php:61
+#: backend/views/admin.php:59
 msgid "Server time:"
 msgstr ""
 
-#: backend/views/admin.php:72
+#: backend/views/admin.php:70
 msgid "Stats"
 msgstr ""

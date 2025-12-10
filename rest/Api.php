@@ -348,7 +348,7 @@ class Api extends Base {
 
 	public function smtp_flush_logs( $request ) {
 		// get the number of days to keep logs
-		$days_to_keep_logs = $this->options['days_to_keep_logs'];
+		$days_to_keep_logs = ! empty( $this->options['days_to_keep_logs'] ) ? (int) $this->options['days_to_keep_logs'] : 30;
 
 		$stats = new Stats();
 

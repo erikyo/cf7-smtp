@@ -97,16 +97,14 @@ class Stats extends Base {
 
 		// check if the timestamp is valid
 		$timestamp = time() - ( $days_to_keep_logs * 24 * 60 * 60 );
-		if ( $timestamp < strtotime( 'now' ) ) {
-			return false;
-		}
 
 		// remove all the entries from the report that are older than the specified time
 		$this->report['storage'] = array_filter(
 			$this->report['storage'],
-			function ( $value ) use ( $days_to_keep_logs ) {
-				return $value['time'] > $days_to_keep_logs;
-			}
+			function ( $key ) use ( $timestamp ) {
+				return $key > $timestamp;
+			},
+			ARRAY_FILTER_USE_KEY
 		);
 
 		return self::store();
