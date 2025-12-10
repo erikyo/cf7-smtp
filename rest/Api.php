@@ -106,6 +106,22 @@ class Api extends Base {
 				),
 			)
 		);
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/flush-logs/',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'smtp_flush_logs' ),
+				'args'                => array(
+					'nonce' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -328,5 +344,20 @@ class Api extends Base {
 		}
 
 		return $response;
+	}
+
+	public function smtp_flush_logs( $request ) {
+		// get the number of days to keep logs
+		$days_to_keep_logs = $this->options['days_to_keep_logs'];
+
+		$stats = new Stats();
+
+		$stats->cleanup_storage( $days_to_keep_logs );
+		return \rest_ensure_response(
+			array(
+				'status'  => 'success',
+				'message' => 'Logs flushed',
+			)
+		);
 	}
 }
