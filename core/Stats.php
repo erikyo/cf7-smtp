@@ -52,7 +52,7 @@ class Stats extends Base {
 		}
 	}
 
-	public function has_report() {
+	public function has_report(): bool {
 		return ! empty( $this->report );
 	}
 
@@ -65,7 +65,7 @@ class Stats extends Base {
 	 *
 	 * @return void
 	 */
-	public function reset_report() {
+	public function reset_report($retain_days = 30) {
 		// Reset the report success and failed to 0
 		$this->report = array_merge(
 			$this->report,
@@ -76,27 +76,49 @@ class Stats extends Base {
 		);
 
 		// Clean up the storage if needed
-		$options     = cf7_smtp_get_settings();
-		$retain_days = intval( $options['log_retain_days'] );
-		if ( $retain_days ) {
-			$this->cleanup_storage( time() - $retain_days * 24 * 60 * 60 );
-		}
+		self::cleanup_storage( $retain_days );
 
 		// update the report
-		update_option( 'cf7-smtp-report', $this->report );
+		self::store();
 	}
 
-	public function cleanup_storage( $time ) {
+	/**
+	 * It removes all the entries from the report that are older than the specified time
+	 *
+	 * @param int $days_to_keep_logs The time to remove entries older than.
+	 *
+	 * @return bool True if the cleanup was successful, false otherwise.
+	 */
+	public function cleanup_storage( int $days_to_keep_logs ): bool {
+		// check if the time is a valid day timestamp
+		if ( ! is_numeric( $days_to_keep_logs ) ) {
+			return false;
+		}
+
+		// check if the timestamp is valid
+		$timestamp = time() - ( $days_to_keep_logs * 24 * 60 * 60 );
+		if ( $timestamp < strtotime( 'now' ) ) {
+			return false;
+		}
+
+		// remove all the entries from the report that are older than the specified time
 		$this->report['storage'] = array_filter(
 			$this->report['storage'],
-			function ( $value ) use ( $time ) {
-				return $value['time'] > $time;
+			function ( $value ) use ( $days_to_keep_logs ) {
+				return $value['time'] > $days_to_keep_logs;
 			}
 		);
+
+		return self::store();
 	}
 
-	public function store() {
-		update_option( 'cf7-smtp-report', $this->report );
+	/**
+	 * It stores the report in the database
+	 *
+	 * @return bool True if the report was stored successfully, false otherwise.
+	 */
+	public function store(): bool {
+		return update_option( 'cf7-smtp-report', $this->report );
 	}
 
 	public function get_success() {
@@ -243,8 +265,9 @@ class Stats extends Base {
 		$response = $smtp_mailer->send_report( $report_formatted );
 
 		/* if the report is sent, reset the report */
+		$retain_days = intval( $options['log_retain_days'] );
 		if ( $response ) {
-			$this->reset_report();
+			$this->reset_report($retain_days);
 		}
 
 		return $response;
