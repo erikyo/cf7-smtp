@@ -53,7 +53,7 @@ class Stats extends Base {
 	}
 
 	public function has_report(): bool {
-		return ! empty( $this->report );
+		return isset($this->report) && ! empty( $this->report['storage'] );
 	}
 
 	public function get_report() {
