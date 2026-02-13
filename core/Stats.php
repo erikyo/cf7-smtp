@@ -258,14 +258,14 @@ class Stats extends Base {
 	 * @param bool                 $last_report Optional. Unix timestamp of the last report. Default current time.
 	 * @return string Formatted HTML string containing the styled email report.
 	 */
-	public function format_report( array $report, bool $last_report = false ) {
+	public function format_report( array $report, bool $last_report = false ): string {
 
 		if ( ! $last_report ) {
 			$last_report = time();
 		}
 
 		$mail_list = array(
-			'result' => array(
+			'recent' => array(
 				'success' => 0,
 				'failed'  => 0,
 			),
@@ -273,65 +273,187 @@ class Stats extends Base {
 			'count'  => 0,
 		);
 
-		$html = '';
+		$content_body = '';
 
+		// Build the mail list section
 		if ( ! empty( $report['storage'] ) ) {
 
-			$html .= sprintf(
-				'<h3>%s</h3>',
+			$content_body .= sprintf(
+				'<h2 style="color: #333; font-size: 18px; font-weight: 600; margin: 0 0 16px 0; padding: 0;">%s</h2>',
 				esc_html__( 'Mail sent since last update', 'cf7-smtp' )
 			);
 
+			$mail_items = '';
 			foreach ( $report['storage'] as $date => $row ) {
 				if ( $last_report > $date ) {
 					++$mail_list['old'];
 					continue;
 				} else {
-					++$mail_list['recent'][ $row['mail_sent'] ];
+					if ( ! empty( $row['mail_sent'] ) ) {
+						++$mail_list['recent']['success'];
+					} else {
+						++$mail_list['recent']['failed'];
+					}
 					++$mail_list['count'];
 				}
 
-				$html .= sprintf(
-					'<p>%s - %s %s (id: %s)</p>',
-					wp_date( 'r', $date ),
-					empty( $row['mail_sent'] ) ? '⛔' : '✅',
-					empty( $row['title'] ) ? '' : intval( $row['title'] ),
-					empty( $row['form_id'] ) ? '' : intval( $row['form_id'] )
-				);
-			}
-		}
+				$status_icon  = empty( $row['mail_sent'] ) ? '⛔' : '✅';
+				$status_color = empty( $row['mail_sent'] ) ? '#dc3545' : '#28a745';
 
-		/* Checking if the report has valid or failed emails. Note: in order to move the report after the list of mail the previous html will be concatenated at the end of this string */
-		if ( ! empty( $report['valid'] ) || ! empty( $report['failed'] ) ) {
-			$html = sprintf(
-				'<h3>%s</h3><p><b>%s</b>%s - <b>%s</b> %s</p>',
-				esc_html__( 'Email statistics', 'cf7-smtp' ),
-				esc_html__( 'Sent with success', 'cf7-smtp' ),
+				$mail_items .= sprintf(
+					'<div style="padding: 10px; margin-bottom: 8px; background: #f8f9fa; border-left: 3px solid %s; border-radius: 4px;">
+						<span style="color: #666; font-size: 13px;">%s</span>
+						<span style="font-size: 16px; margin: 0 8px;">%s</span>
+						<span style="color: #333; font-weight: 500;">%s</span>
+						<span style="color: #999; font-size: 13px;">(ID: %s)</span>
+					</div>',
+					$status_color,
+					wp_date( 'M j, Y - H:i', $date ),
+					$status_icon,
+					empty( $row['title'] ) ? esc_html__( 'No title', 'cf7-smtp' ) : esc_html( $row['title'] ),
+					empty( $row['form_id'] ) ? 'N/A' : intval( $row['form_id'] )
+				);
+			}//end foreach
+
+			$content_body .= $mail_items;
+		}//end if
+
+		// Build the statistics section
+		$statistics_html = '';
+		if ( ! empty( $mail_list['recent']['success'] ) || ! empty( $mail_list['recent']['failed'] ) ) {
+			$statistics_html = sprintf(
+				'<div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 24px;">
+					<h2 style="color: #333; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">%s</h2>
+					<div style="display: inline-block; margin-right: 24px;">
+						<span style="font-size: 24px; color: #28a745; font-weight: 700;">%d</span>
+						<span style="color: #666; font-size: 14px; margin-left: 8px;">%s</span>
+					</div>
+					<div style="display: inline-block;">
+						<span style="font-size: 24px; color: #dc3545; font-weight: 700;">%d</span>
+						<span style="color: #666; font-size: 14px; margin-left: 8px;">%s</span>
+					</div>
+				</div>',
+				esc_html__( 'Email Statistics', 'cf7-smtp' ),
 				intval( $mail_list['recent']['success'] ),
-				esc_html__( 'Failed', 'cf7-smtp' ),
-				intval( $mail_list['recent']['failed'] )
-			) . $html;
+				esc_html__( 'Sent Successfully', 'cf7-smtp' ),
+				intval( $mail_list['recent']['failed'] ),
+				esc_html__( 'Failed', 'cf7-smtp' )
+			);
 		} else {
-			$html = sprintf(
-				'<h3>%s</h3>',
+			$statistics_html = sprintf(
+				'<div style="background: #fff3cd; padding: 20px; border-radius: 6px; margin-bottom: 24px; border-left: 4px solid #ffc107;">
+					<h2 style="color: #856404; font-size: 18px; font-weight: 600; margin: 0;">%s</h2>
+				</div>',
 				esc_html__( 'No recent e-mails to show!', 'cf7-smtp' )
 			);
-		}
+		}//end if
 
-		$html .= ! empty( $report['storage'] )
-			? sprintf(
-				/* translators: %1$s the section title - the inside %2$s (number) is the total count of emails sent and %3$s (number) is the number of mail since the last report */
-				"\r\n<h3>%s: </h3><p>%s overall sent mails, %s since last report</p>",
-				esc_html__( 'Email statistics', 'cf7-smtp' ),
+		// Build the overall statistics
+		$overall_stats = '';
+		if ( ! empty( $report['storage'] ) ) {
+			$overall_stats = sprintf(
+				'<div style="margin-top: 24px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+					<h2 style="color: #333; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">%s</h2>
+					<p style="color: #666; font-size: 14px; margin: 0; line-height: 1.6;">
+						<strong style="color: #333;">%d</strong> %s<br>
+						<strong style="color: #333;">%d</strong> %s
+					</p>
+				</div>',
+				esc_html__( 'Overall Statistics', 'cf7-smtp' ),
 				count( $report['storage'] ),
-				$mail_list['count']
-			)
-			: esc_html__( 'No Mail in storage', 'cf7-smtp' );
+				esc_html__( 'total emails sent', 'cf7-smtp' ),
+				$mail_list['count'],
+				esc_html__( 'emails since last report', 'cf7-smtp' )
+			);
+		} else {
+			$overall_stats = sprintf(
+				'<div style="margin-top: 24px; padding: 16px; background: #e9ecef; border-radius: 6px;">
+					<p style="color: #666; font-size: 14px; margin: 0;">%s</p>
+				</div>',
+				esc_html__( 'No Mail in storage', 'cf7-smtp' )
+			);
+		}//end if
 
-		/* Add filter for 3rd party access, format your html as h3 or p tags */
+		// Combine all content
+		$main_content = $statistics_html . $content_body . $overall_stats;
+
+		// Allow 3rd party plugins to add content via filter
+		// Only basic HTML tags are allowed: h2, h3, p, div, span, strong, b, em, i, br
 		if ( has_filter( 'cf7_smtp_report_mailbody' ) ) {
-			$html = apply_filters( 'cf7_smtp_report_mailbody', $html, $last_report );
-		}
+			$filtered_content = apply_filters( 'cf7_smtp_report_mailbody', '', $last_report );
+
+			// Sanitize the filtered content to allow only safe HTML tags
+			$allowed_tags = array(
+				'h2'     => array( 'style' => array() ),
+				'h3'     => array( 'style' => array() ),
+				'p'      => array( 'style' => array() ),
+				'div'    => array( 'style' => array() ),
+				'span'   => array( 'style' => array() ),
+				'strong' => array(),
+				'b'      => array(),
+				'em'     => array(),
+				'i'      => array(),
+				'br'     => array(),
+			);
+
+			$filtered_content = wp_kses( $filtered_content, $allowed_tags );
+
+			if ( ! empty( $filtered_content ) ) {
+				$main_content .= sprintf(
+					'<div style="margin-top: 24px; padding-top: 20px; border-top: 2px solid #e9ecef;">%s</div>',
+					$filtered_content
+				);
+			}
+		}//end if
+
+		// Build the complete HTML email template
+		$html = sprintf(
+			'<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>%s</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Helvetica Neue\', Arial, sans-serif; background-color: #f5f5f5; line-height: 1.6;">
+	<table width="100%%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+		<tr>
+			<td align="center">
+				<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%%; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+					<tr>
+						<td style="padding: 40px 40px 32px 40px; border-bottom: 3px solid #007bff;">
+							<h1 style="margin: 0; padding: 0; color: #333; font-size: 24px; font-weight: 700;">%s</h1>
+							<p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">%s</p>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 32px 40px;">
+							%s
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 24px 40px; background-color: #f8f9fa; border-top: 1px solid #e9ecef; border-radius: 0 0 8px 8px;">
+							<p style="margin: 0; color: #999; font-size: 12px; text-align: center;">
+								%s
+							</p>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>',
+			esc_html__( 'CF7 SMTP Email Report', 'cf7-smtp' ),
+			esc_html__( 'CF7 SMTP Email Report', 'cf7-smtp' ),
+			esc_html( wp_date( 'F j, Y', time() ) ),
+			$main_content,
+			sprintf(
+			/* translators: %s: plugin name */
+				esc_html__( 'This report was generated by %s', 'cf7-smtp' ),
+				'CF7 SMTP'
+			)
+		);
 
 		return $html;
 	}
@@ -361,7 +483,11 @@ class Stats extends Base {
 		$schedules = wp_get_schedules();
 
 		/* the subject */
-		$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
+		if ( ! empty( $this->report['last_report_time'] ) ) {
+			$last_report = $this->report['last_report_time'];
+		} else {
+			$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
+		}
 
 		/* build the report */
 		$report_formatted = $this->format_report( $this->get_report(), $last_report );
