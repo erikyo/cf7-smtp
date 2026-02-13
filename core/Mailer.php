@@ -300,6 +300,7 @@ class Mailer extends Base {
 			return $components;
 		}
 
+		// Apply the nl2br to convert newlines to HTML line breaks
 		$email_data = array(
 			'body'     => nl2br( $components['body'] ),
 			'subject'  => $components['subject'],
@@ -310,6 +311,17 @@ class Mailer extends Base {
 		$template   = $this->cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() );
 
 		$components['body'] = $this->cf7_smtp_form_template( $email_data, $template );
+
+		// Forces header Content-Type to be HTML if using custom template
+		if ( strpos( $components['headers'], 'Content-Type:' ) === false ) {
+			$components['headers'] .= "\nContent-Type: text/html; charset=\"" . get_option( 'blog_charset' ) . "\"\n";
+		} else {
+			$components['headers'] = preg_replace(
+				'/Content-Type: text\/plain/i',
+				'Content-Type: text/html',
+				$components['headers']
+			);
+		}
 
 		return $components;
 	}
