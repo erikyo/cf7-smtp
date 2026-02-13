@@ -602,17 +602,27 @@ class Mailer extends Base {
 	 * @param string              $from_name From name.
 	 */
 	private function configure_from_address( PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name ) {
-		try {
-			$phpmailer->setFrom( $from_mail, $from_name, false );
-			$phpmailer->Sender = $from_mail;
+		// FIX: If the From Mail setting is empty, do NOT override.
+		// This allows Contact Form 7 specific settings to persist.
+		if ( empty( $from_mail ) ) {
 			return;
+		}
+
+		try {
+			// Validate before setting to avoid exceptions
+			if ( is_email( $from_mail ) ) {
+				$phpmailer->setFrom( $from_mail, $from_name, false );
+				$phpmailer->Sender = $from_mail;
+				return;
+			}
 		} catch ( \Exception $e ) {
 			cf7_smtp_log( 'Failed to set From and Sender: ' . $e->getMessage() );
 		}
 
-		// Use WordPress default if from_mail is invalid
+		// Only fallback if the user PROVIDED a value but it was invalid/failed.
+		// If we are here, it means $from_mail was not empty but failed validation/setting.
 		$default_from = get_option( 'admin_email' );
-		cf7_smtp_log( "From mail empty/invalid. Fallback to admin_email: $default_from" );
+		cf7_smtp_log( "From mail invalid. Fallback to admin_email: $default_from" );
 
 		try {
 			if ( is_email( $default_from ) ) {
@@ -661,6 +671,16 @@ class Mailer extends Base {
 				return;
 			}
 
+			$phpmailer->isSMTP();
+
+			// Check if we should only send CF7 emails via SMTP
+			$smtp_mode = $this->get_setting_by_key( 'smtp_mode' );
+			if ( 'cf7_only' === $smtp_mode && ! self::$is_cf7_mail ) {
+				// If not a CF7 email and mode is CF7 only, return (skip SMTP config)
+				return;
+			}
+
+			// Enable SMTP
 			$phpmailer->isSMTP();
 
 			// Get settings
