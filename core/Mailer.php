@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP MAILER
  *
@@ -76,6 +75,7 @@ class Mailer extends Base {
 	public function initialize() {
 		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
 			\add_action( 'phpmailer_init', array( $this, 'smtp_overrides' ), 11 );
+			\add_action( 'wpcf7_before_send_mail', array( $this, 'set_cf7_mail_flag' ) );
 		}
 
 		if ( ! empty( $this->options['custom_template'] ) ) {
@@ -558,6 +558,55 @@ class Mailer extends Base {
 	}
 
 	/**
+	 * Configure PHPMailer for OAuth2/XOAUTH2 authentication
+	 *
+	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
+	 * @return bool Whether OAuth2 was configured successfully.
+	 */
+	private function configure_oauth2_auth( PHPMailer\PHPMailer $phpmailer ): bool {
+		$oauth2_handler = new OAuth2_Handler();
+
+		if ( ! $oauth2_handler->is_connected() ) {
+			cf7_smtp_log( 'OAuth2 not connected. Falling back to basic authentication.' );
+			return false;
+		}
+
+		// Get a valid access token (will refresh if necessary)
+		$access_token = $oauth2_handler->get_access_token();
+		if ( is_wp_error( $access_token ) || empty( $access_token ) ) {
+			cf7_smtp_log( 'Failed to get OAuth2 access token: ' . ( is_wp_error( $access_token ) ? $access_token->get_error_message() : 'Token is empty' ) );
+			return false;
+		}
+
+		$status     = $oauth2_handler->get_status();
+		$user_email = $status['user_email'] ?? '';
+
+		if ( empty( $user_email ) ) {
+			cf7_smtp_log( 'OAuth2 user email not found.' );
+			return false;
+		}
+
+		// Configure PHPMailer for XOAUTH2
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$phpmailer->SMTPAuth = true;
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$phpmailer->AuthType = 'XOAUTH2';
+
+		// Set the OAuth provider callback
+		$phpmailer->setOAuth(
+			new CF7_SMTP_OAuthProvider(
+				$oauth2_handler->get_provider_instance(),
+				cf7_smtp_decrypt( $this->options['oauth2_client_id'] ?? '' ),
+				cf7_smtp_decrypt( $this->options['oauth2_client_secret'] ?? '' ),
+				cf7_smtp_decrypt( $status['refresh_token'] ?? '' )
+			)
+		);
+
+		cf7_smtp_log( 'OAuth2/XOAUTH2 authentication configured for: ' . $user_email );
+		return true;
+	}
+
+	/**
 	 * Configure PHPMailer port
 	 *
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
@@ -613,6 +662,13 @@ class Mailer extends Base {
 		};
 	}
 
+	/**
+	 * Configure PHPMailer From address
+	 *
+	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
+	 * @param string              $from_mail From email address.
+	 * @param string              $from_name From name.
+	 */
 	/**
 	 * Configure PHPMailer From address
 	 *
@@ -731,8 +787,20 @@ class Mailer extends Base {
 				$phpmailer->SMTPSecure = $auth;
 			}
 
-			// Configure authentication
-			$this->configure_smtp_auth( $phpmailer, $username, $password );
+			// Check authentication type (basic or oauth2)
+			$auth_type = $this->get_setting_by_key( 'auth_type' );
+
+			if ( 'oauth2' === $auth_type ) {
+				// Try OAuth2 authentication
+				if ( ! $this->configure_oauth2_auth( $phpmailer ) ) {
+					// Fall back to basic authentication if OAuth2 fails
+					cf7_smtp_log( 'OAuth2 configuration failed. Falling back to basic authentication.' );
+					$this->configure_smtp_auth( $phpmailer, $username, $password );
+				}
+			} else {
+				// Use basic authentication
+				$this->configure_smtp_auth( $phpmailer, $username, $password );
+			}
 
 			// Handle insecure connections
 			if ( ! empty( $insecure ) ) {
@@ -762,6 +830,6 @@ class Mailer extends Base {
 
 		} catch ( Exception $e ) {
 			cf7_smtp_log( 'Failed to configure SMTP: ' . $e->getMessage() );
-		}
+		}//end try
 	}
 }
