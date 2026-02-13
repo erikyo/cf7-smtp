@@ -14,8 +14,6 @@ namespace cf7_smtp\Integration;
 /**
  * Integration class from Contact Form 7
  */
-
-
 if ( ! class_exists( 'WPCF7_Service' ) ) {
 	return;
 }
@@ -23,9 +21,8 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
 use WPCF7_Service as GlobalWPCF7_Service;
 
 /**
- * This Extention represents the skeleton of the integration API
+ * This Extension allows to enable and disable the smtp service
  */
-
 class Service extends GlobalWPCF7_Service {
 
 	/**
@@ -65,9 +62,9 @@ class Service extends GlobalWPCF7_Service {
 		$this->options = get_option( 'cf7-smtp-options' );
 
 		if ( isset( $_POST['cf7_smtp_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
-			$this->options['enabled'] = $_POST['cf7_smtp_submit'] === 'Enable';
+			$this->options['enabled'] = 'Enable' === $_POST['cf7_smtp_submit'];
 			update_option( 'cf7-smtp-options', $this->options );
-			// add a notice that the settings have been saved
+			// Add a notice that the settings have been saved.
 			add_action(
 				'admin_notices',
 				function () {
@@ -172,7 +169,7 @@ class Service extends GlobalWPCF7_Service {
 	 */
 	public function load( $action = '' ) {
 		if ( ! empty( $_SERVER['REQUEST_METHOD'] ) ) {
-			if ( 'setup' == $action && 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+			if ( 'setup' === $action && 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 				check_admin_referer( 'cf7-smtp-setup' );
 
 				if ( ! empty( $_POST['reset'] ) ) {
