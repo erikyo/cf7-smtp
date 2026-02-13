@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP actiovation / deactivation class
  *
@@ -125,23 +124,36 @@ class ActDeact extends Base {
 		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), -2, 2, true ) ), PHP_URL_HOST );
 
 		return array(
-			'version'         => 1,
-			'enabled'         => true,
-			'custom_template' => false,
-			'report_every'    => false,
-			'report_to'       => wp_get_current_user()->user_email ?? '',
-			'preset'          => 'custom',
-			'host'            => $current_website,
-			'port'            => '25',
-			'auth'            => '',
-			'replyTo'         => false,
-			'insecure'        => false,
-			'user_name'       => '',
-			'user_pass'       => '',
-			'from_mail'       => '',
-			'from_name'       => '',
-			'log_retain_days' => 30,
-		);
+			'version'                          => 1,
+			'enabled'                          => true,
+			'custom_template'                  => false,
+			'report_every'                     => false,
+			'report_to'                        => wp_get_current_user()->user_email ?? '',
+			'preset'                           => 'custom',
+			'host'                             => $current_website,
+			'port'                             => '25',
+			'auth'                             => '',
+			'replyTo'                          => false,
+			'insecure'                         => false,
+			'user_name'                        => '',
+			'user_pass'                        => '',
+			'from_mail'                        => '',
+			'from_name'                        => '',
+			'log_retain_days'                  => 30,
+			// OAuth2 settings.
+			'auth_type'                        => 'basic',
+			'auth_method'                      => 'wp',
+			// basic or oauth2.
+							'oauth2_provider'  => '',
+			// gmail, office365.
+							'oauth2_client_id'     => '',
+		'oauth2_client_secret' => '',
+		'oauth2_access_token'  => '',
+		'oauth2_refresh_token' => '',
+		'oauth2_expires'       => '',
+		'oauth2_user_email'    => '',
+		'oauth2_connected_at'  => '',
+	);
 	}
 
 	/**

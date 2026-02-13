@@ -122,7 +122,16 @@ class Settings_Form {
 			'smtp_data'
 		);
 
-		/* Settings cf7_smtp enabled */
+		/* Settings cf7_smtp auth_method */
+		add_settings_field(
+			'auth_method',
+			__( 'Mail Service', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_auth_method_callback' ),
+			'smtp-settings',
+			'smtp_data'
+		);
+
+		/* Settings cf7_smtp preset */
 		add_settings_field(
 			'preset',
 			__( 'SMTP configuration preset', 'cf7-smtp' ),
@@ -134,10 +143,19 @@ class Settings_Form {
 		/* Settings cf7_smtp auth */
 		add_settings_field(
 			'auth',
-			__( 'Auth', 'cf7-smtp' ),
+			__( 'Encryption', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_auth_callback' ),
 			'smtp-settings',
 			'smtp_data'
+		);
+
+		/* Settings cf7_smtp smtp_mode */
+		add_settings_field(
+			'smtp_mode',
+			__( 'SMTP Mode', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_smtp_mode_callback' ),
+			'smtp-settings-advanced',
+			'smtp_advanced'
 		);
 
 		/* Settings cf7_smtp host */
@@ -176,12 +194,60 @@ class Settings_Form {
 			'smtp_data'
 		);
 
+		/* OAuth2 Section */
+		add_settings_section(
+			'smtp_oauth2',
+			__( 'OAuth2 Authentication', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_section_callback' ),
+			'smtp-settings'
+		);
+
+		/* OAuth2 Provider */
+		add_settings_field(
+			'oauth2_provider',
+			__( 'OAuth2 Provider', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_provider_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
+		/* OAuth2 Client ID */
+		add_settings_field(
+			'oauth2_client_id',
+			__( 'Client ID', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_client_id_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
+		/* OAuth2 Client Secret */
+		add_settings_field(
+			'oauth2_client_secret',
+			__( 'Client Secret', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_client_secret_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
+		/* OAuth2 Connect Button */
+		add_settings_field(
+			'oauth2_connect',
+			__( 'OAuth2 Connection', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_connect_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
 		/* smtp_advanced */
 		add_settings_section(
 			'smtp_advanced',
 			__( 'Advanced Options', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_advanced_callback' ),
-			'smtp-settings'
+			'smtp-settings-advanced'
 		);
 
 		/* allow insecure options */
@@ -189,7 +255,7 @@ class Settings_Form {
 			'insecure',
 			__( 'Allow insecure options', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_insecure_callback' ),
-			'smtp-settings',
+			'smtp-settings-advanced',
 			'smtp_advanced'
 		);
 
@@ -197,8 +263,8 @@ class Settings_Form {
 		add_settings_field(
 			'replyTo',
 			__( 'Add Reply To', 'cf7-smtp' ),
-			array( $this, 'cf7_smtp_print_replyTo_callback' ),
-			'smtp-settings',
+			array( $this, 'cf7_smtp_print_reply_to_callback' ),
+			'smtp-settings-advanced',
 			'smtp_advanced'
 		);
 
@@ -207,7 +273,7 @@ class Settings_Form {
 			'from_mail',
 			__( 'From mail', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_from_mail_callback' ),
-			'smtp-settings',
+			'smtp-settings-advanced',
 			'smtp_advanced'
 		);
 
@@ -216,7 +282,7 @@ class Settings_Form {
 			'from_name',
 			__( 'From name', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_from_name_callback' ),
-			'smtp-settings',
+			'smtp-settings-advanced',
 			'smtp_advanced'
 		);
 
@@ -331,6 +397,170 @@ class Settings_Form {
 		);
 	}
 
+	/**
+	 * Prints the OAuth2 section description.
+	 */
+	public function cf7_smtp_print_oauth2_section_callback() {
+		printf(
+			'<div id="cf7_smtp_oauth2_section_desc"><p>%s</p></div>',
+			esc_html__( 'Use OAuth2 for secure authentication without storing passwords. Connect with your email provider using OAuth2.', 'cf7-smtp' )
+		);
+	}
+
+
+
+	/**
+	 * Prints the OAuth2 provider select field.
+	 */
+	public function cf7_smtp_print_oauth2_provider_callback() {
+		$oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$providers      = $oauth2_handler->get_providers();
+		$current        = ! empty( $this->options['oauth2_provider'] ) ? $this->options['oauth2_provider'] : '';
+
+		$options_html = '<option value="">' . esc_html__( 'Select a provider', 'cf7-smtp' ) . '</option>';
+		foreach ( $providers as $key => $name ) {
+			$options_html .= sprintf(
+				'<option value="%s" %s>%s</option>',
+				esc_attr( $key ),
+				$current === $key ? 'selected' : '',
+				esc_html( $name )
+			);
+		}
+
+		printf(
+			'<select id="cf7_smtp_oauth2_provider" name="cf7-smtp-options[oauth2_provider]" class="cf7-smtp-oauth2-field">%s</select>',
+			$options_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped above.
+		);
+	}
+
+	/**
+	 * Prints the OAuth2 Client ID field.
+	 */
+	public function cf7_smtp_print_oauth2_client_id_callback() {
+		$client_id = $this->cf7_smtp_find_setting( 'oauth2_client_id' );
+		printf(
+			'<input type="text" id="cf7_smtp_oauth2_client_id" name="cf7-smtp-options[oauth2_client_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
+			<p class="description">%s</p>',
+			esc_attr( $client_id['value'] ?? '' ),
+			esc_html( empty( $client_id['defined'] ) ? '' : 'disabled' ),
+			esc_html__( 'Enter the Client ID from your OAuth2 provider (e.g., Google Cloud Console).', 'cf7-smtp' )
+		);
+	}
+
+	/**
+	 * Prints the OAuth2 Client Secret field.
+	 */
+	public function cf7_smtp_print_oauth2_client_secret_callback() {
+		$client_secret = $this->cf7_smtp_find_setting( 'oauth2_client_secret' );
+		$has_value     = ! empty( $client_secret['value'] );
+		printf(
+			'<input type="password" id="cf7_smtp_oauth2_client_secret" name="cf7-smtp-options[oauth2_client_secret]" class="regular-text cf7-smtp-oauth2-field" %s placeholder="%s" />
+			<p class="description">%s</p>',
+			esc_html( empty( $client_secret['defined'] ) ? '' : 'disabled' ),
+			$has_value ? esc_attr__( '••••••••', 'cf7-smtp' ) : '',
+			esc_html__( 'Enter the Client Secret from your OAuth2 provider. This will be encrypted before storing.', 'cf7-smtp' )
+		);
+	}
+
+	/**
+	 * Prints the OAuth2 connect/disconnect button and status.
+	 */
+	public function cf7_smtp_print_oauth2_connect_callback() {
+		$oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$is_connected   = $oauth2_handler->is_connected();
+		$status         = $oauth2_handler->get_status();
+
+		if ( $is_connected ) {
+			$connected_email = $status['user_email'] ?? __( 'Connected', 'cf7-smtp' );
+			printf(
+				'<div class="cf7-smtp-oauth2-status cf7-smtp-oauth2-status--connected">
+					<span class="dashicons dashicons-yes-alt"></span>
+					<span class="cf7-smtp-oauth2-status-text">%s: <strong>%s</strong></span>
+				</div>
+				<button type="button" id="cf7_smtp_oauth2_disconnect" class="button button-secondary cf7-smtp-oauth2-field">%s</button>',
+				esc_html__( 'Connected as', 'cf7-smtp' ),
+				esc_html( $connected_email ),
+				esc_html__( 'Disconnect', 'cf7-smtp' )
+			);
+		} else {
+			printf(
+				'<div class="cf7-smtp-oauth2-status cf7-smtp-oauth2-status--disconnected">
+					<span class="dashicons dashicons-warning"></span>
+					<span class="cf7-smtp-oauth2-status-text">%s</span>
+				</div>
+				<button type="button" id="cf7_smtp_oauth2_connect" class="button button-primary cf7-smtp-oauth2-field">%s</button>
+				<p class="description">%s</p>',
+				esc_html__( 'Not connected', 'cf7-smtp' ),
+				esc_html__( 'Connect with OAuth2', 'cf7-smtp' ),
+				esc_html__( 'Save your Client ID and Client Secret first, then click Connect.', 'cf7-smtp' )
+			);
+		}//end if
+	}
+
+	/**
+	 * Prints the authentication method selection with visual buttons.
+	 */
+	public function cf7_smtp_print_auth_method_callback() {
+		$auth_method = $this->cf7_smtp_find_setting( 'auth_method' );
+		$current     = ! empty( $auth_method['value'] ) ? $auth_method['value'] : '';
+
+		// Backward compatibility: if auth_method is empty, check enabled.
+		if ( empty( $current ) ) {
+			$enabled = $this->cf7_smtp_find_setting( 'enabled' );
+			$current = ! empty( $enabled['value'] ) ? 'smtp' : 'wp';
+		}
+		
+		$disabled    = ! empty( $auth_method['defined'] ) ? 'disabled' : '';
+
+		$methods = array(
+			'wp'      => array(
+				'label' => __( 'WordPress', 'cf7-smtp' ),
+				'icon'  => 'dashicons-wordpress',
+			),
+			'smtp'    => array(
+				'label' => __( 'Other SMTP', 'cf7-smtp' ),
+				'icon'  => 'dashicons-email-alt',
+			),
+			'gmail'   => array(
+				'label' => __( 'Gmail', 'cf7-smtp' ),
+				// Placeholder for SVG or use dashicon for now
+				'icon'  => 'dashicons-google',
+			),
+			'outlook' => array(
+				'label' => __( 'Outlook', 'cf7-smtp' ),
+				'icon'  => 'dashicons-email-alt2',
+			),
+		);
+
+		echo '<div class="cf7-smtp-auth-grid">';
+		foreach ( $methods as $key => $props ) {
+			printf(
+				'<label class="cf7-smtp-auth-card %s">
+					<input type="radio" name="cf7-smtp-options[auth_method]" value="%s" %s %s />
+					<div class="cf7-smtp-auth-card-content">
+						<span class="dashicons %s"></span>
+						<span class="cf7-smtp-auth-label">%s</span>
+					</div>
+				</label>',
+				$current === $key ? 'selected' : '',
+				esc_attr( $key ),
+				$current === $key ? 'checked' : '',
+				esc_attr( $disabled ),
+				esc_attr( $props['icon'] ),
+				esc_html( $props['label'] )
+			);
+		}
+		echo '</div>';
+		echo '<p class="description">' . esc_html__( 'Choose your preferred mail delivery method.', 'cf7-smtp' ) . '</p>';
+
+		// Warning box for invalid/WP selection
+		printf(
+			'<div id="cf7-smtp-wp-warning" class="notice notice-warning inline" style="display:none; margin-top: 15px;">
+				<p>%s</p>
+			</div>',
+			esc_html__( 'Warning: You are using the default WordPress mailer. Your emails might end up in spam.', 'cf7-smtp' )
+		);
+	}
 
 	/**
 	 * It prints a checkbox with the id of `cf7_smtp_enabled` and the name of `cf7-smtp-options[enabled]` and if the `enabled`
@@ -435,7 +665,7 @@ class Settings_Form {
 				'<label><input type="radio" name="cf7-smtp-options[auth]" class="auth-%s" value="%s"%s%s/>%s</label>',
 				esc_attr( $auth_name ),
 				esc_attr( $auth_name ),
-				$selected === $auth || ( $selected === '' && $auth === 'none' ) ? ' checked' : ' ',
+				( $auth === $selected || ( '' === $selected && 'none' === $auth ) ) ? ' checked' : ' ',
 				! empty( $defined ) ? ' disabled ' : ' ',
 				$auth_name
 			);
@@ -448,21 +678,21 @@ class Settings_Form {
 	 * set in the options array, return the value of the key. Otherwise, return 'unset'
 	 *
 	 * @param string $key The key of the option you want to retrieve.
-	 * @param bool   $return If true, the value of the option will be returned. If false, the option's status will be returned.
+	 * @param bool   $return_value If true, the value of the option will be returned. If false, the option's status will be returned.
 	 *
 	 * @return array $option The value of the key in the CF7_SMTP_SETTINGS array, or the value of the key in the $this->options array, or
 	 * 'unset' if the key is not found in either array.
 	 */
-	public function cf7_smtp_find_setting( string $key, bool $return = true ): array {
+	public function cf7_smtp_find_setting( string $key, bool $return_value = true ): array {
 		$option = array(
 			'value'   => false,
 			'defined' => false,
 		);
 		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS[ $key ] ) ) {
-			$option['value']   = $return ? CF7_SMTP_SETTINGS[ $key ] : 'defined';
+			$option['value']   = $return_value ? CF7_SMTP_SETTINGS[ $key ] : 'defined';
 			$option['defined'] = true;
 		} elseif ( ! empty( $this->options[ $key ] ) ) {
-			$option['value'] = $return ? $this->options[ $key ] : 'stored';
+			$option['value'] = $return_value ? $this->options[ $key ] : 'stored';
 		}
 		return $option;
 	}
@@ -473,9 +703,13 @@ class Settings_Form {
 	public function cf7_smtp_print_insecure_callback() {
 		$insecure = $this->cf7_smtp_find_setting( 'insecure' );
 		printf(
-			'<input type="checkbox" id="cf7_smtp_insecure" name="cf7-smtp-options[insecure]" %s %s />',
+			'<span class="smtp-options-wrapper checkbox-wrapper flex">
+				<input type="checkbox" id="cf7_smtp_insecure" name="cf7-smtp-options[insecure]" %s %s />
+				<p class="description">%s</p>
+			</span>',
 			empty( $insecure['value'] ) ? '' : 'checked="true"',
-			esc_html( empty( $insecure['defined'] ) ? '' : 'disabled' )
+			esc_html( empty( $insecure['defined'] ) ? '' : 'disabled' ),
+			esc_html__( 'Enable ONLY if your SMTP server uses self-signed certificates or outdated TLS versions. Warning: This reduces the security of your mail transmission.', 'cf7-smtp' )
 		);
 	}
 
@@ -483,12 +717,16 @@ class Settings_Form {
 	 * It prints a checkbox with the id of cf7_smtp_replyTo and the name of cf7-smtp-options[replyTo] and if the option is
 	 * set, it will be checked
 	 */
-	public function cf7_smtp_print_replyTo_callback() {
+	public function cf7_smtp_print_reply_to_callback() {
 		$reply_to = $this->cf7_smtp_find_setting( 'replyTo' );
 		printf(
-			'<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />',
+			'<span class="smtp-options-wrapper checkbox-wrapper flex">
+				<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />
+				<p class="description">%s</p>
+			</span>',
 			empty( $reply_to['value'] ) ? '' : 'checked="true"',
-			esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' )
+			esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' ),
+			esc_html__( 'Check this if you want the "Reply-To" header to be set automatically. This allows users to reply to a different address than the one used to send the email.', 'cf7-smtp' )
 		);
 	}
 
@@ -555,6 +793,30 @@ class Settings_Form {
 		);
 	}
 
+	/**
+	 * It prints a radio button group for the SMTP mode (all emails vs cf7 only)
+	 */
+	public function cf7_smtp_print_smtp_mode_callback() {
+		$smtp_mode = $this->cf7_smtp_find_setting( 'smtp_mode' );
+		$current   = ! empty( $smtp_mode['value'] ) ? $smtp_mode['value'] : 'all';
+		$disabled  = ! empty( $smtp_mode['defined'] ) ? 'disabled' : '';
+
+		printf(
+			'<div id="cf7-smtp-mode">
+				<label><input type="radio" name="cf7-smtp-options[smtp_mode]" value="all" %s %s /> %s</label><br>
+				<label><input type="radio" name="cf7-smtp-options[smtp_mode]" value="cf7_only" %s %s /> %s</label>
+			</div>
+			<p class="description">%s</p>',
+			'all' === $current ? 'checked' : '',
+			esc_attr( $disabled ),
+			esc_html__( 'Send all emails via SMTP', 'cf7-smtp' ),
+			'cf7_only' === $current ? 'checked' : '',
+			esc_attr( $disabled ),
+			esc_html__( 'Send only Contact Form 7 emails via SMTP', 'cf7-smtp' ),
+			esc_html__( 'Choose "Send Only CF7 Emails" to use the default WordPress mailer for other emails.Choose whether to route all WordPress outgoing mail through SMTP or restrict it only to Contact Form 7. Global routing is recommended for better deliverability of password resets and notifications.', 'cf7-smtp' )
+		);
+	}
+
 
 	/**
 	 * It prints a text input field with the id of cf7_smtp_user_pass, the name of cf7-smtp-options[user_pass], and a class of
@@ -603,9 +865,11 @@ class Settings_Form {
 	public function cf7_smtp_print_from_name_callback() {
 		$from_name = $this->cf7_smtp_find_setting( 'from_name' );
 		printf(
-			'<input type="text" id="cf7_smtp_from_name" name="cf7-smtp-options[from_name]" value="%s" %s />',
+			'<input type="text" id="cf7_smtp_from_name" name="cf7-smtp-options[from_name]" value="%s" %s placeholder="WordPress" />
+			<p class="description">%s</p>',
 			esc_attr( isset( $from_name['value'] ) ? esc_html( $from_name['value'] ) : '' ),
-			esc_html( $from_name['defined'] ? 'disabled' : '' )
+			esc_html( $from_name['defined'] ? 'disabled' : '' ),
+			esc_html__( 'The display name shown in the recipient\'s inbox (e.g., "Your Company Support").', 'cf7-smtp' )
 		);
 	}
 
@@ -635,8 +899,10 @@ class Settings_Form {
 
 	/**
 	 * It prints a text input field with the id of cf7_smtp_log_retain_days and the name of cf7-smtp-options[log_retain_days] and the value of the log_retain_days option
+	 *
+	 * @return void
 	 */
-	function cf7_smtp_print_log_retain_days_callback() {
+	public function cf7_smtp_print_log_retain_days_callback() {
 		printf(
 			'<input type="number" id="cf7_smtp_log_retain_days" name="cf7-smtp-options[log_retain_days]" value="%s" min="0" max="365" step="1" />',
 			esc_attr( ! empty( $this->options['log_retain_days'] ) ? intval( $this->options['log_retain_days'] ) : 30 )
@@ -644,9 +910,11 @@ class Settings_Form {
 	}
 
 	/**
-	 * It prints a button with the id of cf7_smtp_flush_logs and the name of cf7-smtp-options[flush_logs]
+	 * Print the flush logs button callback
+	 *
+	 * @return void
 	 */
-	function cf7_smtp_print_flush_logs_callback() {
+	public function cf7_smtp_print_flush_logs_callback() {
 		printf(
 			'<button id="cf7_smtp_flush_logs" class="button" />%s</button>',
 			esc_html__( 'Flush Logs', 'cf7-smtp' )
@@ -675,6 +943,11 @@ class Settings_Form {
 		);
 	}
 
+	/**
+	 * Print the report now button callback
+	 *
+	 * @return void
+	 */
 	public function cf7_smtp_print_report_now_callback() {
 		printf(
 			'<button id="cf7_smtp_report_now" class="button" />%s</button>',
@@ -695,8 +968,17 @@ class Settings_Form {
 		/* get the existing options */
 		$new_input = array_merge( $opts::default_options(), $this->options );
 
-		/* SMTP enabled */
-		$new_input['enabled'] = ! empty( $input['enabled'] );
+		/* SMTP auth method */
+		$new_input['auth_method'] = ! empty( $input['auth_method'] ) ? sanitize_text_field( $input['auth_method'] ) : 'wp';
+
+		/* SMTP enabled - Sync with auth_method */
+		if ( 'wp' === $new_input['auth_method'] ) {
+			$new_input['enabled'] = false;
+		} else {
+			$new_input['enabled'] = true;
+		}
+
+
 
 		/* SMTP preset */
 		if ( ! empty( $input['preset'] ) ) {
@@ -766,13 +1048,55 @@ class Settings_Form {
 			if ( $timestamp ) {
 				wp_clear_scheduled_hook( 'cf7_smtp_report' );
 			}
-		}
+		}//end if
 
 		/* SMTP log retain days */
 		$new_input['log_retain_days'] = ! empty( $input['log_retain_days'] ) ? intval( $input['log_retain_days'] ) : $new_input['log_retain_days'];
 
 		/* SMTP send report to */
 		$new_input['report_to'] = empty( $input['report_to'] ) ? $new_input['report_to'] : sanitize_text_field( $input['report_to'] );
+
+		/* OAuth2 Authentication Type */
+		if ( isset( $input['auth_type'] ) && in_array( $input['auth_type'], array( 'basic', 'oauth2' ), true ) ) {
+			$new_input['auth_type'] = sanitize_text_field( $input['auth_type'] );
+		}
+
+		/* OAuth2 Provider */
+		if ( isset( $input['oauth2_provider'] ) ) {
+			$valid_providers = array( '', 'gmail', 'office365' );
+			if ( in_array( $input['oauth2_provider'], $valid_providers, true ) ) {
+				$new_input['oauth2_provider'] = sanitize_text_field( $input['oauth2_provider'] );
+			}
+		}
+
+		/* OAuth2 Client ID */
+		if ( isset( $input['oauth2_client_id'] ) ) {
+			$new_input['oauth2_client_id'] = sanitize_text_field( $input['oauth2_client_id'] );
+		}
+
+		/* OAuth2 Client Secret - encrypt before storing */
+		if ( ! empty( $input['oauth2_client_secret'] ) ) {
+			$new_input['oauth2_client_secret'] = cf7_smtp_crypt( sanitize_text_field( $input['oauth2_client_secret'] ) );
+			// Also store in OAuth2 data for the handler.
+			// $oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+			// $oauth2_handler->save_oauth2_data(
+			// 	array(
+			// 		'client_id'     => $new_input['oauth2_client_id'],
+			// 		'client_secret' => $new_input['oauth2_client_secret'],
+			// 	)
+			// );
+		}
+
+		/* Sync auth_type and oauth2_provider based on auth_method - Force override at the end */
+		if ( 'gmail' === $new_input['auth_method'] ) {
+			$new_input['auth_type']       = 'oauth2';
+			$new_input['oauth2_provider'] = 'gmail';
+		} elseif ( 'outlook' === $new_input['auth_method'] ) {
+			$new_input['auth_type']       = 'oauth2';
+			$new_input['oauth2_provider'] = 'office365';
+		} elseif ( 'smtp' === $new_input['auth_method'] ) {
+            // Ensure auth_type is not oauth2 if basic is intended, or let it be if user chose oauth2 for custom smtp
+		}
 
 		return $new_input;
 	}
