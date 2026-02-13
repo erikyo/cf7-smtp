@@ -652,15 +652,16 @@ class Mailer extends Base {
 			$phpmailer->isSMTP();
 
 			// Get settings
-			$auth      = $this->get_setting_by_key( 'auth' );
-			$username  = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
-			$password  = $this->get_smtp_password();
-			$host      = sanitize_text_field( $this->get_setting_by_key( 'host' ) );
-			$port      = intval( $this->get_setting_by_key( 'port' ) );
-			$insecure  = intval( $this->get_setting_by_key( 'insecure' ) );
-			$from_mail = sanitize_email( $this->get_setting_by_key( 'from_mail' ) );
-			$from_name = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
-			$reply_to  = intval( $this->get_setting_by_key( 'replyTo' ) );
+			$auth          = $this->get_setting_by_key( 'auth' );
+			$username      = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
+			$password      = $this->get_smtp_password();
+			$host          = sanitize_text_field( $this->get_setting_by_key( 'host' ) );
+			$port          = intval( $this->get_setting_by_key( 'port' ) );
+			$insecure      = intval( $this->get_setting_by_key( 'insecure' ) );
+			$raw_from_mail = $this->get_setting_by_key( 'from_mail' );
+			$from_mail     = is_email( $raw_from_mail ) ? sanitize_email( $raw_from_mail ) : '';
+			$from_name     = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
+			$reply_to      = intval( $this->get_setting_by_key( 'replyTo' ) );
 
 			// Validate required settings
 			if ( empty( $host ) ) {
