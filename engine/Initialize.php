@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP plugin bootstrap
  *
@@ -81,7 +80,7 @@ class Initialize {
 					);
 				}
 			);
-		}
+		}//end if
 	}
 
 	/**
@@ -120,17 +119,17 @@ class Initialize {
 	 * @return array Return the classes.
 	 * @since 0.0.1
 	 */
-	private function get_classes( string $namespace ): array {
-		$prefix    = $this->composer->getPrefixesPsr4();
-		$classmap  = $this->composer->getClassMap();
-		$namespace = 'cf7_smtp\\' . $namespace;
+	private function get_classes( string $class_namespace ): array {
+		$prefix          = $this->composer->getPrefixesPsr4();
+		$classmap        = $this->composer->getClassMap();
+		$class_namespace = 'cf7_smtp\\' . $class_namespace;
 
 		// In case composer has autoload optimized.
 		if ( isset( $classmap['cf7_smtp\\Engine\\Initialize'] ) ) {
 			$classes = \array_keys( $classmap );
 
 			foreach ( $classes as $class ) {
-				if ( 0 !== \strncmp( (string) $class, $namespace, \strlen( $namespace ) ) ) {
+				if ( 0 !== \strncmp( (string) $class, $class_namespace, \strlen( $class_namespace ) ) ) {
 					continue;
 				}
 
@@ -140,13 +139,13 @@ class Initialize {
 			return $this->classes;
 		}
 
-		$namespace .= '\\';
+		$class_namespace .= '\\';
 
 		// In case composer is not optimized.
-		if ( isset( $prefix[ $namespace ] ) ) {
-			$folder    = $prefix[ $namespace ][0];
+		if ( isset( $prefix[ $class_namespace ] ) ) {
+			$folder    = $prefix[ $class_namespace ][0];
 			$php_files = $this->scandir( $folder );
-			$this->find_classes( $php_files, $folder, $namespace );
+			$this->find_classes( $php_files, $folder, $class_namespace );
 
 			if ( ! WP_DEBUG ) {
 				\wp_die( \esc_html__( 'cf7-smtp is on production environment with missing `composer dumpautoload -o` that will improve the performance on autoloading itself.', 'cf7-smtp' ) );
