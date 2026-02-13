@@ -122,6 +122,28 @@ class Api extends Base {
 				),
 			)
 		);
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/check-dns/',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'smtp_check_dns' ),
+				'args'                => array(
+					'nonce' => array(
+						'required' => true,
+					),
+					'email' => array(
+						'required' => true,
+					),
+					'host'  => array(
+						'required' => false,
+					),
+				),
+			)
+		);
 	}
 
 	/**

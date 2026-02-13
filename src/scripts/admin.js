@@ -22,11 +22,6 @@ export const responseBox = document.querySelector( '#sendmail-response pre' );
 export function smtpAdmin() {
 	/**
 	 *	JS logic to manipulate card transition
-	 *	This set of conditionals checks if we are in the integration page
-	 *	if yes then set a flag in localStorage to "remember" that we are in the current page
-	 *	on each page reload we will remove the transitions but set the max-width(maxWidth) to 1000
-	 *	when we leave the page we will remove the flag
-	 *	this code should not be changed unless Contact Form 7 will submit some major updates for the integration URLs
 	 */
 
 	const urlParams = new URLSearchParams( window.location.search );
@@ -224,8 +219,116 @@ export function smtpAdmin() {
 					responseBox,
 					`<code>${ __( 'OOOPS something went wrong!', 'cf7-smtp' ) }`
 				);
-			} );
-	} );
+			});
+	});
+
+	// DNS Check Logic
+	const checkDnsBtn = document.getElementById('cf7_smtp_check_dns');
+	const fromMailInput = document.getElementById('cf7_smtp_from_mail');
+	const dnsResultBox = document.getElementById('cf7_smtp_dns_result');
+
+	const triggerDnsCheck = () => {
+		const email = fromMailInput.value;
+		const host = document.getElementById('cf7_smtp_host')?.value || '';
+
+		if (!email) {
+			return;
+		}
+
+		if (checkDnsBtn) checkDnsBtn.disabled = true;
+		if (dnsResultBox) dnsResultBox.innerHTML = `<code>${__('Checking DNS...', 'cf7-smtp')}</code>`;
+
+		apiFetch({
+			path: '/cf7-smtp/v1/check-dns/',
+			method: 'POST',
+			data: {
+				nonce: window.smtp_settings.nonce,
+				email: email,
+				host: host
+			},
+		})
+			.then((r) => {
+				if (checkDnsBtn) checkDnsBtn.disabled = false;
+				if (r.status === 'success') {
+					const data = r.data;
+					let boxClass = 'notice ';
+					if (data.risk === 'high') boxClass += 'notice-error';
+					else if (data.risk === 'medium') boxClass += 'notice-warning';
+					else boxClass += 'notice-success';
+
+					let detailsHtml = '';
+					if (data.details && data.details.length) {
+						detailsHtml = '<ul>' + data.details.map(d => `<li>${d}</li>`).join('') + '</ul>';
+					}
+
+					if (dnsResultBox) {
+						dnsResultBox.innerHTML = `
+							<div class="${boxClass} inline" style="margin-top: 10px; padding: 10px;">
+								<p><strong>${r.message}</strong></p>
+								${detailsHtml}
+							</div>
+						`;
+					}
+				} else {
+					if (dnsResultBox) dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${r.message}</p></div>`;
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+				if (checkDnsBtn) checkDnsBtn.disabled = false;
+				if (dnsResultBox) dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${__('Error checking DNS.', 'cf7-smtp')}</p></div>`;
+			});
+	};
+
+	// Debounce utility
+	const debounce = (func, wait) => {
+		let timeout;
+		return function executedFunction(...args) {
+			const later = () => {
+				clearTimeout(timeout);
+				func(...args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	};
+
+	// Simple email validation regex
+	const isValidEmail = (email) => {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	};
+
+	if (checkDnsBtn) {
+		checkDnsBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			triggerDnsCheck();
+			lastCheckedEmail = fromMailInput ? fromMailInput.value : '';
+		});
+	}
+
+	let lastCheckedEmail = '';
+	if (fromMailInput) {
+		// Initialize with current value
+		lastCheckedEmail = fromMailInput.value;
+
+		const debouncedCheck = debounce(() => {
+			const currentVal = fromMailInput.value;
+			if (currentVal !== lastCheckedEmail && isValidEmail(currentVal)) {
+				lastCheckedEmail = currentVal;
+				triggerDnsCheck();
+			}
+		}, 1000); // 1 second debounce
+
+		fromMailInput.addEventListener('keyup', debouncedCheck);
+
+		fromMailInput.addEventListener('blur', () => {
+			const currentVal = fromMailInput.value;
+			if (currentVal !== lastCheckedEmail && isValidEmail(currentVal)) {
+				lastCheckedEmail = currentVal;
+				triggerDnsCheck();
+			}
+		});
+	}
 }
 
 /**
