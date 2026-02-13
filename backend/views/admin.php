@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Represents the view for the administration dashboard.
  *
@@ -39,6 +38,12 @@
 			submit_button();
 			echo '</div>';
 
+			/* This prints out the advanced smtp settings */
+			echo '<div class="card smtp-settings-advanced">';
+			do_settings_sections( 'smtp-settings-advanced' );
+			submit_button();
+			echo '</div>';
+
 			/* This prints the style options (template) */
 			echo '<div class="card smtp-style-options">';
 			do_settings_sections( 'smtp-style' );
@@ -68,8 +73,8 @@
 			/* This prints the stats */
 			echo '<div class="card smtp-style-chart">';
 			echo '<h2>' . esc_html__( 'Stats', 'cf7-smtp' ) . '</h2>';
-			$widget = new \cf7_smtp\Backend\Widget();
-			$widget->display_charts();
+			$cf7_smtp_widget = new \cf7_smtp\Backend\Widget();
+			$cf7_smtp_widget->display_charts();
 			echo '</div>';
 			?>
 		</form>

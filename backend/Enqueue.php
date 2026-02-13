@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP Enqueue style and scripts
  *
