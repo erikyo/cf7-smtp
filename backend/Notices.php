@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP notifications
  *

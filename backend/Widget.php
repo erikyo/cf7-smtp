@@ -20,7 +20,7 @@ use cf7_smtp\Core\Stats;
 use cf7_smtp\Engine\Base;
 
 /**
- *
+ * The Dashboard Widget that displays the email sent
  */
 class Widget extends Base {
 

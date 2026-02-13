@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP Cron
  *
@@ -18,8 +17,6 @@ use cf7_smtp\Engine\Base;
  * The various Cron of this plugin
  */
 class Cron extends Base {
-
-
 
 	/**
 	 * Initialize the class.

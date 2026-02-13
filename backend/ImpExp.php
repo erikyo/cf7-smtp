@@ -41,13 +41,12 @@ class ImpExp extends Base {
 	 */
 	public function settings_export() {
 		if (
-			empty( $_POST['c_action'] ) || //phpcs:ignore WordPress.Security.NonceVerification
-			'export_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) ) //phpcs:ignore WordPress.Security.NonceVerification
+			empty( $_POST['c_action'] ) || 'export_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) )
 		) {
 			return;
 		}
 
-		if ( ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_export_nonce'] ) ), 'c_export_nonce' ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		if ( isset( $_POST['c_export_nonce'] ) && ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_export_nonce'] ) ), 'c_export_nonce' ) ) {
 			return;
 		}
 
@@ -56,8 +55,7 @@ class ImpExp extends Base {
 		}
 
 		$settings    = array();
-		$settings[0] = \get_option( 'cf7-smtp' . '-options' );
-		$settings[1] = \get_option( 'cf7-smtp' . '-settings-second' );
+		$settings[0] = \get_option( 'cf7-smtp-options' );
 
 		\ignore_user_abort( true );
 
@@ -79,8 +77,8 @@ class ImpExp extends Base {
 	 */
 	public function settings_import() {
 		if (
-			empty( $_POST['c_action'] ) || //phpcs:ignore WordPress.Security.NonceVerification
-			'import_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) ) //phpcs:ignore WordPress.Security.NonceVerification
+			empty( $_POST['c_action'] ) ||
+			'import_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) )
 		) {
 			return;
 		}
@@ -113,11 +111,10 @@ class ImpExp extends Base {
 			$settings = \json_decode( (string) $settings_file );
 
 			if ( \is_array( $settings ) ) {
-				\update_option( 'cf7-smtp' . '-options', \get_object_vars( $settings[0] ) );
-				\update_option( 'cf7-smtp' . '-settings-second', \get_object_vars( $settings[1] ) );
+				\update_option( 'cf7-smtp-options', \get_object_vars( $settings[0] ) );
 			}
 
-			\wp_safe_redirect( \admin_url( 'options-general.php?page=' . 'cf7-smtp' ) );
+			\wp_safe_redirect( \admin_url( 'options-general.php?page=cf7-smtp' ) );
 			exit;
 		}
 

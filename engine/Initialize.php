@@ -115,9 +115,10 @@ class Initialize {
 	/**
 	 * Based on the folder loads the classes automatically using the Composer autoloader to detect the classes of a Namespace.
 	 *
-	 * @param string $namespace Class name to find.
-	 * @since 0.0.1
+	 * @param string $class_namespace Class name to find.
+	 *
 	 * @return array Return the classes.
+	 * @since 0.0.1
 	 */
 	private function get_classes( string $namespace ): array {
 		$prefix    = $this->composer->getPrefixesPsr4();
@@ -207,6 +208,6 @@ class Initialize {
 
 			$sub_php_files = $this->scandir( $folder . '/' . $php_file );
 			$this->find_classes( $sub_php_files, $folder . '/' . $php_file, $base . $php_file . '\\' );
-		}
+		}//end foreach
 	}
 }

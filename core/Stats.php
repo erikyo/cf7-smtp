@@ -12,21 +12,37 @@
 namespace cf7_smtp\Core;
 
 use cf7_smtp\Engine\Base;
-use cf7_smtp\Core\Mailer;
 
 /**
- * Handles Statistics for this plugin
+ * Handles Statistics for this plugin.
+ *
+ * This class manages email sending statistics including success/failure counts,
+ * storage of detailed email logs, and report generation for the CF7 SMTP plugin.
+ * It provides functionality to track, store, and report on email sending activities.
+ *
+ * @since   1.0.0
+ * @package cf7_smtp
+ * @author  Erik Golinelli <erik@codekraft.it>
  */
 class Stats extends Base {
 
 
 	/**
-	 * The report
+	 * The report data structure containing email statistics and storage.
 	 *
-	 * @var array
+	 * @var array<string, mixed> Report data with keys: 'success', 'failed', 'storage', 'last_report_time'
 	 */
 	private $report = null;
 
+	/**
+	 * Initialize the Stats class.
+	 *
+	 * Loads the existing report from WordPress options and ensures the report
+	 * structure contains all required keys with proper default values.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public function __construct() {
 		$this->report = get_option( 'cf7-smtp-report' );
 
@@ -50,28 +66,55 @@ class Stats extends Base {
 		if ( ! isset( $this->report['storage'] ) ) {
 			$this->report['storage'] = array();
 		}
+		if ( ! isset( $this->report['last_report_time'] ) ) {
+			$this->report['last_report_time'] = 0;
+		}
 	}
 
+	/**
+	 * Check if there is a report stored with email entries.
+	 *
+	 * Determines whether the current report contains any stored email data
+	 * in the storage array.
+	 *
+	 * @since 1.0.0
+	 * @return bool True if report exists and has storage entries, false otherwise.
+	 */
 	public function has_report(): bool {
-		return isset($this->report) && ! empty( $this->report['storage'] );
+		return isset( $this->report ) && ! empty( $this->report['storage'] );
 	}
 
-	public function get_report() {
+	/**
+	 * Returns the complete stored report data.
+	 *
+	 * Retrieves the full report array including success counts, failure counts,
+	 * storage data, and metadata.
+	 *
+	 * @since 1.0.0
+	 * @return array<string, mixed> The complete report data structure.
+	 */
+	public function get_report(): array {
 		return $this->report;
 	}
 
 	/**
-	 * Reset the report
+	 * Reset the report statistics and optionally clean up old storage entries.
 	 *
+	 * Resets success and failure counters to zero, updates the last report time,
+	 * and optionally removes storage entries older than the specified retention period.
+	 *
+	 * @since 1.0.0
+	 * @param int $retain_days Number of days to retain storage entries. Default 30.
 	 * @return void
 	 */
-	public function reset_report($retain_days = 30) {
+	public function reset_report( $retain_days = 30 ) {
 		// Reset the report success and failed to 0
 		$this->report = array_merge(
 			$this->report,
 			array(
-				'success' => 0,
-				'failed'  => 0,
+				'success'          => 0,
+				'failed'           => 0,
+				'last_report_time' => time(),
 			)
 		);
 
@@ -83,11 +126,14 @@ class Stats extends Base {
 	}
 
 	/**
-	 * It removes all the entries from the report that are older than the specified time
+	 * Remove storage entries older than the specified number of days.
 	 *
-	 * @param int $days_to_keep_logs The time to remove entries older than.
+	 * Cleans up the email storage array by removing entries that are older
+	 * than the specified retention period to prevent database bloat.
 	 *
-	 * @return bool True if the cleanup was successful, false otherwise.
+	 * @since 1.0.0
+	 * @param int $days_to_keep_logs Number of days to keep logs. Entries older than this will be removed.
+	 * @return bool True if cleanup was successful and data was stored, false otherwise.
 	 */
 	public function cleanup_storage( int $days_to_keep_logs ): bool {
 		// check if the time is a valid day timestamp
@@ -111,45 +157,106 @@ class Stats extends Base {
 	}
 
 	/**
-	 * It stores the report in the database
+	 * Store the current report data in WordPress options.
 	 *
-	 * @return bool True if the report was stored successfully, false otherwise.
+	 * Persists the complete report structure to the WordPress database
+	 * using the update_option function.
+	 *
+	 * @since 1.0.0
+	 * @return bool True if the report was successfully stored, false otherwise.
 	 */
 	public function store(): bool {
 		return update_option( 'cf7-smtp-report', $this->report );
 	}
 
+	/**
+	 * Get the total number of successful email sends.
+	 *
+	 * Retrieves the success counter from the current report data.
+	 *
+	 * @since 1.0.0
+	 * @return int The number of successful email sends.
+	 */
 	public function get_success() {
 		return $this->report['success'];
 	}
 
-	public function get_failed() {
+	/**
+	 * Get the total number of failed email sends.
+	 *
+	 * Retrieves the failure counter from the current report data.
+	 *
+	 * @since 1.0.0
+	 * @return int The number of failed email sends.
+	 */
+	public function get_failed(): int {
 		return $this->report['failed'];
 	}
 
-	public function get_storage() {
+	/**
+	 * Get the detailed email storage data.
+	 *
+	 * Retrieves the storage array which contains detailed information
+	 * about each email sent including timestamps, status, and metadata.
+	 *
+	 * @since 1.0.0
+	 * @return array<string, mixed> The storage array containing detailed email logs.
+	 */
+	public function get_storage(): array {
 		return $this->report['storage'];
 	}
 
+	/**
+	 * Add an entry to the email storage with detailed information.
+	 *
+	 * Stores detailed information about a specific email send operation
+	 * in the storage array using the timestamp as the key.
+	 *
+	 * @since 1.0.0
+	 * @param int   $time  Unix timestamp when the email was sent.
+	 * @param array $value Array containing email details including status, form ID, title, etc.
+	 * @return void
+	 */
 	public function add_field_to_storage( $time, $value ) {
 		$this->report['storage'][ $time ] = $value;
 	}
 
+	/**
+	 * Increment the failed email counter.
+	 *
+	 * Increases the failed counter by one to track unsuccessful email sends.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public function add_failed() {
 		$this->report['failed'] = ++$this->report['failed'];
 	}
 
+	/**
+	 * Increment the successful email counter.
+	 *
+	 * Increases the success counter by one to track successful email sends.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public function add_success() {
 		$this->report['success'] = ++$this->report['success'];
 	}
 
 	/**
-	 * It takes the report data and formats it into a human-readable HTML string
+	 * Format report data into a human-readable HTML email.
 	 *
-	 * @param array $report The array of emails.
-	 * @param bool  $last_report the time of last report (unix timestamp).
+	 * Takes the raw report data and formats it into a professional HTML email template with
+	 * email statistics, individual email entries with timestamps and status,
+	 * and summary information. The email uses a card-based design with a light
+	 * gray background for better readability and email client compatibility.
 	 *
-	 * @return string
+	 * @since 1.0.0
+	 * @param array<string, mixed> $report      The report data array containing storage and statistics.
+	 * @param bool                 $last_report Optional. Unix timestamp of the last report. Default current time.
+	 * @return string Formatted HTML string containing the styled email report.
 	 */
 	public function format_report( array $report, bool $last_report = false ) {
 
@@ -230,14 +337,18 @@ class Stats extends Base {
 	}
 
 	/**
-	 * It sends a report of the number of successful and failed emails sent by Contact Form 7 to the email address specified
-	 * in the plugin settings
+	 * Send an email report of statistics to the configured recipient.
 	 *
-	 * @param bool $force Whether to force the report to be sent.
+	 * Generates and sends a comprehensive email report containing success/failure
+	 * statistics and recent email activity. The report is sent based on the
+	 * configured schedule settings.
 	 *
-	 * @return bool Whether the report was sent successfully.
+	 * @param bool $force Optional. Whether to force sending the report regardless of schedule. Default false.
+	 *
+	 * @return bool True if the report was sent successfully, false otherwise.
+	 * @since 1.0.0
 	 */
-	public function send_report( $force = false ) {
+	public function send_report( bool $force = false ): bool {
 		// get the options
 		$options = cf7_smtp_get_settings();
 
@@ -265,7 +376,7 @@ class Stats extends Base {
 		/* if the report is sent, reset the report */
 		$retain_days = intval( $options['log_retain_days'] );
 		if ( $response ) {
-			$this->reset_report($retain_days);
+			$this->reset_report( $retain_days );
 		}
 
 		return $response;

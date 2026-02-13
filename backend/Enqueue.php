@@ -44,7 +44,7 @@ class Enqueue extends Base {
 		if ( ! \is_null( $admin_page ) && ( false !== strpos( $admin_page->id, 'cf7-smtp' ) || false !== strpos( $admin_page->id, 'dashboard' ) ) ) {
 
 			$asset = include CF7_SMTP_PLUGIN_ROOT . '/build/smtp-settings.asset.php';
-			\wp_enqueue_style( 'cf7-smtp' . '-settings-style', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.css', array(), $asset['version'] );
+			\wp_enqueue_style( 'cf7-smtp-settings-style', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.css', array(), $asset['version'] );
 		}
 	}
 
@@ -60,10 +60,10 @@ class Enqueue extends Base {
 		if ( ! \is_null( $admin_page ) && ( false !== strpos( $admin_page->id, 'cf7-smtp' ) || false !== strpos( $admin_page->id, 'dashboard' ) ) ) {
 
 			$asset = include CF7_SMTP_PLUGIN_ROOT . '/build/smtp-settings.asset.php';
-			\wp_enqueue_script( 'cf7-smtp' . '-settings-script', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.js', $asset['dependencies'], $asset['version'], true );
+			\wp_enqueue_script( 'cf7-smtp-settings-script', CF7_SMTP_PLUGIN_URL . 'build/smtp-settings.js', $asset['dependencies'], $asset['version'], true );
 
 			\wp_localize_script(
-				'cf7-smtp' . '-settings-script',
+				'cf7-smtp-settings-script',
 				'smtp_settings',
 				array(
 					'nonce' => wp_create_nonce( 'cf7-smtp' ),

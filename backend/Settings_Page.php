@@ -42,7 +42,7 @@ class Settings_Page extends Base {
 		\add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		$realpath        = (string) \realpath( __DIR__ );
-		$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . 'cf7-smtp' . '.php' );
+		$plugin_basename = \plugin_basename( \plugin_dir_path( $realpath ) . 'cf7-smtp.php' );
 
 		\add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 	}
@@ -87,7 +87,7 @@ class Settings_Page extends Base {
 	 * @return array
 	 */
 	public function add_action_links( array $links ) {
-		$plugin_option   = get_option( 'cf7-smtp' . '-options' );
+		$plugin_option   = get_option( 'cf7-smtp-options' );
 		$service_enabled = $plugin_option['service_enabled'] ?? false;
 		$url             = $service_enabled ? 'admin.php?page=cf7-smtp' : 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup';
 		$label           = $service_enabled ? __( 'Setup SMTP', 'cf7-smtp' ) : __( 'Settings', 'cf7-smtp' );

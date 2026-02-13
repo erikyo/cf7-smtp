@@ -156,14 +156,13 @@ class Api extends Base {
 
 		$mail = $this->cf7_smtp_testmailer_fill_data( $mail_data );
 
-		/* the destination mail is mandatory */
+		/* The destination mail is mandatory */
 		if ( empty( $mail['email'] ) ) {
 			cf7_smtp_log( 'you need to fill the "email" field in order to decide where the mail has to be received' );
 			return "⚠️ The recipient mail is missing!\r\n";
 		}
-		/*
-		allows to change the "from" if the user has chosen to override WordPress data */
-		/* Setting the "from" (email and name). */
+
+		/* Allows to change the "from" if the user has chosen to override WordPress data. */
 		if ( ! empty( $mail['from_mail'] ) ) {
 			$mail['headers'] = sprintf( "From: %s <%s>\r\n", $mail['from_name'] ?? 'WordPress', $mail['from_mail'] );
 		}
@@ -171,7 +170,7 @@ class Api extends Base {
 		$smtp_mailer = new Mailer();
 		$res         = $smtp_mailer->send_email( $mail );
 
-		// Get the log from the mailer instance and set transient
+		// Get the log from the mailer instance and set transient.
 		$log = $smtp_mailer->get_log();
 		if ( ! empty( $log ) ) {
 			set_transient( 'cf7_smtp_testing_log', $log, MINUTE_IN_SECONDS );
@@ -244,6 +243,12 @@ class Api extends Base {
 		return $response;
 	}
 
+	/**
+	 * Send SMTP report via REST API
+	 *
+	 * @param WP_REST_Request $request The REST request object.
+	 * @return WP_REST_Response The REST response.
+	 */
 	public function smtp_report( $request ) {
 		$stats = new Stats();
 		$res   = $stats->send_report( true );
@@ -326,7 +331,7 @@ class Api extends Base {
 						'nonce'     => wp_create_nonce( 'cf7-smtp' ),
 					)
 				);
-			}
+			}//end if
 
 			$response->set_status( 200 );
 		} else {
@@ -341,13 +346,19 @@ class Api extends Base {
 			);
 
 			$response->set_status( 500 );
-		}
+		}//end if
 
 		return $response;
 	}
 
+	/**
+	 * Flush SMTP logs via REST API
+	 *
+	 * @param WP_REST_Request $request The REST request object.
+	 * @return WP_REST_Response The REST response.
+	 */
 	public function smtp_flush_logs( $request ) {
-		// get the number of days to keep logs
+		// Get the number of days to keep logs.
 		$days_to_keep_logs = ! empty( $this->options['days_to_keep_logs'] ) ? (int) $this->options['days_to_keep_logs'] : 30;
 
 		$stats = new Stats();
