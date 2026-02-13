@@ -332,9 +332,9 @@ class Mailer extends Base {
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer object.
 	 */
 	public function cf7_smtp_apply_template( PHPMailer\PHPMailer $phpmailer ) {
-		if ( ! empty( $this->options['custom_template'] ) && preg_match( '/<html /mi', $phpmailer->Body ) ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$phpmailer->isHTML();
+		// If it contains HTML (like <br>, <div>, <html>), force PHPMailer to use HTML
+		if ( preg_match( '/<(br|div|html|body|table|p)/mi', $phpmailer->Body ) ) {
+			$phpmailer->isHTML( true );
 		}
 	}
 
