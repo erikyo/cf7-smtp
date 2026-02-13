@@ -8,7 +8,7 @@ import { enableAdvanced } from './utils';
 import { fetchAndRetry } from './mailFetch';
 import { appendOutput, appendOutputMultiline, cleanOutput } from './output';
 
-apiFetch.use( apiFetch.createNonceMiddleware( window.smtp_settings.nonce ) );
+apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
 
 /**
  *  Email Response box
@@ -16,32 +16,32 @@ apiFetch.use( apiFetch.createNonceMiddleware( window.smtp_settings.nonce ) );
  *  @member {HTMLElement} formElem - the Email form used to test email functionalities
  *  @member {HTMLElement} responseBox - the wrapper for the smtp server messages
  */
-export const formElem = document.querySelector( '#sendmail-testform form' );
-export const responseBox = document.querySelector( '#sendmail-response pre' );
+export const formElem = document.querySelector('#sendmail-testform form');
+export const responseBox = document.querySelector('#sendmail-response pre');
 
 export function smtpAdmin() {
 	/**
 	 *	JS logic to manipulate card transition
 	 */
 
-	const urlParams = new URLSearchParams( window.location.search );
-	const page = urlParams.get( 'page' );
-	const service = urlParams.get( 'service' );
-	const action = urlParams.get( 'action' );
+	const urlParams = new URLSearchParams(window.location.search);
+	const page = urlParams.get('page');
+	const service = urlParams.get('service');
+	const action = urlParams.get('action');
 
-	const cards = document.querySelectorAll( '.card' );
+	const cards = document.querySelectorAll('.card');
 
 	function disableTransition() {
-		cards.forEach( ( card ) => {
+		cards.forEach((card) => {
 			card.style.transition = 'none';
-		} );
+		});
 	}
 
 	function enableTransition() {
-		cards.forEach( ( card ) => {
+		cards.forEach((card) => {
 			card.style.transition = 'max-width 1s ease';
 			card.style.maxWidth = '1000px';
-		} );
+		});
 	}
 
 	if (
@@ -49,175 +49,343 @@ export function smtpAdmin() {
 		service === 'cf7-smtp' &&
 		action === 'setup'
 	) {
-		if ( sessionStorage.getItem( 'disableTransition' ) === 'true' ) {
+		if (sessionStorage.getItem('disableTransition') === 'true') {
 			disableTransition();
-			cards.forEach( ( card ) => {
+			cards.forEach((card) => {
 				card.style.maxWidth = '1000px';
-			} );
+			});
 		} else {
 			enableTransition();
-			sessionStorage.setItem( 'disableTransition', 'true' );
+			sessionStorage.setItem('disableTransition', 'true');
 		}
 	} else {
-		sessionStorage.setItem( 'disableTransition', 'false' );
+		sessionStorage.setItem('disableTransition', 'false');
 		disableTransition();
 	}
 
 	/**
-	 *  Variables needed to set SMTP connetion
-	 *
-	 *  @member {HTMLElement} formSelectDefault - cf7_smtp_preset
-	 *  @member {HTMLElement} formSelectHost - cf7_smtp_host
-	 *  @member {HTMLElement} formSelectPort - cf7_smtp_port
+	 *  Auth Method Selection Logic
 	 */
-	const formSelectDefault = document.getElementById( 'cf7_smtp_preset' );
-	const formSelectHost = document.getElementById( 'cf7_smtp_host' );
-	const formSelectPort = document.getElementById( 'cf7_smtp_port' );
+	const authMethodInputs = document.querySelectorAll('input[name="cf7-smtp-options[auth_method]"]');
+	const wpWarning = document.getElementById('cf7-smtp-wp-warning');
+
+	// Helpers to find rows by input ID
+	const getRow = (id) => {
+		const el = document.getElementById(id);
+		return el ? el.closest('tr') : null;
+	};
+
+	const classicFields = [
+		'cf7_smtp_preset',
+		'cf7-smtp-auth', // This is a div, need to find the row
+		'cf7_smtp_host',
+		'cf7_smtp_port',
+		'cf7_smtp_user_name',
+		'cf7_smtp_user_pass',
+	].map(id => {
+		if (id === 'cf7-smtp-auth') return document.getElementById(id)?.closest('tr');
+		return getRow(id);
+	}).filter(Boolean);
+
+	const oauthFields = document.querySelectorAll('.cf7-smtp-oauth-row');
+
+	const advancedSection = document.querySelector('.smtp-settings-options h2:nth-of-type(2)'); // "Advanced Options" header if exists? 
+	// Actually advanced options are in a section.
+
+	const updateUI = (method) => {
+		// Update cards visual state
+		document.querySelectorAll('.cf7-smtp-auth-card').forEach(card => {
+			const input = card.querySelector('input');
+			if (input.value === method) {
+				card.classList.add('selected');
+			} else {
+				card.classList.remove('selected');
+			}
+		});
+
+		// OAuth Section Header and Description handling
+		const oauthDesc = document.getElementById('cf7_smtp_oauth2_section_desc');
+		// Find H2 by assuming it's the preceding element (common WP structure: H2 then callback output)
+		// Or verify structure. `do_settings_sections` outputs `<h2>...</h2>` then `call_user_func(...)`
+		// So `<h2>` should be previous sibling of the description container.
+		let oauthHeader = null;
+		if (oauthDesc) {
+			const prev = oauthDesc.previousElementSibling;
+			if (prev && prev.tagName === 'H2') {
+				oauthHeader = prev;
+			}
+		}
+
+		if (method === 'wp') {
+			classicFields.forEach(row => row.style.display = 'none');
+			oauthFields.forEach(row => row.style.display = 'none');
+			if (wpWarning) wpWarning.style.display = 'block';
+
+			if (oauthDesc) oauthDesc.style.display = 'none';
+			if (oauthHeader) oauthHeader.style.display = 'none';
+
+		} else if (method === 'smtp') {
+			classicFields.forEach(row => row.style.display = 'table-row');
+			oauthFields.forEach(row => row.style.display = 'none');
+			if (wpWarning) wpWarning.style.display = 'none';
+
+			if (oauthDesc) oauthDesc.style.display = 'none';
+			if (oauthHeader) oauthHeader.style.display = 'none';
+
+		} else if (method === 'gmail' || method === 'outlook') {
+			classicFields.forEach(row => row.style.display = 'none');
+			oauthFields.forEach(row => row.style.display = 'table-row');
+			if (wpWarning) wpWarning.style.display = 'none';
+
+			if (oauthDesc) oauthDesc.style.display = 'block';
+			if (oauthHeader) oauthHeader.style.display = 'block';
+
+			// Auto-select provider in the hidden select if needed
+			const providerSelect = document.getElementById('cf7_smtp_oauth2_provider');
+			if (providerSelect) {
+				providerSelect.value = method === 'gmail' ? 'gmail' : 'office365';
+				// hide the provider select row itself since it's implied? 
+				// The user asked to hide unnecessary fields. 
+				// "Display a single, prominent button... Hide the Host, Port..."
+				// If we auto-select, we can hide the provider select row.
+				const providerRow = getRow('cf7_smtp_oauth2_provider');
+				if (providerRow) providerRow.style.display = 'none';
+			}
+		}
+	};
+
+	authMethodInputs.forEach(input => {
+		input.addEventListener('change', (e) => {
+			updateUI(e.target.value);
+		});
+		// Init
+		if (input.checked) {
+			updateUI(input.value);
+		}
+	});
+
+
+	/**
+	 *  Variables needed to set SMTP connetion
+	 */
+	const formSelectDefault = document.getElementById('cf7_smtp_preset');
+	const formSelectHost = document.getElementById('cf7_smtp_host');
+	const formSelectPort = document.getElementById('cf7_smtp_port');
 
 	/**
 	 * Sets the values of the SMTP connection according to the value selected by the user.
 	 */
-	if ( !! formSelectDefault ) {
-		formSelectDefault.addEventListener( 'change', ( e ) => {
-			const selectedEl = e.target[ e.target.selectedIndex ];
-			if ( selectedEl ) {
+	if (!!formSelectDefault) {
+		formSelectDefault.addEventListener('change', (e) => {
+			const selectedEl = e.target[e.target.selectedIndex];
+			if (selectedEl) {
 				const authRadio = document.querySelector(
 					'.auth-' + selectedEl.dataset.auth
 				);
-				authRadio.checked = true;
+				if (authRadio) authRadio.checked = true;
 				formSelectHost.value = selectedEl.dataset.host;
 				formSelectPort.value = selectedEl.dataset.port;
 			}
-		} );
+		});
 	}
 
-	/**
-	 * Enables the SMTP settings
-	 */
-	const smtpEnabled = document.querySelector( '#cf7_smtp_enabled' );
-	const formSmtpSection = document.querySelector(
-		'#cf7-smtp-settings .form-table:first-of-type'
-	);
-	if ( !! smtpEnabled ) {
-		enableAdvanced(
-			[ 2, 3, 4, 5, 6, 7 ],
-			formSmtpSection,
-			smtpEnabled.checked
-		);
+	// Logic for "Connect" button in OAuth
+	const connectBtn = document.getElementById('cf7_smtp_oauth2_connect');
+	if (connectBtn) {
+		connectBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			const providerSelect = document.getElementById('cf7_smtp_oauth2_provider');
 
-		smtpEnabled.addEventListener( 'click', () => {
-			enableAdvanced(
-				[ 2, 3, 4, 5, 6, 7 ],
-				formSmtpSection,
-				smtpEnabled.checked
-			);
-		} );
+			// If provider select is hidden or we rely on the auth cards, we derive the provider
+			// But current implementation relies on the select value which should be set by the cards
+			let provider = providerSelect ? providerSelect.value : '';
+
+			// Fallback if select is missing but cards are used? 
+			// But updateUI sets the select value.
+
+			if (!provider) {
+				// Try to find checked card
+				const checked = document.querySelector('input[name="cf7-smtp-options[auth_method]"]:checked');
+				if (checked) {
+					if (checked.value === 'gmail') provider = 'gmail';
+					if (checked.value === 'outlook') provider = 'office365'; // check value mapping
+				}
+			}
+
+			if (!provider) {
+				alert(__('Please select a provider (Gmail/Outlook) via the icons above.', 'cf7-smtp'));
+				return;
+			}
+
+			// Show loading?
+			connectBtn.disabled = true;
+			connectBtn.innerText = __('Connecting...', 'cf7-smtp');
+
+			apiFetch({
+				path: '/cf7-smtp/v1/oauth2/authorize/',
+				method: 'POST',
+				data: {
+					nonce: window.smtp_settings.nonce,
+					provider: provider
+				},
+			})
+				.then((r) => {
+					if (r.status === 'success' && r.authorization_url) {
+						window.location.href = r.authorization_url;
+					} else {
+						alert(r.message || __('Failed to get authorization URL.', 'cf7-smtp'));
+						connectBtn.disabled = false;
+						connectBtn.innerText = __('Connect', 'cf7-smtp');
+					}
+				})
+				.catch((err) => {
+					console.error(err);
+					alert(__('An error occurred. Please try again.', 'cf7-smtp'));
+					connectBtn.disabled = false;
+					connectBtn.innerText = __('Connect', 'cf7-smtp');
+				});
+		});
 	}
+
+	const disconnectBtn = document.getElementById('cf7_smtp_oauth2_disconnect');
+	if (disconnectBtn) {
+		disconnectBtn.addEventListener('click', (e) => {
+			e.preventDefault();
+			if (!confirm(__('Are you sure you want to disconnect?', 'cf7-smtp'))) return;
+
+			disconnectBtn.disabled = true;
+			disconnectBtn.innerText = __('Disconnecting...', 'cf7-smtp');
+
+			apiFetch({
+				path: '/cf7-smtp/v1/oauth2/disconnect/',
+				method: 'POST',
+				data: {
+					nonce: window.smtp_settings.nonce,
+				},
+			})
+				.then((r) => {
+					if (r.status === 'success') {
+						window.location.reload();
+					} else {
+						alert(r.message || __('Failed to disconnect.', 'cf7-smtp'));
+						disconnectBtn.disabled = false;
+						disconnectBtn.innerText = __('Disconnect', 'cf7-smtp');
+					}
+				})
+				.catch((err) => {
+					console.error(err);
+					alert(__('An error occurred.', 'cf7-smtp'));
+					disconnectBtn.disabled = false;
+					disconnectBtn.innerText = __('Disconnect', 'cf7-smtp');
+				});
+		});
+	}
+
 	/* Initialize the response box and show a welcome message */
-	if ( !! responseBox ) {
+	if (!!responseBox) {
 		cleanOutput(
 			responseBox,
 			'<code>' +
-				__( 'Mail Server initialization completed!', 'cf7-smtp' ) +
-				'</code>'
+			__('Mail Server initialization completed!', 'cf7-smtp') +
+			'</code>'
 		);
 	}
 
 	/**
 	 *  Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
 	 */
-	if ( !! formElem ) {
-		formElem.addEventListener( 'submit', ( e ) => {
+	if (!!formElem) {
+		formElem.addEventListener('submit', (e) => {
 			e.preventDefault();
 			/* The form inputs data */
-			const formData = new FormData( e.target );
+			const formData = new FormData(e.target);
 
 			const data = {};
 			data.nonce = window.smtp_settings.nonce;
 
-			for ( const [ key, value ] of formData.entries() ) {
-				data[ key ] = value;
+			for (const [key, value] of formData.entries()) {
+				data[key] = value;
 			}
 
 			/* clean the previous results*/
-			cleanOutput( responseBox );
+			cleanOutput(responseBox);
 
 			appendOutput(
 				responseBox,
-				`<code>${ __(
+				`<code>${__(
 					"Let's start a new server connection…",
 					'cf7-smtp'
-				) } <span class="mail-init animation-start">✉️</span></code>`
+				)} <span class="mail-init animation-start">✉️</span></code>`
 			);
 
-			apiFetch( {
+			apiFetch({
 				path: '/cf7-smtp/v1/sendmail',
 				method: 'POST',
 				data,
-			} )
-				.then( ( r ) => {
-					if ( r.status === 'success' ) {
-						appendOutputMultiline( responseBox, r.message, true );
+			})
+				.then((r) => {
+					if (r.status === 'success') {
+						appendOutputMultiline(responseBox, r.message, true);
 					}
 					return r;
-				} )
-				.then( ( mailResp ) => {
-					return fetchAndRetry( mailResp, 500, 5 );
-				} )
-				.catch( ( /*errMsg*/ ) => {
+				})
+				.then((mailResp) => {
+					return fetchAndRetry(mailResp, 500, 5);
+				})
+				.catch(( /*errMsg*/) => {
 					appendOutput(
 						responseBox,
-						`<code>${ __(
+						`<code>${__(
 							'OOOPS something went wrong!',
 							'cf7-smtp'
-						) }`
+						)}`
 					);
-				} );
-		} );
+				});
+		});
 	}
 
-	const flushLogs = document.getElementById( 'cf7_smtp_flush_logs' );
-	flushLogs?.addEventListener( 'click', () => {
-		apiFetch( {
+	const flushLogs = document.getElementById('cf7_smtp_flush_logs');
+	flushLogs?.addEventListener('click', () => {
+		apiFetch({
 			path: '/cf7-smtp/v1/flush-logs',
 			method: 'POST',
 			data: {
 				nonce: window.smtp_settings.nonce,
 			},
-		} )
-			.then( ( r ) => {
-				if ( r.status === 'success' ) {
-					alert( r.message );
+		})
+			.then((r) => {
+				if (r.status === 'success') {
+					alert(r.message);
 				}
 				return r;
-			} )
-			.catch( ( /*errMsg*/ ) => {
+			})
+			.catch(( /*errMsg*/) => {
 				appendOutput(
 					responseBox,
-					`<code>${ __( 'OOOPS something went wrong!', 'cf7-smtp' ) }`
+					`<code>${__('OOOPS something went wrong!', 'cf7-smtp')}`
 				);
-			} );
-	} );
+			});
+	});
 
-	const reportNow = document.getElementById( 'cf7_smtp_report_now' );
-	reportNow?.addEventListener( 'click', () => {
-		apiFetch( {
+	const reportNow = document.getElementById('cf7_smtp_report_now');
+	reportNow?.addEventListener('click', () => {
+		apiFetch({
 			path: '/cf7-smtp/v1/report',
 			method: 'POST',
 			data: {
 				nonce: window.smtp_settings.nonce,
 			},
-		} )
-			.then( ( r ) => {
-				if ( r.status === 'success' ) {
-					alert( r.message );
+		})
+			.then((r) => {
+				if (r.status === 'success') {
+					alert(r.message);
 				}
 				return r;
-			} )
-			.catch( ( /*errMsg*/ ) => {
+			})
+			.catch(( /*errMsg*/) => {
 				appendOutput(
 					responseBox,
-					`<code>${ __( 'OOOPS something went wrong!', 'cf7-smtp' ) }`
+					`<code>${__('OOOPS something went wrong!', 'cf7-smtp')}`
 				);
 			});
 	});
