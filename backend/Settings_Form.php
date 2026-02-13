@@ -581,9 +581,16 @@ class Settings_Form {
 	public function cf7_smtp_print_from_mail_callback() {
 		$from_mail = $this->cf7_smtp_find_setting( 'from_mail' );
 		printf(
-			'<input type="email" id="cf7_smtp_from_mail" name="cf7-smtp-options[from_mail]" value="%s" %s />',
+			'<span class="smtp-options-wrapper flex">
+				<input type="email" id="cf7_smtp_from_mail" name="cf7-smtp-options[from_mail]" value="%s" %s placeholder="wordpress@example.com" />
+				<button type="button" id="cf7_smtp_check_dns" class="button button-secondary">%s</button>
+			</span>
+			<p class="description">%s</p>
+			<div id="cf7_smtp_dns_result"></div>',
 			esc_attr( empty( $from_mail['value'] ) ? '' : esc_html( $from_mail['value'] ) ),
-			esc_html( empty( $from_mail['defined'] ) ? '' : 'disabled' )
+			esc_html( empty( $from_mail['defined'] ) ? '' : 'disabled' ),
+			esc_html__( 'Check DNS now', 'cf7-smtp' ),
+			esc_html__( 'Crucial for deliverability. This address should match the domain of your SMTP account to satisfy SPF and DKIM checks. If left empty, the plugin will use the WordPress default or the one set in CF7, which might cause "Spoofing" alerts.', 'cf7-smtp' )
 		);
 	}
 
