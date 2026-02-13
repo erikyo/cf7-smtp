@@ -300,6 +300,7 @@ class Mailer extends Base {
 			return $components;
 		}
 
+		// Apply the nl2br to convert newlines to HTML line breaks
 		$email_data = array(
 			'body'     => nl2br( $components['body'] ),
 			'subject'  => $components['subject'],
@@ -311,6 +312,17 @@ class Mailer extends Base {
 
 		$components['body'] = $this->cf7_smtp_form_template( $email_data, $template );
 
+		// Forces header Content-Type to be HTML if using custom template
+		if ( strpos( $components['headers'], 'Content-Type:' ) === false ) {
+			$components['headers'] .= "\nContent-Type: text/html; charset=\"" . get_option( 'blog_charset' ) . "\"\n";
+		} else {
+			$components['headers'] = preg_replace(
+				'/Content-Type: text\/plain/i',
+				'Content-Type: text/html',
+				$components['headers']
+			);
+		}
+
 		return $components;
 	}
 
@@ -320,9 +332,9 @@ class Mailer extends Base {
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer object.
 	 */
 	public function cf7_smtp_apply_template( PHPMailer\PHPMailer $phpmailer ) {
-		if ( ! empty( $this->options['custom_template'] ) && preg_match( '/<html /mi', $phpmailer->Body ) ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$phpmailer->isHTML();
+		// If it contains HTML (like <br>, <div>, <html>), force PHPMailer to use HTML
+		if ( preg_match( '/<(br|div|html|body|table|p)/mi', $phpmailer->Body ) ) {
+			$phpmailer->isHTML( true );
 		}
 	}
 
