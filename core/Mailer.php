@@ -39,6 +39,16 @@ class Mailer extends Base {
 	 */
 	private array $default_headers;
 
+	/**
+	 * Flag to check if the email is from CF7.
+	 *
+	 * @var bool
+	 */
+	private static bool $is_cf7_mail = false;
+
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		parent::initialize();
 
@@ -77,6 +87,15 @@ class Mailer extends Base {
 		\add_action( 'wp_mail_succeeded', array( $this, 'cf7_smtp_wp_mail_log' ) );
 		\add_action( 'wp_mail_failed', array( $this, 'cf7_smtp_wp_mail_catch_errors' ) );
 		\add_filter( 'wpcf7_mail_components', array( $this, 'cf7_smtp_email_style' ), 99, 3 );
+	}
+
+	/**
+	 * Set the flag to true if the email is from CF7.
+	 *
+	 * @return void
+	 */
+	public function set_cf7_mail_flag() {
+		self::$is_cf7_mail = true;
 	}
 
 	/**
@@ -138,7 +157,7 @@ class Mailer extends Base {
 	public function cf7_smtp_wp_mail_catch_errors( $error ) {
 		$error_msgs = $error->get_error_messages();
 		foreach ( $error_msgs as $msg ) {
-			error_log( 'CF7 SMTP Error: ' . $msg );
+			cf7_smtp_log( 'CF7 SMTP Error: ' . $msg );
 		}
 
 		cf7_smtp_log( 'WP Mail Failed! Error Messages:' );
@@ -410,7 +429,7 @@ class Mailer extends Base {
 			return $data;
 		}
 
-		$template_path = CF7_SMTP_PLUGIN_ROOT . 'templates/' . $template_file;
+		$template_path = sprintf( '%stemplates/%s', CF7_SMTP_PLUGIN_ROOT, $template_file );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$template = file_exists( $template_path ) ? file_get_contents( $template_path ) : '';
 

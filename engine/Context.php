@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP context class.
  *
@@ -62,7 +61,7 @@ class Context {
 				\_doing_it_wrong( __METHOD__, \esc_html( \sprintf( 'Unknown request type: %s', $type ) ), '1.0.0' );
 
 				return false;
-		}
+		}//end switch
 	}
 
 	/**

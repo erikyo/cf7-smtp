@@ -19,7 +19,8 @@
         "languages/cf7-smtp.pot",
         "README.txt",
         "LICENSE.txt",
-        "uninstall.php"
+        "uninstall.php",
+        "composer.json"
     ],
     "scripts": {
         "start": "wp-scripts start",
@@ -36,11 +37,11 @@
         "postinstall": "npm run build"
     },
     "devDependencies": {
-        "@babel/core": "^7.23.9",
-        "@wordpress/api-fetch": "^7.23.0",
-        "@wordpress/env": "^10.31.0",
-        "@wordpress/i18n": "^6.9.0",
-        "@wordpress/scripts": "^31.1.0",
+        "@babel/core": "^7.29.0",
+        "@wordpress/api-fetch": "^7.39.0",
+        "@wordpress/env": "^10.39.0",
+        "@wordpress/i18n": "^6.12.0",
+        "@wordpress/scripts": "^31.4.0",
         "chart.js": "^4.5.1"
     },
     "engines": {

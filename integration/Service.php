@@ -1,7 +1,4 @@
 <?php
-
-namespace cf7_smtp\Integration;
-
 /**
  * CF7_SMTP context class.
  *
@@ -12,14 +9,16 @@ namespace cf7_smtp\Integration;
  * @link      https://modul-r.codekraft.it/
  */
 
-
-if ( ! class_exists( 'WPCF7_Service' ) ) {
-	return;
-}
+namespace cf7_smtp\Integration;
 
 /**
  * Integration class from Contact Form 7
  */
+
+
+if ( ! class_exists( 'WPCF7_Service' ) ) {
+	return;
+}
 
 use WPCF7_Service as GlobalWPCF7_Service;
 
@@ -29,10 +28,25 @@ use WPCF7_Service as GlobalWPCF7_Service;
 
 class Service extends GlobalWPCF7_Service {
 
+	/**
+	 * The service instance
+	 *
+	 * @var self
+	 */
 	private static $instance;
 
+	/**
+	 * Plugin options
+	 *
+	 * @var array
+	 */
 	public $options;
 
+	/**
+	 * Get singleton instance
+	 *
+	 * @return self
+	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -41,6 +55,9 @@ class Service extends GlobalWPCF7_Service {
 		return self::$instance;
 	}
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		/**
 		 * Call the options otherwise the plugin will break in integration
@@ -112,6 +129,12 @@ class Service extends GlobalWPCF7_Service {
 		);
 	}
 
+	/**
+	 * Display admin notice
+	 *
+	 * @param string $message The message to display.
+	 * @return void
+	 */
 	public function admin_notice( $message = '' ) {
 	}
 
@@ -167,8 +190,8 @@ class Service extends GlobalWPCF7_Service {
 	 * The `display` function is used to display information about the SMTP plugin and provide options for
 	 * setup integration.
 	 *
-	 * @param string The "action" parameter is used to determine the specific action to be performed in the
-	 * "display" function. It is a string that can have two possible values:
+	 * @param string $action The "action" parameter is used to determine the specific action to be performed in the
+	 * "display" function. It is a string that can have two possible values.
 	 */
 	public function display( $action = '' ) {
 		printf(
@@ -197,7 +220,7 @@ class Service extends GlobalWPCF7_Service {
 			);
 		}
 
-		// Get the current checkbox status from the options
+		// Get the current checkbox status from the options.
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
 		wp_nonce_field( 'cf7a_toggle', 'cf7a_nonce' );

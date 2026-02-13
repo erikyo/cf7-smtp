@@ -97,7 +97,7 @@ if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 
 	// Return early to prevent loading the plugin.
 	return;
-}
+}//end if
 
 $cf7_smtp_libraries = require CF7_SMTP_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ignore
 
@@ -143,13 +143,19 @@ if ( ! wp_installing() ) {
 			}
 		}
 	);
-}
+}//end if
 
 /**
- * call the integration action to mount our plugin as a component
+ * Call the integration action to mount our plugin as a component
  * into the intefration page
  */
 add_action( 'wpcf7_init', 'cf7_smtp_register_service', 1, 0 );
+
+/**
+ * Register the SMTP service with Contact Form 7
+ *
+ * @return void
+ */
 function cf7_smtp_register_service() {
 	$integration = WPCF7_Integration::get_instance();
 	$integration->add_category( 'email_services', 'Email Services' );
