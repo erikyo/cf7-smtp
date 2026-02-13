@@ -673,6 +673,16 @@ class Mailer extends Base {
 
 			$phpmailer->isSMTP();
 
+			// Check if we should only send CF7 emails via SMTP
+			$smtp_mode = $this->get_setting_by_key( 'smtp_mode' );
+			if ( 'cf7_only' === $smtp_mode && ! self::$is_cf7_mail ) {
+				// If not a CF7 email and mode is CF7 only, return (skip SMTP config)
+				return;
+			}
+
+			// Enable SMTP
+			$phpmailer->isSMTP();
+
 			// Get settings
 			$auth          = $this->get_setting_by_key( 'auth' );
 			$username      = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
