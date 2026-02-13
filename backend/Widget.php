@@ -31,7 +31,18 @@ class Widget extends Base {
 		if ( ! parent::initialize() ) {
 			return;
 		}
-		\add_action( 'wp_dashboard_setup', array( $this, 'cf7_smtp_dashboard_widget' ) );
+
+		/**
+		 * Widget Visibility
+		 * Define the capability needed to see the widget (default: manage_options for Admins).
+		 *
+		 * @since 1.0.1
+		 */
+		$capability = apply_filters( 'cf7_smtp_stats_capability', 'manage_options' );
+
+		if ( current_user_can( $capability ) ) {
+			\add_action( 'wp_dashboard_setup', array( $this, 'cf7_smtp_dashboard_widget' ) );
+		}
 	}
 
 
