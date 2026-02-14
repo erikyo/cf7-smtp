@@ -212,6 +212,16 @@ class Settings_Form {
 			array( 'class' => 'cf7-smtp-oauth-row' )
 		);
 
+		/* OAuth2 Redirect URI (Read Only) */
+		add_settings_field(
+			'oauth2_redirect_uri',
+			__( 'Authorized Redirect URI', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_redirect_uri_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
 		/* OAuth2 Client ID */
 		add_settings_field(
 			'oauth2_client_id',
@@ -430,6 +440,28 @@ class Settings_Form {
 		printf(
 			'<select id="cf7_smtp_oauth2_provider" name="cf7-smtp-options[oauth2_provider]" class="cf7-smtp-oauth2-field">%s</select>',
 			$options_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped above.
+		);
+	}
+
+	/**
+	 * Prints the OAuth2 Redirect URI (read-only) for the user to copy.
+	 */
+	public function cf7_smtp_print_oauth2_redirect_uri_callback() {
+		$redirect_uri = \admin_url( 'admin.php' );
+		// Ensure the redirect URI matches exactly what the OAuth2 provider expects
+		$redirect_uri = \add_query_arg(
+			array(
+				'page'            => 'cf7-smtp',
+				'oauth2_callback' => 1,
+			),
+			$redirect_uri
+		);
+
+		\printf(
+			'<code style="user-select: all; background: #f0f0f1; padding: 5px 10px; display: block; margin-bottom: 5px;">%s</code>
+			<p class="description">%s</p>',
+			\esc_html( $redirect_uri ),
+			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' )
 		);
 	}
 
@@ -1076,15 +1108,13 @@ class Settings_Form {
 
 		/* OAuth2 Client Secret - encrypt before storing */
 		if ( ! empty( $input['oauth2_client_secret'] ) ) {
-			$new_input['oauth2_client_secret'] = cf7_smtp_crypt( sanitize_text_field( $input['oauth2_client_secret'] ) );
-			// Also store in OAuth2 data for the handler.
-			// $oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
-			// $oauth2_handler->save_oauth2_data(
-			// 	array(
-			// 		'client_id'     => $new_input['oauth2_client_id'],
-			// 		'client_secret' => $new_input['oauth2_client_secret'],
-			// 	)
-			// );
+			// Only encrypt if the value is different from what's already stored.
+			// This prevents double-encryption when update_option() triggers the
+			// sanitize callback with the already-encrypted value.
+			$existing = $this->options['oauth2_client_secret'] ?? '';
+			if ( $input['oauth2_client_secret'] !== $existing ) {
+				$new_input['oauth2_client_secret'] = cf7_smtp_crypt( sanitize_text_field( $input['oauth2_client_secret'] ) );
+			}
 		}
 
 		/* Sync auth_type and oauth2_provider based on auth_method - Force override at the end */
