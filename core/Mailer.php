@@ -74,7 +74,7 @@ class Mailer extends Base {
 	 */
 	public function initialize() {
 		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
-			\add_action( 'phpmailer_init', array( $this, 'smtp_overrides' ), 11 );
+			\add_action( 'phpmailer_init', array( $this, 'smtp_overrides' ), 99999 );
 			\add_action( 'wpcf7_before_send_mail', array( $this, 'set_cf7_mail_flag' ) );
 		}
 
@@ -586,21 +586,41 @@ class Mailer extends Base {
 			return false;
 		}
 
+		// Override SMTP host/port/encryption to match the OAuth2 provider's SMTP server.
+		// OAuth2 tokens are provider-specific and ONLY work with the provider's SMTP server.
+		$provider_key    = $oauth2_handler->get_current_provider();
+		$provider_config = $provider_key ? $oauth2_handler->get_provider_config( $provider_key ) : null;
+
+		if ( ! empty( $provider_config['host'] ) ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$phpmailer->Host = $provider_config['host'];
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$phpmailer->Port = $provider_config['port'] ?? 587;
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$phpmailer->SMTPSecure = $provider_config['encryption'] ?? 'tls';
+
+			cf7_smtp_log( 'OAuth2: Overriding SMTP host to ' . $provider_config['host'] . ':' . ( $provider_config['port'] ?? 587 ) . ' (' . ( $provider_config['encryption'] ?? 'tls' ) . ')' );
+		}
+
 		// Configure PHPMailer for XOAUTH2
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->SMTPAuth = true;
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->AuthType = 'XOAUTH2';
 
-		// Set the OAuth provider callback
-		$phpmailer->setOAuth(
-			new CF7_SMTP_OAuthProvider(
-				$oauth2_handler->get_provider_instance(),
-				cf7_smtp_decrypt( $this->options['oauth2_client_id'] ?? '' ),
-				cf7_smtp_decrypt( $this->options['oauth2_client_secret'] ?? '' ),
-				cf7_smtp_decrypt( $status['refresh_token'] ?? '' )
-			)
+		// Load the OAuthProvider class (not autoloaded as it's a global class).
+		require_once __DIR__ . '/OAuthProvider.php';
+
+		$oauth_provider = new \CF7_SMTP_OAuthProvider(
+			$oauth2_handler->get_provider_instance(),
+			$this->options['oauth2_client_id'] ?? '',
+			cf7_smtp_decrypt( $this->options['oauth2_client_secret'] ?? '' ),
+			cf7_smtp_decrypt( $status['refresh_token'] ?? '' ),
+			$user_email
 		);
+
+		// Set the OAuth provider callback
+		$phpmailer->setOAuth( $oauth_provider );
 
 		cf7_smtp_log( 'OAuth2/XOAUTH2 authentication configured for: ' . $user_email );
 		return true;
@@ -828,6 +848,7 @@ class Mailer extends Base {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' );
 
+			cf7_smtp_log( 'Final PHPMailer config: AuthType=' . $phpmailer->AuthType . ', SMTPAuth=' . ( $phpmailer->SMTPAuth ? 'true' : 'false' ) );
 		} catch ( Exception $e ) {
 			cf7_smtp_log( 'Failed to configure SMTP: ' . $e->getMessage() );
 		}//end try
