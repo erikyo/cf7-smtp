@@ -541,8 +541,8 @@ class Settings_Form {
 			$enabled = $this->cf7_smtp_find_setting( 'enabled' );
 			$current = ! empty( $enabled['value'] ) ? 'smtp' : 'wp';
 		}
-		
-		$disabled    = ! empty( $auth_method['defined'] ) ? 'disabled' : '';
+
+		$disabled = ! empty( $auth_method['defined'] ) ? 'disabled' : '';
 
 		$methods = array(
 			'wp'      => array(
@@ -1010,8 +1010,6 @@ class Settings_Form {
 			$new_input['enabled'] = true;
 		}
 
-
-
 		/* SMTP preset */
 		if ( ! empty( $input['preset'] ) ) {
 			$selected_preset = $this->cf7_smtp_host_presets[ sanitize_text_field( $input['preset'] ) ] ?? 'custom';
@@ -1024,8 +1022,9 @@ class Settings_Form {
 
 		/* SMTP preset */
 		if ( isset( $input['auth'] ) ) {
-			if ( in_array( $input['auth'], array( 'ssl', 'tls' ), true ) ) {
-				$new_input['auth'] = sanitize_text_field( $input['auth'] );
+			$auth = sanitize_text_field( $input['auth'] );
+			if ( in_array( $auth, array( 'ssl', 'tls' ), true ) ) {
+				$new_input['auth'] = $auth;
 			} else {
 				$new_input['auth'] = '';
 			}
@@ -1089,8 +1088,11 @@ class Settings_Form {
 		$new_input['report_to'] = empty( $input['report_to'] ) ? $new_input['report_to'] : sanitize_text_field( $input['report_to'] );
 
 		/* OAuth2 Authentication Type */
-		if ( isset( $input['auth_type'] ) && in_array( $input['auth_type'], array( 'basic', 'oauth2' ), true ) ) {
-			$new_input['auth_type'] = sanitize_text_field( $input['auth_type'] );
+		if ( isset( $input['auth_type'] ) ) {
+			$auth_type = sanitize_text_field( $input['auth_type'] );
+			if ( in_array( $auth_type, array( 'basic', 'oauth2' ), true ) ) {
+				$new_input['auth_type'] = $auth_type;
+			}
 		}
 
 		/* OAuth2 Provider */
@@ -1124,9 +1126,9 @@ class Settings_Form {
 		} elseif ( 'outlook' === $new_input['auth_method'] ) {
 			$new_input['auth_type']       = 'oauth2';
 			$new_input['oauth2_provider'] = 'office365';
-		} elseif ( 'smtp' === $new_input['auth_method'] ) {
-            // Ensure auth_type is not oauth2 if basic is intended, or let it be if user chose oauth2 for custom smtp
 		}
+		// For 'smtp' auth_method, ensure auth_type is not oauth2 if basic is intended,
+		// or let it be if user chose oauth2 for custom smtp
 
 		return $new_input;
 	}

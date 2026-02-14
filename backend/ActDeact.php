@@ -146,14 +146,14 @@ class ActDeact extends Base {
 			// basic or oauth2.
 							'oauth2_provider'  => '',
 			// gmail, office365.
-							'oauth2_client_id'     => '',
-		'oauth2_client_secret' => '',
-		'oauth2_access_token'  => '',
-		'oauth2_refresh_token' => '',
-		'oauth2_expires'       => '',
-		'oauth2_user_email'    => '',
-		'oauth2_connected_at'  => '',
-	);
+							'oauth2_client_id' => '',
+			'oauth2_client_secret'             => '',
+			'oauth2_access_token'              => '',
+			'oauth2_refresh_token'             => '',
+			'oauth2_expires'                   => '',
+			'oauth2_user_email'                => '',
+			'oauth2_connected_at'              => '',
+		);
 	}
 
 	/**
