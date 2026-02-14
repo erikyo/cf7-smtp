@@ -71,7 +71,7 @@ function cf7_smtp_decrypt( string $value, string $cipher = 'aes-256-cbc' ): stri
  * @return void
  */
 function cf7_smtp_log( $log_data ) {
-	if ( ! empty( $log_data && WP_DEBUG ) ) {
+	if ( WP_DEBUG && ! empty( $log_data ) ) {
 		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		error_log(
 			is_string( $log_data )

@@ -20,5 +20,5 @@ interface OAuthTokenProvider {
 	 *
 	 * @return string The base64-encoded OAuth token
 	 */
-	public function getOauth64(): string;
+	public function get_oauth64(): string;
 }

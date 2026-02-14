@@ -80,7 +80,7 @@ class CF7_SMTP_OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider 
 	 * @return string The base64-encoded OAuth token
 	 * @throws \PHPMailer\PHPMailer\Exception If the OAuth provider or refresh token is not configured.
 	 */
-	public function getOauth64(): string {
+	public function get_oauth64(): string {
 		if ( ! $this->provider || ! $this->refresh_token ) {
 			throw new \PHPMailer\PHPMailer\Exception( 'OAuth provider or refresh token not configured.' );
 		}

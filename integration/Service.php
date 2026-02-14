@@ -62,7 +62,7 @@ class Service extends GlobalWPCF7_Service {
 		$this->options = get_option( 'cf7-smtp-options' );
 
 		if ( isset( $_POST['cf7_smtp_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
-			$this->options['enabled'] = 'Enable' === $_POST['cf7_smtp_submit'];
+			$this->options['enabled'] = 'Enable' === sanitize_text_field( wp_unslash( $_POST['cf7_smtp_submit'] ) );
 			update_option( 'cf7-smtp-options', $this->options );
 			// Add a notice that the settings have been saved.
 			add_action(
@@ -175,6 +175,7 @@ class Service extends GlobalWPCF7_Service {
 				if ( ! empty( $_POST['reset'] ) ) {
 					$redirect_to = $this->menu_page_url( 'action=setup' );
 					wp_safe_redirect( $redirect_to );
+					exit();
 				}
 				exit();
 			}
