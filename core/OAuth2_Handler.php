@@ -194,6 +194,9 @@ class OAuth2_Handler extends Base {
 			$options['prompt']      = 'consent';
 		}
 
+		// Use WP nonce as state for security and to satisfy Settings_Page verification
+		$options['state'] = wp_create_nonce( 'cf7-smtp-oauth2' );
+
 		$auth_url = $provider->getAuthorizationUrl( $options );
 		$state    = $provider->getState();
 
