@@ -115,21 +115,21 @@ class Settings_Page extends Base {
 			return;
 		}
 
-		error_log( 'CF7-SMTP OAuth2: callback detected' );
-
-		if ( ! isset( $_GET['code'] ) || ! isset( $_GET['state'] ) ) {
-			error_log( 'CF7-SMTP OAuth2: missing code or state' );
+		// Verify nonce for OAuth2 callback
+		if ( ! isset( $_GET['state'] ) || ! wp_verify_nonce( sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Invalid nonce or missing state parameter' );
 			return;
 		}
 
-		error_log( 'CF7-SMTP OAuth2: processing code and state' );
+		if ( ! isset( $_GET['code'] ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Missing authorization code' );
+			return;
+		}
 
 		try {
 			$handler = new \cf7_smtp\Core\OAuth2_Handler();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$result = $handler->handle_callback( \sanitize_text_field( $_GET['code'] ), \sanitize_text_field( $_GET['state'] ) );
-
-			error_log( 'CF7-SMTP OAuth2: handle_callback result: ' . wp_json_encode( $result ) );
+			$result = $handler->handle_callback( \sanitize_text_field( wp_unslash( $_GET['code'] ) ), sanitize_text_field( wp_unslash( $_GET['state'] ) ) );
 
 			if ( $result['success'] ) {
 				\set_transient( 'cf7_smtp_oauth2_notice', $result['message'], 60 );
@@ -137,11 +137,11 @@ class Settings_Page extends Base {
 				\set_transient( 'cf7_smtp_oauth2_error', $result['message'], 60 );
 			}
 		} catch ( \Exception $e ) {
-			error_log( 'CF7-SMTP OAuth2: Exception: ' . $e->getMessage() );
+			cf7_smtp_log( 'OAuth2 callback exception: ' . $e->getMessage() );
 			\set_transient( 'cf7_smtp_oauth2_error', $e->getMessage(), 60 );
 		}
 
-		\wp_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+		\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
 		exit;
 	}
 
@@ -149,7 +149,8 @@ class Settings_Page extends Base {
 	 * Display OAuth2 notices.
 	 */
 	public function display_oauth2_notices() {
-		if ( $notice = \get_transient( 'cf7_smtp_oauth2_notice' ) ) {
+		$notice = \get_transient( 'cf7_smtp_oauth2_notice' );
+		if ( $notice ) {
 			?>
 			<div class="notice notice-success is-dismissible">
 				<p><?php echo \esc_html( $notice ); ?></p>
@@ -158,7 +159,8 @@ class Settings_Page extends Base {
 			\delete_transient( 'cf7_smtp_oauth2_notice' );
 		}
 
-		if ( $error = \get_transient( 'cf7_smtp_oauth2_error' ) ) {
+		$error = \get_transient( 'cf7_smtp_oauth2_error' );
+		if ( $error ) {
 			?>
 			<div class="notice notice-error is-dismissible">
 				<p><?php echo \esc_html( $error ); ?></p>
