@@ -1,6 +1,10 @@
 <?php
 /**
- * CF7_SMTP OAuth Token Provider Interface
+ * PHPMailer OAuthTokenProvider Interface
+ *
+ * WordPress's bundled PHPMailer references this interface in its setOAuth()
+ * method but does not ship the interface file. This file provides it so
+ * the cf7-smtp plugin can use XOAUTH2 authentication.
  *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
@@ -9,17 +13,6 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-use PHPMailer\PHPMailer\Exception;
-
-/**
- * OAuth Token Provider Interface for PHPMailer
- */
-interface CF7_SMTP_OAuthTokenProvider {
-	/**
-	 * Get the OAuth64 string for PHPMailer
-	 *
-	 * @return string The OAuth64 string
-	 * @throws Exception If OAuth token retrieval fails.
-	 */
-	public function get_oauth64(): string;
+if ( ! interface_exists( 'PHPMailer\\PHPMailer\\OAuthTokenProvider' ) ) {
+	require_once __DIR__ . '/PHPMailerOAuthTokenProvider.php';
 }
