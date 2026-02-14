@@ -611,7 +611,7 @@ class Mailer extends Base {
 		// Load the OAuthProvider class (not autoloaded as it's a global class).
 		require_once __DIR__ . '/OAuthProvider.php';
 
-		$oauth_provider = new \CF7_SMTP_OAuthProvider(
+		$oauth_provider = new \cf7_smtp\Core\OAuthProvider(
 			$oauth2_handler->get_provider_instance(),
 			$this->options['oauth2_client_id'] ?? '',
 			cf7_smtp_decrypt( $this->options['oauth2_client_secret'] ?? '' ),

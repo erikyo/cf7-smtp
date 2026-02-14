@@ -12,13 +12,14 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-require_once __DIR__ . '/OAuthTokenProvider.php';
+namespace cf7_smtp\Core;
 
 /**
  * Custom OAuth Token Provider for PHPMailer.
- * Implements PHPMailer\PHPMailer\OAuthTokenProvider using League OAuth2 Client.
+ * Implements cf7_smtp\Core\OAuthTokenProvider using League OAuth2 Client.
  */
-class CF7_SMTP_OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider {
+
+class OAuthProvider implements OAuthTokenProvider {
 	/**
 	 * The OAuth provider instance (League OAuth2 Client).
 	 *
@@ -80,7 +81,7 @@ class CF7_SMTP_OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider 
 	 * @return string The base64-encoded OAuth token
 	 * @throws \PHPMailer\PHPMailer\Exception If the OAuth provider or refresh token is not configured.
 	 */
-	public function get_oauth64(): string {
+	public function getOauth64(): string {
 		if ( ! $this->provider || ! $this->refresh_token ) {
 			throw new \PHPMailer\PHPMailer\Exception( 'OAuth provider or refresh token not configured.' );
 		}

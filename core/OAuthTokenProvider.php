@@ -13,6 +13,15 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-if ( ! interface_exists( 'PHPMailer\\PHPMailer\\OAuthTokenProvider' ) ) {
-	require_once __DIR__ . '/PHPMailerOAuthTokenProvider.php';
+namespace cf7_smtp\Core;
+
+if ( ! interface_exists( 'cf7_smtp\\Core\\OAuthTokenProvider' ) ) {
+	interface OAuthTokenProvider {
+		/**
+		 * Generate a base64-encoded OAuth token string for SMTP XOAUTH2.
+		 *
+		 * @return string The base64-encoded OAuth token
+		 */
+		public function get_oauth64(): string;
+	}
 }
