@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CF7_SMTP Rest api endpoints
  * provides cf7-smtp/v1/sendmail/ and cf7-smtp/v1/get_errors/
@@ -122,6 +121,57 @@ class Api extends Base {
 				),
 			)
 		);
+
+		// OAuth2 endpoints.
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/oauth2/authorize/',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'oauth2_authorize' ),
+				'args'                => array(
+					'nonce'    => array(
+						'required' => true,
+					),
+					'provider' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/oauth2/disconnect/',
+			array(
+				'methods'             => 'POST',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'oauth2_disconnect' ),
+				'args'                => array(
+					'nonce' => array(
+						'required' => true,
+					),
+				),
+			)
+		);
+
+		\register_rest_route(
+			'cf7-smtp/v1',
+			'/oauth2/status/',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => function () {
+					return current_user_can( 'manage_options' );
+				},
+				'callback'            => array( $this, 'oauth2_status' ),
+			)
+		);
+
 		\register_rest_route(
 			'cf7-smtp/v1',
 			'/check-dns/',
@@ -390,6 +440,216 @@ class Api extends Base {
 			array(
 				'status'  => 'success',
 				'message' => 'Logs flushed',
+			)
+		);
+	}
+
+	/**
+	 * OAuth2 authorize endpoint - returns the authorization URL.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response
+	 */
+	public function oauth2_authorize( $request ) {
+		if ( ! \wp_verify_nonce( $request['nonce'], 'cf7-smtp' ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'Invalid nonce', 'cf7-smtp' ),
+				)
+			);
+		}
+
+		$provider = sanitize_text_field( $request['provider'] );
+		if ( empty( $provider ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'Provider is required', 'cf7-smtp' ),
+				)
+			);
+		}
+
+		$oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$result         = $oauth2_handler->get_authorization_url( $provider );
+
+		if ( \is_wp_error( $result ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => $result->get_error_message(),
+				)
+			);
+		}
+
+		return \rest_ensure_response(
+			array(
+				'status'            => 'success',
+				'authorization_url' => $result,
+				'nonce'             => \wp_create_nonce( 'cf7-smtp' ),
+			)
+		);
+	}
+
+	/**
+	 * OAuth2 disconnect endpoint - revokes the stored tokens.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response
+	 */
+	public function oauth2_disconnect( $request ) {
+		if ( ! \wp_verify_nonce( $request['nonce'], 'cf7-smtp' ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'Invalid nonce', 'cf7-smtp' ),
+				)
+			);
+		}
+
+		$oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$result         = $oauth2_handler->disconnect();
+
+		if ( $result ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'success',
+					'message' => __( 'OAuth2 connection disconnected successfully', 'cf7-smtp' ),
+					'nonce'   => \wp_create_nonce( 'cf7-smtp' ),
+				)
+			);
+		}
+
+		return \rest_ensure_response(
+			array(
+				'status'  => 'error',
+				'message' => __( 'Failed to disconnect OAuth2', 'cf7-smtp' ),
+				'nonce'   => \wp_create_nonce( 'cf7-smtp' ),
+			)
+		);
+	}
+
+	/**
+	 * OAuth2 status endpoint - returns the current OAuth2 connection status.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function oauth2_status() {
+		$oauth2_handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$status         = $oauth2_handler->get_status();
+
+		return \rest_ensure_response(
+			array(
+				'status' => 'success',
+				'data'   => $status,
+			)
+		);
+	}
+
+	/**
+	 * Checks DNS records (MX, SPF, DKIM) for variables.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return \WP_REST_Response
+	 */
+	public function smtp_check_dns( $request ) {
+		if ( ! \wp_verify_nonce( $request['nonce'], 'cf7-smtp' ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'Invalid nonce', 'cf7-smtp' ),
+				)
+			);
+		}
+
+		$email = sanitize_email( $request['email'] );
+		$host  = sanitize_text_field( $request['host'] );
+
+		if ( ! is_email( $email ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'Invalid email address', 'cf7-smtp' ),
+				)
+			);
+		}
+
+		$domain  = substr( strrchr( $email, '@' ), 1 );
+		$results = array(
+			'mx'      => false,
+			'spf'     => false,
+			'dkim'    => false,
+			'risk'    => 'low',
+			'details' => array(),
+		);
+
+		// 1. MX Lookup
+		$mx_records = dns_get_record( $domain, DNS_MX );
+		if ( ! empty( $mx_records ) ) {
+			$results['mx']        = true;
+			$results['details'][] = __( 'MX records found.', 'cf7-smtp' );
+		} else {
+			$results['details'][] = __( 'No MX records found. Emails may not be delivered.', 'cf7-smtp' );
+			$results['risk']      = 'high';
+		}
+
+		// 2. SPF Check
+		$txt_records = dns_get_record( $domain, DNS_TXT );
+		$spf_found   = false;
+		$spf_record  = '';
+		if ( ! empty( $txt_records ) ) {
+			foreach ( $txt_records as $record ) {
+				if ( isset( $record['txt'] ) && strpos( $record['txt'], 'v=spf1' ) !== false ) {
+					$spf_found  = true;
+					$spf_record = $record['txt'];
+					break;
+				}
+			}
+		}
+
+		if ( $spf_found ) {
+			$results['spf'] = true;
+			/* translators: %s: SPF record */
+			$results['details'][] = sprintf( __( 'SPF record found: %s', 'cf7-smtp' ), $spf_record );
+		} else {
+			$results['details'][] = __( 'No SPF record found. High risk of spam classification.', 'cf7-smtp' );
+			if ( 'high' !== $results['risk'] ) {
+				$results['risk'] = 'medium';
+			}
+		}
+
+		// 3. Authorization Logic (Domain Alignment)
+		// 3. Authorization Logic (Domain Alignment)
+		if ( ! empty( $host ) ) {
+			if ( false === strpos( $host, $domain ) ) {
+				if ( ! $spf_found ) {
+					$results['risk']      = 'high';
+					$results['details'][] = __( 'Domain mismatch: SMTP host does not match email domain and no SPF record found.', 'cf7-smtp' );
+				} else {
+					if ( 'low' === $results['risk'] ) {
+						$results['risk'] = 'medium';
+					}
+					/* translators: 1: domain name, 2: SMTP host */
+					$results['details'][] = sprintf( __( 'Domain mismatch: You are sending from %1$s via %2$s. Ensure this host is authorized in the SPF record.', 'cf7-smtp' ), $domain, $host );
+				}
+			}
+		} else {
+			$results['risk']      = 'medium';
+			$results['details'][] = __( 'No SMTP Host configured. We cannot verify if the server is authorized to send emails for this domain.', 'cf7-smtp' );
+		}
+
+		$status_msg = __( 'DNS Check Complete.', 'cf7-smtp' );
+		if ( 'high' === $results['risk'] ) {
+			$status_msg = __( 'Action Required: Potential Deliverability Issue detected.', 'cf7-smtp' );
+		} elseif ( 'medium' === $results['risk'] ) {
+			$status_msg = __( 'Warning: Deliverability improvements possible.', 'cf7-smtp' );
+		}
+
+		return \rest_ensure_response(
+			array(
+				'status'  => 'success',
+				'data'    => $results,
+				'message' => $status_msg,
 			)
 		);
 	}

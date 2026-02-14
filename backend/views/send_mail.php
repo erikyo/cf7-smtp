@@ -51,7 +51,7 @@ $cf7_smtp_from_mail = $cf7_smtp_mailer->get_setting_by_key( 'from_mail', $this->
 	<?php if ( defined( 'WP_DEBUG' ) ) : ?>
 		<div class="card">
 			<h3><?php echo esc_html__( 'Debug Options', 'cf7-smtp' ); ?></h3>
-			<pre><?php echo json_encode( $this->options, JSON_PRETTY_PRINT ); ?></pre>
+			<pre><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></pre>
 		</div>
 	<?php endif; ?>
 

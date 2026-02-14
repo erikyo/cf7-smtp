@@ -1,6 +1,25 @@
 @use "../vars.scss" as *;
 
 /**
+ * The Common style for the wrappers that contains the cards in the admin page.
+ */
+.cf7-smtp-options,
+.cf7-smtp-tester {
+	.flex {
+		display: flex;
+
+		&.checkbox-wrapper input {
+			align-self: baseline;
+			margin: 6px 12px 0 0;
+		}
+	}
+
+	.card {
+		max-width: 760px;
+	}
+}
+
+/**
  * This stylesheet is used to style the settings page of the plugin.
  */
 #cf7-smtp-settings {

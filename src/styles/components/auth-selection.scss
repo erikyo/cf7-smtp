@@ -1,0 +1,90 @@
+.cf7-smtp-auth-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 15px;
+	margin-bottom: 20px;
+	max-width: 600px;
+}
+
+.cf7-smtp-auth-card {
+	display: block; // Label acts as block
+	border: 1px solid #ccd0d4;
+	background: #fff;
+	padding: 20px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+	position: relative;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+
+	&:hover {
+		border-color: #2271b1;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+	}
+
+	&.selected {
+		border-color: #2271b1;
+		background-color: #f0f6fc;
+		box-shadow: 0 0 0 1px #2271b1;
+	}
+
+	&.disabled {
+		opacity: 0.6;
+		pointer-events: none;
+		background: #f6f7f7;
+	}
+
+	input[type="radio"] {
+		position: absolute;
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.cf7-smtp-auth-card-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+
+		.dashicons {
+			font-size: 32px;
+			width: 32px;
+			height: 32px;
+			color: #50575e;
+		}
+
+		.cf7-smtp-auth-label {
+			font-size: 14px;
+			font-weight: 500;
+			color: #1d2327;
+		}
+	}
+
+	&.selected .dashicons {
+		color: #2271b1;
+	}
+}
+
+// Ensure the OAuth status has some spacing
+.cf7-smtp-oauth2-status {
+	margin: 15px 0;
+	padding: 10px;
+	border-left: 4px solid #72aee6;
+	background: #fff;
+	
+	&.cf7-smtp-oauth2-status--connected {
+		border-left-color: #00a32a;
+	}
+	
+	&.cf7-smtp-oauth2-status--disconnected {
+		border-left-color: #d63638;
+	}
+
+	.dashicons {
+		margin-right: 5px;
+		vertical-align: middle;
+	}
+}
