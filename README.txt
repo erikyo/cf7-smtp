@@ -38,6 +38,19 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 4. Outlook (tls and ssl)
 4. Office365 (tls)
 
+= OAuth2 Setup (Google Gmail) =
+
+To use Gmail with OAuth2, you need to create a Google Cloud Project:
+
+1. Go to **Google Cloud Console** (console.cloud.google.com).
+2. Create a new project.
+3. Go to **APIs & Services > Credentials** and click **Create Credentials > OAuth client ID**.
+4. Application type: **Web application**.
+5. **Authorized redirect URIs**: Copy the URL from the plugin settings (e.g., `https://your-site.com/wp-admin/admin.php?page=cf7-smtp&oauth2_callback=1`).
+6. Copy the **Client ID** and **Client Secret** into the plugin settings.
+7. Important: Go to **OAuth consent screen > Test users** and add your email address if the app is in "Testing" mode.
+8. Click **Connect with Gmail** in the plugin settings.
+
 Would you like to find more presets (that you think are useful to other users)? Open a request in the support form and provide the necessary connection data (auth, server address and port). In the next cf7-smtp version you will find the required configuration among the presets.
 
 = Security =
