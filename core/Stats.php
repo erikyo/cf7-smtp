@@ -258,7 +258,7 @@ class Stats extends Base {
 	 * @param bool                 $last_report Optional. Unix timestamp of the last report. Default current time.
 	 * @return string Formatted HTML string containing the styled email report.
 	 */
-	public function format_report( array $report, bool $last_report = false ): string {
+	public function format_report( array $report, int $last_report = 0 ): string {
 
 		if ( ! $last_report ) {
 			$last_report = time();
