@@ -28,7 +28,7 @@
         "plugin-zip": "wp-scripts plugin-zip",
         "preplugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build && npm run make-pot",
         "lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
-        "lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
+        "lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
         "packages-update": "wp-scripts packages-update",
         "wp-env:start": "wp-env start --xdebug",
         "wp-env:stop": "wp-env stop",
