@@ -5,19 +5,23 @@
  * @param {HTMLElement} formElem - the form row
  * @param {boolean}     enabled  - show or hide the form row
  */
-export function enableAdvanced( elements, formElem, enabled ) {
+export function enableAdvanced(
+	elements: number[],
+	formElem: HTMLElement | null,
+	enabled: boolean
+): void {
 	if ( formElem ) {
 		elements.forEach( ( el ) => {
-			formElem.querySelector( `tr:nth-child(${ el })` ).style.display =
-				enabled ? 'table-row' : 'none';
+			const row = formElem.querySelector(
+				`tr:nth-child(${ el })`
+			) as HTMLElement;
+			if ( row ) {
+				row.style.display = enabled ? 'table-row' : 'none';
+			}
 		} );
 	} else {
 		// eslint-disable-next-line no-console
-		console.log(
-			`Cannot find form element ${ elements } of ${ toString(
-				formElem
-			) }`
-		);
+		console.log( `The form has no element child number ${ elements }` );
 	}
 }
 
@@ -28,9 +32,14 @@ export function enableAdvanced( elements, formElem, enabled ) {
  * @param {string} raw - The line of text to extract the data from.
  * @return {Array} An array with the date and message.
  */
-export function extractData( raw ) {
+export function extractData(
+	raw: string
+): [ string, string | false, string | false ] {
 	const regex = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (.*)|\w.+/g;
-	return regex.exec( raw ) || [ raw, false, false ];
+	const result = regex.exec( raw );
+	return result
+		? [ result[ 0 ], result[ 1 ] || false, result[ 2 ] || false ]
+		: [ raw, false, false ];
 }
 
 /**
@@ -38,4 +47,5 @@ export function extractData( raw ) {
  *
  * @param {number} ms - The number of milliseconds to delay.
  */
-export const delay = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
+export const delay = ( ms: number ): Promise< void > =>
+	new Promise( ( resolve ) => setTimeout( resolve, ms ) );
