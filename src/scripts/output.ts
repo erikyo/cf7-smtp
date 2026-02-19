@@ -7,7 +7,10 @@ import { extractData } from './utils';
  * @param {HTMLElement} logWrap   - The element that will contain the log messages.
  * @param {?string}     [message] - The message to be displayed in the log.
  */
-export function cleanOutput( logWrap, message = '' ) {
+export function cleanOutput(
+	logWrap: HTMLElement,
+	message: string = ''
+): void {
 	const date = new Date();
 	logWrap.innerHTML =
 		`<code class="logdate alignright">${ __(
@@ -16,7 +19,16 @@ export function cleanOutput( logWrap, message = '' ) {
 		) } ${ date }</code>` + message;
 }
 
-export function appendOutput( logWrap, message = '' ) {
+/**
+ * Append a message to the output container.
+ *
+ * @param logWrap The element where the output will be displayed.
+ * @param message The message to be displayed in the log.
+ */
+export function appendOutput(
+	logWrap: HTMLElement,
+	message: string = ''
+): void {
 	logWrap.insertAdjacentHTML( 'beforeend', message );
 }
 
@@ -27,38 +39,42 @@ export function appendOutput( logWrap, message = '' ) {
  * @param {string}       msg             - the message to be displayed
  * @param {boolean|null} mailSent        if the mail was sent or not
  */
-export function appendOutputMultiline( outputContainer, msg, mailSent = null ) {
-	msg = msg.split( /\n|<br\s*\/?>/ );
+export function appendOutputMultiline(
+	outputContainer: HTMLElement,
+	msg: string,
+	mailSent: boolean | null = null
+): void {
+	const lines = msg.split( /\n|<br\s*\/?>/ );
 	let lastTimestamp = 0;
 
-	if ( msg.length ) {
-		msg.forEach( ( line, index ) => {
-			// TODO: regex here to search for errors
-
+	if ( lines.length ) {
+		lines.forEach( ( line, index ) => {
 			const [ raw, date, text ] = extractData( line );
+			const newDate = Number( date );
 
 			/* will add the lines "softly" */
-			if ( raw !== '' )
+			if ( raw !== '' ) {
 				setTimeout( () => {
 					if ( ! text ) {
 						appendOutput(
 							outputContainer,
 							`<code>${ raw }</code>`
 						);
-					} else if ( date === lastTimestamp ) {
+					} else if ( newDate === lastTimestamp ) {
 						appendOutput(
 							outputContainer,
 							`<code>${ text }</code>`
 						);
 					} else {
 						// refresh the timestamp
-						lastTimestamp = date;
+						lastTimestamp = newDate;
 						appendOutput(
 							outputContainer,
 							`<span class="timestamp">${ date }</span><code>${ text }</code>`
 						);
 					}
 				}, 50 * index );
+			}
 		} );
 	}
 
