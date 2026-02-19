@@ -1,4 +1,4 @@
-# Copyright (C) 2025 SMTP for Contact Form 7
+# Copyright (C) 2026 SMTP for Contact Form 7
 # This file is distributed under the GPL 2.0+ license.
 msgid ""
 msgstr ""
@@ -8,11 +8,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2025-12-10T02:00:14.458Z\n"
-"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2026-02-14T14:03:23.349Z\n"
+"PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: codekraft <erik@codekraft.it>\n"
 "Language-Team: codekraft <erik@codekraft.it>\n"
-"X-Generator: @wp-blocks/make-pot 1.6.3\n"
+"X-Generator: @wp-blocks/make-pot 1.6.4\n"
 "Language: en\n"
 "X-Domain: cf7-smtp\n"
 
@@ -45,35 +45,105 @@ msgstr ""
 msgid "SMTP for Contact Form 7 requires PHP 7.1 or newer."
 msgstr ""
 
-#: rest/Api.php:139
+#: rest/Api.php:211
 msgid "no subject provided"
 msgstr ""
 
-#: rest/Api.php:140
+#: rest/Api.php:212
 msgid "Empty mail body"
 msgstr ""
 
-#: rest/Api.php:181
+#: rest/Api.php:252
 msgid "Mail Processed with success ?"
 msgstr ""
 
-#: rest/Api.php:183
+#: rest/Api.php:254
 msgid "Mail processed with errors"
 msgstr ""
 
-#: rest/Api.php:238
+#: rest/Api.php:309
 msgid "Still no Server response"
 msgstr ""
 
-#: integration/Service.php:57
+#: rest/Api.php:458
+#: rest/Api.php:505
+#: rest/Api.php:560
+msgid "Invalid nonce"
+msgstr ""
+
+#: rest/Api.php:468
+msgid "Provider is required"
+msgstr ""
+
+#: rest/Api.php:517
+msgid "OAuth2 connection disconnected successfully"
+msgstr ""
+
+#: rest/Api.php:526
+msgid "Failed to disconnect OAuth2"
+msgstr ""
+
+#: rest/Api.php:572
+msgid "Invalid email address"
+msgstr ""
+
+#: rest/Api.php:590
+msgid "MX records found."
+msgstr ""
+
+#: rest/Api.php:592
+msgid "No MX records found. Emails may not be delivered."
+msgstr ""
+
+# %s: SPF record
+#: rest/Api.php:613
+msgid "SPF record found: %s"
+msgstr ""
+
+#: rest/Api.php:615
+msgid "No SPF record found. High risk of spam classification."
+msgstr ""
+
+#: rest/Api.php:627
+msgid ""
+"Domain mismatch: SMTP host does not match email domain and no SPF record "
+"found."
+msgstr ""
+
+# 1: domain name, 2: SMTP host
+#: rest/Api.php:633
+msgid ""
+"Domain mismatch: You are sending from %1$s via %2$s. Ensure this host is "
+"authorized in the SPF record."
+msgstr ""
+
+#: rest/Api.php:638
+msgid ""
+"No SMTP Host configured. We cannot verify if the server is authorized to "
+"send emails for this domain."
+msgstr ""
+
+#: rest/Api.php:641
+msgid "DNS Check Complete."
+msgstr ""
+
+#: rest/Api.php:643
+msgid "Action Required: Potential Deliverability Issue detected."
+msgstr ""
+
+#: rest/Api.php:645
+msgid "Warning: Deliverability improvements possible."
+msgstr ""
+
+#: integration/Service.php:71
 msgid "Settings saved."
 msgstr ""
 
-#: integration/Service.php:72
+#: integration/Service.php:86
 msgid "CF7 SMTP"
 msgstr ""
 
-#: integration/Service.php:177
+#: integration/Service.php:198
 msgid ""
 "SMTP stands for ?Simple Mail Transfer Protocol?.It is a "
 "connection-oriented, text-based network protocol, the purpose of this "
@@ -81,98 +151,144 @@ msgid ""
 "form"
 msgstr ""
 
-#: integration/Service.php:188
+#: integration/Service.php:209
 msgid "https://wordpress.org/plugins/cf7-smtp/"
 msgstr ""
 
-#: integration/Service.php:196
+#: integration/Service.php:217
 msgid "CF7 SMTP is active on this site."
 msgstr ""
 
-#: integration/Service.php:206
+#: integration/Service.php:227
 msgid "Disable"
 msgstr ""
 
-#: integration/Service.php:206
+#: integration/Service.php:227
 #: backend/Settings_Form.php:119
 msgid "Enable"
 msgstr ""
 
-#: engine/Initialize.php:77
+#: engine/Initialize.php:76
 msgid "SMTP for Contact Form 7 need "
 msgstr ""
 
-#: engine/Initialize.php:79
+#: engine/Initialize.php:78
 msgid "Contact Form 7"
 msgstr ""
 
-#: engine/Initialize.php:80
+#: engine/Initialize.php:79
 msgid " installed and enabled in order to work."
 msgstr ""
 
-#: core/Stats.php:175
+#: core/Stats.php:283
 msgid "Mail sent since last update"
 msgstr ""
 
-#: core/Stats.php:201
-#: core/Stats.php:218
-msgid "Email statistics"
+#: core/Stats.php:313
+msgid "No title"
 msgstr ""
 
-#: core/Stats.php:202
-msgid "Sent with success"
+#: core/Stats.php:336
+msgid "Email Statistics"
 msgstr ""
 
-#: core/Stats.php:204
+#: core/Stats.php:338
+msgid "Sent Successfully"
+msgstr ""
+
+#: core/Stats.php:340
 msgid "Failed"
 msgstr ""
 
-#: core/Stats.php:210
+#: core/Stats.php:347
 msgid "No recent e-mails to show!"
 msgstr ""
 
-#: core/Stats.php:222
+#: core/Stats.php:362
+msgid "Overall Statistics"
+msgstr ""
+
+#: core/Stats.php:364
+msgid "total emails sent"
+msgstr ""
+
+#: core/Stats.php:366
+msgid "emails since last report"
+msgstr ""
+
+#: core/Stats.php:373
 msgid "No Mail in storage"
 msgstr ""
 
+#: core/Stats.php:447
+#: core/Stats.php:448
+msgid "CF7 SMTP Email Report"
+msgstr ""
+
+# %s: plugin name
+#: core/Stats.php:453
+msgid "This report was generated by %s"
+msgstr ""
+
+#: core/OAuth2_Handler.php:224
+msgid "Invalid state parameter. Please try again."
+msgstr ""
+
+#: core/OAuth2_Handler.php:232
+msgid "Provider not found. Please try again."
+msgstr ""
+
+#: core/OAuth2_Handler.php:244
+msgid "Could not create OAuth2 provider."
+msgstr ""
+
+#: core/OAuth2_Handler.php:280
+msgid "Successfully connected!"
+msgstr ""
+
+# %s: error message
+#: core/OAuth2_Handler.php:290
+msgid "OAuth2 error: %s"
+msgstr ""
+
 # %s site name
-#: core/Mailer.php:423
+#: core/Mailer.php:454
 msgid "%s Mail report"
 msgstr ""
 
-#: core/Cron.php:44
+#: core/Cron.php:41
 msgid "Every 2 weeks"
 msgstr ""
 
-#: core/Cron.php:50
+#: core/Cron.php:47
 msgid "Every month"
 msgstr ""
 
-#: backend/Widget.php:42
+#: backend/Widget.php:52
 msgid "Stats for CF7 SMTP"
 msgstr ""
 
-#: backend/Widget.php:53
+#: backend/Widget.php:63
 msgid "Mail vs Time"
 msgstr ""
 
-#: backend/Widget.php:56
+#: backend/Widget.php:66
 msgid "Mail sent vs Mail failed"
 msgstr ""
 
-#: backend/Widget.php:63
+#: backend/Widget.php:73
 msgid "No email sent (yet)"
 msgstr ""
 
-#: backend/Settings_Page.php:60
+#: backend/Settings_Page.php:63
 msgid "SMTP"
 msgstr ""
 
-#: backend/Settings_Page.php:93
+#: backend/Settings_Page.php:96
 msgid "Setup SMTP"
 msgstr ""
 
-#: backend/Settings_Page.php:93
+#: backend/Settings_Page.php:96
 msgid "Settings"
 msgstr ""
 
@@ -181,115 +297,270 @@ msgid "Smtp Server Setup"
 msgstr ""
 
 #: backend/Settings_Form.php:128
-msgid "SMTP configuration preset"
+msgid "Mail Service"
 msgstr ""
 
 #: backend/Settings_Form.php:137
-msgid "Auth"
+msgid "SMTP configuration preset"
 msgstr ""
 
 #: backend/Settings_Form.php:146
-msgid "Host"
+msgid "Encryption"
 msgstr ""
 
 #: backend/Settings_Form.php:155
-msgid "Port"
+msgid "SMTP Mode"
 msgstr ""
 
 #: backend/Settings_Form.php:164
-msgid "SMTP User Name"
+msgid "Host"
 msgstr ""
 
 #: backend/Settings_Form.php:173
-msgid "SMTP Password"
+msgid "Port"
 msgstr ""
 
 #: backend/Settings_Form.php:182
-msgid "Advanced Options"
+msgid "SMTP User Name"
 msgstr ""
 
-#: backend/Settings_Form.php:190
-msgid "Allow insecure options"
+#: backend/Settings_Form.php:191
+msgid "SMTP Password"
 msgstr ""
 
-#: backend/Settings_Form.php:199
-msgid "Add Reply To"
+#: backend/Settings_Form.php:200
+msgid "OAuth2 Authentication"
 msgstr ""
 
 #: backend/Settings_Form.php:208
+msgid "OAuth2 Provider"
+msgstr ""
+
+#: backend/Settings_Form.php:218
+msgid "Authorized Redirect URI"
+msgstr ""
+
+#: backend/Settings_Form.php:228
+msgid "Client ID"
+msgstr ""
+
+#: backend/Settings_Form.php:238
+msgid "Client Secret"
+msgstr ""
+
+#: backend/Settings_Form.php:248
+msgid "OAuth2 Connection"
+msgstr ""
+
+#: backend/Settings_Form.php:258
+msgid "Advanced Options"
+msgstr ""
+
+#: backend/Settings_Form.php:266
+msgid "Allow insecure options"
+msgstr ""
+
+#: backend/Settings_Form.php:275
+msgid "Add Reply To"
+msgstr ""
+
+#: backend/Settings_Form.php:284
 msgid "From mail"
 msgstr ""
 
-#: backend/Settings_Form.php:217
+#: backend/Settings_Form.php:293
 msgid "From name"
 msgstr ""
 
-#: backend/Settings_Form.php:226
+#: backend/Settings_Form.php:302
 msgid "Style"
 msgstr ""
 
-#: backend/Settings_Form.php:234
+#: backend/Settings_Form.php:310
 msgid "Custom Template"
 msgstr ""
 
-#: backend/Settings_Form.php:243
+#: backend/Settings_Form.php:319
 msgid "Report"
 msgstr ""
 
-#: backend/Settings_Form.php:251
+#: backend/Settings_Form.php:327
 msgid "Schedule report every"
 msgstr ""
 
-#: backend/Settings_Form.php:260
+#: backend/Settings_Form.php:336
 msgid "Log retention days"
 msgstr ""
 
-#: backend/Settings_Form.php:269
+#: backend/Settings_Form.php:345
 msgid "Flush logs"
 msgstr ""
 
-#: backend/Settings_Form.php:278
+#: backend/Settings_Form.php:354
 msgid "Email report to"
 msgstr ""
 
-#: backend/Settings_Form.php:287
+#: backend/Settings_Form.php:363
 msgid "Send report now"
 msgstr ""
 
-#: backend/Settings_Form.php:300
+#: backend/Settings_Form.php:376
 msgid ""
 "Welcome! Remember that you can activate and deactivate the smtp service "
 "simply by ticking the checkbox below"
 msgstr ""
 
-#: backend/Settings_Form.php:309
+#: backend/Settings_Form.php:385
 msgid ""
 "Add an html template that wraps the email. (ps. You can enable a "
 "user-defined template, see the documentation for more information)"
 msgstr ""
 
-#: backend/Settings_Form.php:318
+#: backend/Settings_Form.php:394
 msgid ""
 "Do you want to know if the mails are running smoothly? Let me occasionally "
 "e-mail a summary to verify the functionality."
 msgstr ""
 
-#: backend/Settings_Form.php:330
+#: backend/Settings_Form.php:406
 msgid ""
 "Leave empty to NOT override the WordPress defaults (the one used can be "
 "different from the one you see below, if left blank the one set in Contact "
 "Form 7 will be used)"
 msgstr ""
 
-#: backend/Settings_Form.php:433
+#: backend/Settings_Form.php:416
+msgid ""
+"Use OAuth2 for secure authentication without storing passwords. Connect "
+"with your email provider using OAuth2."
+msgstr ""
+
+#: backend/Settings_Form.php:430
+msgid "Select a provider"
+msgstr ""
+
+#: backend/Settings_Form.php:478
+msgid "Enter the Client ID from your OAuth2 provider (e.g., Google Cloud Console)."
+msgstr ""
+
+#: backend/Settings_Form.php:492
+msgid "????????"
+msgstr ""
+
+#: backend/Settings_Form.php:493
+msgid ""
+"Enter the Client Secret from your OAuth2 provider. This will be encrypted "
+"before storing."
+msgstr ""
+
+#: backend/Settings_Form.php:506
+msgid "Connected"
+msgstr ""
+
+#: backend/Settings_Form.php:513
+msgid "Connected as"
+msgstr ""
+
+#: backend/Settings_Form.php:515
+#: src/scripts/admin.js:339
+#: src/scripts/admin.js:349
+msgid "Disconnect"
+msgstr ""
+
+#: backend/Settings_Form.php:525
+msgid "Not connected"
+msgstr ""
+
+#: backend/Settings_Form.php:526
+msgid "Connect with OAuth2"
+msgstr ""
+
+#: backend/Settings_Form.php:527
+msgid "Save your Client ID and Client Secret first, then click Connect."
+msgstr ""
+
+#: backend/Settings_Form.php:549
+msgid "WordPress"
+msgstr ""
+
+#: backend/Settings_Form.php:553
+msgid "Other SMTP"
+msgstr ""
+
+#: backend/Settings_Form.php:557
+msgid "Gmail"
+msgstr ""
+
+#: backend/Settings_Form.php:562
+msgid "Outlook"
+msgstr ""
+
+#: backend/Settings_Form.php:586
+msgid "Choose your preferred mail delivery method."
+msgstr ""
+
+#: backend/Settings_Form.php:593
+msgid ""
+"Warning: You are using the default WordPress mailer. Your emails might end "
+"up in spam."
+msgstr ""
+
+#: backend/Settings_Form.php:695
 msgid "none"
 msgstr ""
 
-#: backend/Settings_Form.php:645
+#: backend/Settings_Form.php:744
+msgid ""
+"Enable ONLY if your SMTP server uses self-signed certificates or outdated "
+"TLS versions. Warning: This reduces the security of your mail transmission."
+msgstr ""
+
+#: backend/Settings_Form.php:761
+msgid ""
+"Check this if you want the \"Reply-To\" header to be set automatically. "
+"This allows users to reply to a different address than the one used to send "
+"the email."
+msgstr ""
+
+#: backend/Settings_Form.php:844
+msgid "Send all emails via SMTP"
+msgstr ""
+
+#: backend/Settings_Form.php:847
+msgid "Send only Contact Form 7 emails via SMTP"
+msgstr ""
+
+#: backend/Settings_Form.php:848
+msgid ""
+"Choose \"Send Only CF7 Emails\" to use the default WordPress mailer for "
+"other emails.Choose whether to route all WordPress outgoing mail through "
+"SMTP or restrict it only to Contact Form 7. Global routing is recommended "
+"for better deliverability of password resets and notifications."
+msgstr ""
+
+#: backend/Settings_Form.php:886
+msgid "Check DNS now"
+msgstr ""
+
+#: backend/Settings_Form.php:887
+msgid ""
+"Crucial for deliverability. This address should match the domain of your "
+"SMTP account to satisfy SPF and DKIM checks. If left empty, the plugin will "
+"use the WordPress default or the one set in CF7, which might cause "
+"\"Spoofing\" alerts."
+msgstr ""
+
+#: backend/Settings_Form.php:904
+msgid ""
+"The display name shown in the recipient's inbox (e.g., \"Your Company "
+"Support\")."
+msgstr ""
+
+#: backend/Settings_Form.php:952
 msgid "Flush Logs"
 msgstr ""
 
-#: backend/Settings_Form.php:674
+#: backend/Settings_Form.php:986
 msgid "Send Report Now"
 msgstr ""
 
@@ -309,54 +580,103 @@ msgstr ""
 msgid "? Success!"
 msgstr ""
 
-#: src/scripts/admin.js:126
+#: src/scripts/admin.js:260
+msgid "Please select a provider (Gmail/Outlook) via the icons above."
+msgstr ""
+
+#: src/scripts/admin.js:270
+msgid "Connecting?"
+msgstr ""
+
+#: src/scripts/admin.js:286
+msgid "Failed to get authorization URL."
+msgstr ""
+
+#: src/scripts/admin.js:292
+#: src/scripts/admin.js:301
+msgid "Connect"
+msgstr ""
+
+#: src/scripts/admin.js:298
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: src/scripts/admin.js:314
+msgid "Are you sure you want to disconnect?"
+msgstr ""
+
+#: src/scripts/admin.js:321
+msgid "Disconnecting?"
+msgstr ""
+
+#: src/scripts/admin.js:336
+msgid "Failed to disconnect."
+msgstr ""
+
+#: src/scripts/admin.js:347
+msgid "An error occurred."
+msgstr ""
+
+#: src/scripts/admin.js:359
 msgid "Mail Server initialization completed!"
 msgstr ""
 
-#: src/scripts/admin.js:152
+#: src/scripts/admin.js:385
 msgid "Let's start a new server connection?"
 msgstr ""
 
-#: src/scripts/admin.js:175
-#: src/scripts/admin.js:202
-#: src/scripts/admin.js:225
+#: src/scripts/admin.js:408
+#: src/scripts/admin.js:435
+#: src/scripts/admin.js:458
 msgid "OOOPS something went wrong!"
 msgstr ""
 
-#: backend/views/send_mail.php:28
+#: src/scripts/admin.js:480
+msgid "Checking DNS?"
+msgstr ""
+
+#: src/scripts/admin.js:538
+msgid "Error checking DNS."
+msgstr ""
+
+#: backend/views/send_mail.php:27
 msgid "on"
 msgstr ""
 
-#: backend/views/send_mail.php:28
+#: backend/views/send_mail.php:27
 msgid "off"
 msgstr ""
 
-#: backend/views/send_mail.php:29
+#: backend/views/send_mail.php:28
 msgid "Send A test Mail"
 msgstr ""
 
-#: backend/views/send_mail.php:33
+#: backend/views/send_mail.php:32
 msgid "Add here something like: \"this is a test mail!\""
 msgstr ""
 
-#: backend/views/send_mail.php:39
+#: backend/views/send_mail.php:38
 msgid ""
 "Add here your custom mail body for the test mail otherwise a default body "
 "will be used"
 msgstr ""
 
-#: backend/views/admin.php:29
+#: backend/views/send_mail.php:63
+msgid "Debug Options"
+msgstr ""
+
+#: backend/views/admin.php:28
 msgid "Options"
 msgstr ""
 
-#: backend/views/admin.php:57
+#: backend/views/admin.php:62
 msgid "Next report:"
 msgstr ""
 
-#: backend/views/admin.php:59
+#: backend/views/admin.php:64
 msgid "Server time:"
 msgstr ""
 
-#: backend/views/admin.php:70
+#: backend/views/admin.php:75
 msgid "Stats"
 msgstr ""
