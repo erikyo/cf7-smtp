@@ -89,6 +89,48 @@ function cf7_smtp_log( $log_data ) {
  *
  * @return string The password with * placeholders.
  */
-function cf7_smtp_print_pass_placeholders( string $pass ) {
+function cf7_smtp_print_pass_placeholders( string $pass ): string {
 	return '"' . str_repeat( '*', strlen( $pass ) ) . '"';
+}
+
+/**
+ * Used to obfuscate the password and other sensitive data in the debug output
+ *
+ * @param string | null $user_pass The password to obfuscate
+ *
+ * @return string a string with *** placeholders if the string is not empty, otherwise returns an empty string
+ */
+function cf7_smtp_obfuscate_secret( ?string $user_pass ): string {
+	return ! empty( $user_pass ) ? '***' : '';
+}
+
+
+/**
+ * Used to obfuscate email addresses in the debug output
+ *
+ * @param string $email The email address to obfuscate
+ *
+ * @return string a string with ***@***.*** placeholders if the email is not empty, otherwise returns the value as is
+ */
+function cf7_smtp_obfuscate_email( string $email ): string {
+	return ! empty( $email ) && filter_var( $email, FILTER_VALIDATE_EMAIL ) ? '***@***.***' : $email;
+}
+
+/**
+ * Obfuscates sensitive data in the options array
+ *
+ * @param array $old_options The options array to obfuscate
+ *
+ * @return array The obfuscated options array
+ */
+function cf7_smtp_obfuscate_options( array $old_options): array {
+	$options = $old_options;
+	$options['user_pass'] = cf7_smtp_obfuscate_secret( $old_options['user_pass'] );
+	$options['oauth2_client_secret'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_client_secret'] );
+	$options['oauth2_access_token'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_access_token'] );
+	$options['oauth2_refresh_token'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_refresh_token'] );
+	$options['report_to'] = cf7_smtp_obfuscate_email( $old_options['report_to'] );
+	$options['oauth2_user_email'] = cf7_smtp_obfuscate_email( $old_options['oauth2_user_email'] );
+	$options['user_name'] = cf7_smtp_obfuscate_email( $old_options['user_name'] );
+	return $options;
 }
