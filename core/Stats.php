@@ -275,7 +275,6 @@ class Stats extends Base {
 
 			$content_body .= sprintf(
 				'<h2 style="color: #333; font-size: 18px; font-weight: 600; margin: 0 0 16px 0; padding: 0;">%s</h2>',
-				esc_html__( 'Mail sent since last update', 'cf7-smtp' )
 				sprintf(
 					/* translators: %s: date */
 					esc_html__( 'Mail sent since %s', 'cf7-smtp' ),

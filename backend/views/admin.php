@@ -60,9 +60,9 @@
 				printf(
 					'<small class="monospace"><b>%s</b> %s <br/><b>%s</b> %s</small>',
 					esc_html__( 'Next report:', 'cf7-smtp' ),
-					esc_html( wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7_smtp_report' ) ) ),
+					esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), wp_next_scheduled( 'cf7_smtp_report' ) ) ),
 					esc_html__( 'Server time:', 'cf7-smtp' ),
-					esc_html( wp_date( 'Y-m-d H:i:s', time() ) )
+					esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time() ) )
 				);
 				echo '</div>';
 			}
