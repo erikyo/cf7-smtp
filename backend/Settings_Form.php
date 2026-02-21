@@ -1132,32 +1132,4 @@ class Settings_Form {
 
 		return $new_input;
 	}
-
-	/**
-	 * It handles the actions that are triggered by the user
-	 */
-	public function cf7_smtp_handle_actions() {
-
-		if ( ! isset( $_REQUEST ) || empty( $_REQUEST['_wpnonce'] ) ) {
-			return;
-		}
-
-		if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ) ) ) {
-			return;
-		}
-
-		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
-		$url    = esc_url( menu_page_url( 'cf7-smtp', false ) );
-
-		if ( 'dismiss-banner' === $action ) {
-			if ( get_user_meta( get_current_user_id(), 'cf7_smtp_hide_welcome_panel_on', true ) ) {
-				update_user_meta( get_current_user_id(), 'cf7_smtp_hide_welcome_panel_on', true );
-			} else {
-				add_user_meta( get_current_user_id(), 'cf7_smtp_hide_welcome_panel_on', true, true );
-			}
-
-			wp_safe_redirect( $url );
-			exit();
-		}
-	}
 }
