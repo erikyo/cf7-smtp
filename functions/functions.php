@@ -123,14 +123,14 @@ function cf7_smtp_obfuscate_email( string $email ): string {
  *
  * @return array The obfuscated options array
  */
-function cf7_smtp_obfuscate_options( array $old_options): array {
-	$options = $old_options;
-	$options['user_pass'] = cf7_smtp_obfuscate_secret( $old_options['user_pass'] );
+function cf7_smtp_obfuscate_options( array $old_options ): array {
+	$options                         = $old_options;
+	$options['user_pass']            = cf7_smtp_obfuscate_secret( $old_options['user_pass'] );
 	$options['oauth2_client_secret'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_client_secret'] );
-	$options['oauth2_access_token'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_access_token'] );
+	$options['oauth2_access_token']  = cf7_smtp_obfuscate_secret( $old_options['oauth2_access_token'] );
 	$options['oauth2_refresh_token'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_refresh_token'] );
-	$options['report_to'] = cf7_smtp_obfuscate_email( $old_options['report_to'] );
-	$options['oauth2_user_email'] = cf7_smtp_obfuscate_email( $old_options['oauth2_user_email'] );
-	$options['user_name'] = cf7_smtp_obfuscate_email( $old_options['user_name'] );
+	$options['report_to']            = cf7_smtp_obfuscate_email( $old_options['report_to'] );
+	$options['oauth2_user_email']    = cf7_smtp_obfuscate_email( $old_options['oauth2_user_email'] );
+	$options['user_name']            = cf7_smtp_obfuscate_email( $old_options['user_name'] );
 	return $options;
 }

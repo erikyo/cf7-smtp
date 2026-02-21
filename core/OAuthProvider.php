@@ -18,7 +18,6 @@ namespace cf7_smtp\Core;
  * Custom OAuth Token Provider for PHPMailer.
  * Implements cf7_smtp\Core\OAuthTokenProvider using League OAuth2 Client.
  */
-
 class OAuthProvider implements OAuthTokenProvider {
 	/**
 	 * The OAuth provider instance (League OAuth2 Client).

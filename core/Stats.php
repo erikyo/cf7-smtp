@@ -250,7 +250,7 @@ class Stats extends Base {
 	 *
 	 * @since 1.0.0
 	 * @param array<string, mixed> $report      The report data array containing storage and statistics.
-	 * @param bool                 $last_report Optional. Unix timestamp of the last report. Default current time.
+	 * @param integer              $last_report Optional. Unix timestamp of the last report. Default current time.
 	 * @return string Formatted HTML string containing the styled email report.
 	 */
 	public function format_report( array $report, int $last_report = 0 ): string {
