@@ -109,14 +109,9 @@ class Stats extends Base {
 	 */
 	public function reset_report( $retain_days = 30 ) {
 		// Reset the report success and failed to 0
-		$this->report = array_merge(
-			$this->report,
-			array(
-				'success'          => 0,
-				'failed'           => 0,
-				'last_report_time' => time(),
-			)
-		);
+		$this->report['success']          = 0;
+		$this->report['failed']           = 0;
+		$this->report['last_report_time'] = time();
 
 		// Clean up the storage if needed
 		self::cleanup_storage( $retain_days );
@@ -255,7 +250,7 @@ class Stats extends Base {
 	 *
 	 * @since 1.0.0
 	 * @param array<string, mixed> $report      The report data array containing storage and statistics.
-	 * @param bool                 $last_report Optional. Unix timestamp of the last report. Default current time.
+	 * @param integer              $last_report Optional. Unix timestamp of the last report. Default current time.
 	 * @return string Formatted HTML string containing the styled email report.
 	 */
 	public function format_report( array $report, int $last_report = 0 ): string {
@@ -280,7 +275,11 @@ class Stats extends Base {
 
 			$content_body .= sprintf(
 				'<h2 style="color: #333; font-size: 18px; font-weight: 600; margin: 0 0 16px 0; padding: 0;">%s</h2>',
-				esc_html__( 'Mail sent since last update', 'cf7-smtp' )
+				sprintf(
+					/* translators: %s: date */
+					esc_html__( 'Mail sent since %s', 'cf7-smtp' ),
+					wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $last_report )
+				)
 			);
 
 			$mail_items = '';
@@ -475,7 +474,7 @@ class Stats extends Base {
 		$options = cf7_smtp_get_settings();
 
 		/* if the report is not forced or is disabled, then return */
-		if ( $force || empty( $options['report_every'] ) ) {
+		if ( ! $force && empty( $options['report_every'] ) ) {
 			return false;
 		}
 
@@ -486,7 +485,8 @@ class Stats extends Base {
 		if ( ! empty( $this->report['last_report_time'] ) ) {
 			$last_report = $this->report['last_report_time'];
 		} else {
-			$last_report = time() - intval( $schedules[ $options['report_every'] ]['interval'] );
+			$interval    = ! empty( $options['report_every'] ) && isset( $schedules[ $options['report_every'] ] ) ? intval( $schedules[ $options['report_every'] ]['interval'] ) : \WEEK_IN_SECONDS;
+			$last_report = time() - $interval;
 		}
 
 		/* build the report */

@@ -50,11 +50,11 @@ $cf7_smtp_from_mail = $cf7_smtp_mailer->get_setting_by_key( 'from_mail', $this->
 
 	<?php
 	if ( defined( 'WP_DEBUG' ) ) {
-		$options = cf7_smtp_obfuscate_options($this->options);
+		$cf7_smtp_options = cf7_smtp_obfuscate_options( $this->options );
 		?>
 		<div class="card">
 			<h3><?php echo esc_html__( 'Debug Options', 'cf7-smtp' ); ?></h3>
-			<pre><?php echo wp_json_encode( $options, JSON_PRETTY_PRINT ); ?></pre>
+			<pre><?php echo wp_json_encode( $cf7_smtp_options, JSON_PRETTY_PRINT ); ?></pre>
 		</div>
 	<?php } ?>
 
