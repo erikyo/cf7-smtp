@@ -67,7 +67,6 @@ class Settings_Page extends Base {
 		);
 
 		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_options_init' ) );
-		\add_action( 'admin_init', array( $this->form, 'cf7_smtp_handle_actions' ), 1 );
 	}
 
 
