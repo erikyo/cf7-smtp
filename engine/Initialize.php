@@ -96,16 +96,32 @@ class Initialize {
 
 		foreach ( $this->classes as $class ) {
 			try {
+				// Skip interfaces and traits without using Reflection (which can cause fatal errors in PHP 7.4 if dependencies are missing)
+				if ( ! \class_exists( $class ) ) {
+					continue;
+				}
+
 				$temp = new $class();
 
 				if ( \method_exists( $temp, 'initialize' ) ) {
 					$temp->initialize();
 				}
+			} catch ( \Error $err ) {
+				// Safely catch errors like "Cannot instantiate abstract class" without crashing
+				if ( \strpos( $err->getMessage(), 'Cannot instantiate' ) !== false ) {
+					continue;
+				}
+
+				\do_action( 'cf7_smtp_initialize_failed', $err );
+
+				if ( WP_DEBUG ) {
+					throw new \Exception( \esc_html( $err->getMessage() ) );
+				}
 			} catch ( \Exception $err ) {
 				\do_action( 'cf7_smtp_initialize_failed', $err );
 
 				if ( WP_DEBUG ) {
-					throw new \Exception( esc_html( $err->getMessage() ) );
+					throw new \Exception( \esc_html( $err->getMessage() ) );
 				}
 			}
 		}
