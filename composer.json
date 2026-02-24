@@ -1,6 +1,7 @@
 {
     "name": "wpbp/wordpress-plugin-boilerplate-powered",
     "description": "Wordpress Plugin Boilerplate with steroids!",
+    "version": "1.1.0",
     "license": "GPL-3.0-or-later",
     "type": "wordpress-plugin",
     "authors": [

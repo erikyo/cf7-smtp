@@ -6,7 +6,7 @@ module.exports = {
 	entry: {
 		'smtp-settings': path.resolve(
 			process.cwd(),
-			`src/cf7-smtp-settings.js`
+			`src/cf7-smtp-settings.ts`
 		),
 	},
 };
