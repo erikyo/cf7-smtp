@@ -22,9 +22,9 @@ class OAuthProvider implements OAuthTokenProvider {
 	/**
 	 * The OAuth provider instance (League OAuth2 Client).
 	 *
-	 * @var object
+	 * @var object|null
 	 */
-	private object $provider;
+	private ?object $provider;
 
 	/**
 	 * The client ID.
@@ -63,7 +63,7 @@ class OAuthProvider implements OAuthTokenProvider {
 	 * @param string $refresh_token The refresh token.
 	 * @param string $email         The user email address.
 	 */
-	public function __construct( object $provider, string $client_id, string $client_secret, string $refresh_token, string $email ) {
+	public function __construct( object $provider = null, string $client_id = '', string $client_secret = '', string $refresh_token = '', string $email = '' ) {
 		$this->provider      = $provider;
 		$this->client_id     = $client_id;
 		$this->client_secret = $client_secret;
@@ -80,7 +80,7 @@ class OAuthProvider implements OAuthTokenProvider {
 	 * @return string The base64-encoded OAuth token
 	 * @throws \PHPMailer\PHPMailer\Exception If the OAuth provider or refresh token is not configured.
 	 */
-	public function getOauth64(): string {
+	public function get_oauth64(): string {
 		if ( ! $this->provider || ! $this->refresh_token ) {
 			throw new \PHPMailer\PHPMailer\Exception( 'OAuth provider or refresh token not configured.' );
 		}

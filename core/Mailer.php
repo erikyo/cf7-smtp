@@ -466,7 +466,7 @@ class Mailer extends Base {
 		);
 
 		// Fallback to plain text if no template
-		if ( empty( $this->options['template'] ) ) {
+		if ( empty( $this->options['custom_template'] ) ) {
 			$mail_data['body'] = sprintf( "%s %s\r\n\r\n%s", $subject, get_bloginfo( 'name' ), $report );
 		}
 
