@@ -123,8 +123,8 @@ class Initialize {
 				if ( WP_DEBUG ) {
 					throw new \Exception( \esc_html( $err->getMessage() ) );
 				}
-			}
-		}
+			}//end try
+		}//end foreach
 	}
 
 	/**
