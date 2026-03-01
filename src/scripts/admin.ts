@@ -21,7 +21,7 @@ interface ApiResponse {
 }
 
 interface MailData {
-	[ key: string ]: string;
+	[key: string]: string;
 }
 
 declare global {
@@ -30,7 +30,7 @@ declare global {
 	}
 }
 
-apiFetch.use( apiFetch.createNonceMiddleware( window.smtp_settings.nonce ) );
+apiFetch.use(apiFetch.createNonceMiddleware(window.smtp_settings.nonce));
 
 /**
  *  Email Response box
@@ -46,34 +46,35 @@ export const responseBox = document.querySelector(
 ) as HTMLElement;
 
 export function smtpAdmin(): void {
+	console.log('this not');
 	/**
 	 *	JS logic to manipulate card transition
 	 */
 
-	const urlParams = new URLSearchParams( window.location.search );
-	const page = urlParams.get( 'page' );
-	const service = urlParams.get( 'service' );
-	const action = urlParams.get( 'action' );
+	const urlParams = new URLSearchParams(window.location.search);
+	const page = urlParams.get('page');
+	const service = urlParams.get('service');
+	const action = urlParams.get('action');
 
-	const cards = document.querySelectorAll( '.card' );
+	const cards = document.querySelectorAll('.card');
 
 	/**
 	 * Disable the transition for the cards.
 	 */
 	function disableTransition(): void {
-		cards.forEach( ( card ) => {
-			( card as HTMLElement ).style.transition = 'none';
-		} );
+		cards.forEach((card) => {
+			(card as HTMLElement).style.transition = 'none';
+		});
 	}
 
 	/**
 	 * Enable the transition for the cards.
 	 */
 	function enableTransition(): void {
-		cards.forEach( ( card ) => {
-			( card as HTMLElement ).style.transition = 'max-width 1s ease';
-			( card as HTMLElement ).style.maxWidth = '1000px';
-		} );
+		cards.forEach((card) => {
+			(card as HTMLElement).style.transition = 'max-width 1s ease';
+			(card as HTMLElement).style.maxWidth = '1000px';
+		});
 	}
 
 	if (
@@ -81,17 +82,17 @@ export function smtpAdmin(): void {
 		service === 'cf7-smtp' &&
 		action === 'setup'
 	) {
-		if ( sessionStorage.getItem( 'disableTransition' ) === 'true' ) {
+		if (sessionStorage.getItem('disableTransition') === 'true') {
 			disableTransition();
-			cards.forEach( ( card ) => {
-				( card as HTMLElement ).style.maxWidth = '1000px';
-			} );
+			cards.forEach((card) => {
+				(card as HTMLElement).style.maxWidth = '1000px';
+			});
 		} else {
 			enableTransition();
-			sessionStorage.setItem( 'disableTransition', 'true' );
+			sessionStorage.setItem('disableTransition', 'true');
 		}
 	} else {
-		sessionStorage.setItem( 'disableTransition', 'false' );
+		sessionStorage.setItem('disableTransition', 'false');
 		disableTransition();
 	}
 
@@ -100,13 +101,13 @@ export function smtpAdmin(): void {
 	 */
 	const authMethodInputs = document.querySelectorAll(
 		'input[name="cf7-smtp-options[auth_method]"]'
-	) as NodeListOf< HTMLInputElement >;
-	const wpWarning = document.getElementById( 'cf7-smtp-wp-warning' );
+	) as NodeListOf<HTMLInputElement>;
+	const wpWarning = document.getElementById('cf7-smtp-wp-warning');
 
 	// Helpers to find rows by input ID
-	const getRow = ( id: string ): HTMLElement | null => {
-		const el = document.getElementById( id );
-		return el ? ( el.closest( 'tr' ) as HTMLElement ) : null;
+	const getRow = (id: string): HTMLElement | null => {
+		const el = document.getElementById(id);
+		return el ? (el.closest('tr') as HTMLElement) : null;
 	};
 
 	const classicFields = [
@@ -117,19 +118,19 @@ export function smtpAdmin(): void {
 		'cf7_smtp_user_name',
 		'cf7_smtp_user_pass',
 	]
-		.map( ( id ) => {
-			if ( id === 'cf7-smtp-auth' ) {
+		.map((id) => {
+			if (id === 'cf7-smtp-auth') {
 				return document
-					.getElementById( id )
-					?.closest( 'tr' ) as HTMLElement;
+					.getElementById(id)
+					?.closest('tr') as HTMLElement;
 			}
-			return getRow( id );
-		} )
-		.filter( Boolean ) as HTMLElement[];
+			return getRow(id);
+		})
+		.filter(Boolean) as HTMLElement[];
 
 	const oauthFields = document.querySelectorAll(
 		'.cf7-smtp-oauth-row'
-	) as NodeListOf< HTMLElement >;
+	) as NodeListOf<HTMLElement>;
 
 	const advancedSection = document.querySelector(
 		'.smtp-settings-options h2:nth-of-type(2)'
@@ -140,72 +141,72 @@ export function smtpAdmin(): void {
 	 *
 	 * @param method The selected authentication method.
 	 */
-	const updateUI = ( method: string ): void => {
+	const updateUI = (method: string): void => {
 		// Update cards visual state
 		document
-			.querySelectorAll( '.cf7-smtp-auth-card' )
-			.forEach( ( card ) => {
-				const input = card.querySelector( 'input' ) as HTMLInputElement;
-				if ( input.value === method ) {
-					card.classList.add( 'selected' );
+			.querySelectorAll('.cf7-smtp-auth-card')
+			.forEach((card) => {
+				const input = card.querySelector('input') as HTMLInputElement;
+				if (input.value === method) {
+					card.classList.add('selected');
 				} else {
-					card.classList.remove( 'selected' );
+					card.classList.remove('selected');
 				}
-			} );
+			});
 
 		// OAuth Section Header and Description handling
 		const oauthDesc = document.getElementById(
 			'cf7_smtp_oauth2_section_desc'
 		);
 		let oauthHeader: HTMLElement | null = null;
-		if ( oauthDesc ) {
+		if (oauthDesc) {
 			const prev = oauthDesc.previousElementSibling;
-			if ( prev && prev.tagName === 'H2' ) {
+			if (prev && prev.tagName === 'H2') {
 				oauthHeader = prev as HTMLElement;
 			}
 		}
 
-		if ( method === 'wp' ) {
-			classicFields.forEach( ( row ) => ( row.style.display = 'none' ) );
-			oauthFields.forEach( ( row ) => ( row.style.display = 'none' ) );
-			if ( wpWarning ) {
+		if (method === 'wp') {
+			classicFields.forEach((row) => (row.style.display = 'none'));
+			oauthFields.forEach((row) => (row.style.display = 'none'));
+			if (wpWarning) {
 				wpWarning.style.display = 'block';
 			}
 
-			if ( oauthDesc ) {
+			if (oauthDesc) {
 				oauthDesc.style.display = 'none';
 			}
-			if ( oauthHeader ) {
+			if (oauthHeader) {
 				oauthHeader.style.display = 'none';
 			}
-		} else if ( method === 'smtp' ) {
+		} else if (method === 'smtp') {
 			classicFields.forEach(
-				( row ) => ( row.style.display = 'table-row' )
+				(row) => (row.style.display = 'table-row')
 			);
-			oauthFields.forEach( ( row ) => ( row.style.display = 'none' ) );
-			if ( wpWarning ) {
+			oauthFields.forEach((row) => (row.style.display = 'none'));
+			if (wpWarning) {
 				wpWarning.style.display = 'none';
 			}
 
-			if ( oauthDesc ) {
+			if (oauthDesc) {
 				oauthDesc.style.display = 'none';
 			}
-			if ( oauthHeader ) {
+			if (oauthHeader) {
 				oauthHeader.style.display = 'none';
 			}
-		} else if ( method === 'gmail' || method === 'outlook' ) {
-			classicFields.forEach( ( row ) => ( row.style.display = 'none' ) );
+		} else if (method === 'gmail' || method === 'outlook') {
+			classicFields.forEach((row) => (row.style.display = 'none'));
 			oauthFields.forEach(
-				( row ) => ( row.style.display = 'table-row' )
+				(row) => (row.style.display = 'table-row')
 			);
-			if ( wpWarning ) {
+			if (wpWarning) {
 				wpWarning.style.display = 'none';
 			}
 
-			if ( oauthDesc ) {
+			if (oauthDesc) {
 				oauthDesc.style.display = 'block';
 			}
-			if ( oauthHeader ) {
+			if (oauthHeader) {
 				oauthHeader.style.display = 'block';
 			}
 
@@ -213,26 +214,26 @@ export function smtpAdmin(): void {
 			const providerSelect = document.getElementById(
 				'cf7_smtp_oauth2_provider'
 			) as HTMLSelectElement;
-			if ( providerSelect ) {
+			if (providerSelect) {
 				providerSelect.value =
 					method === 'gmail' ? 'gmail' : 'office365';
-				const providerRow = getRow( 'cf7_smtp_oauth2_provider' );
-				if ( providerRow ) {
+				const providerRow = getRow('cf7_smtp_oauth2_provider');
+				if (providerRow) {
 					providerRow.style.display = 'none';
 				}
 			}
 		}
 	};
 
-	authMethodInputs.forEach( ( input ) => {
-		input.addEventListener( 'change', ( e ) => {
-			updateUI( ( e.target as HTMLInputElement ).value );
-		} );
+	authMethodInputs.forEach((input) => {
+		input.addEventListener('change', (e) => {
+			updateUI((e.target as HTMLInputElement).value);
+		});
 		// Init
-		if ( input.checked ) {
-			updateUI( input.value );
+		if (input.checked) {
+			updateUI(input.value);
 		}
-	} );
+	});
 
 	/**
 	 *  Variables needed to set SMTP connetion
@@ -250,31 +251,31 @@ export function smtpAdmin(): void {
 	/**
 	 * Sets the values of the SMTP connection according to the value selected by the user.
 	 */
-	if ( !! formSelectDefault ) {
-		formSelectDefault.addEventListener( 'change', ( e ) => {
+	if (!!formSelectDefault) {
+		formSelectDefault.addEventListener('change', (e) => {
 			const target = e.target as HTMLSelectElement;
 			const selectedEl = target[
 				target.selectedIndex
 			] as HTMLOptionElement;
-			if ( selectedEl ) {
+			if (selectedEl) {
 				const authRadio = document.querySelector(
 					'.auth-' + selectedEl.dataset.auth
 				) as HTMLInputElement;
-				if ( authRadio ) {
+				if (authRadio) {
 					authRadio.checked = true;
 				}
 				formSelectHost.value = selectedEl.dataset.host || '';
 				formSelectPort.value = selectedEl.dataset.port || '';
 			}
-		} );
+		});
 	}
 
 	// Logic for "Connect" button in OAuth
 	const connectBtn = document.getElementById(
 		'cf7_smtp_oauth2_connect'
 	) as HTMLButtonElement;
-	if ( connectBtn ) {
-		connectBtn.addEventListener( 'click', ( e ) => {
+	if (connectBtn) {
+		connectBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			const providerSelect = document.getElementById(
 				'cf7_smtp_oauth2_provider'
@@ -287,22 +288,22 @@ export function smtpAdmin(): void {
 			// Fallback if select is missing but cards are used?
 			// But updateUI sets the select value.
 
-			if ( ! provider ) {
+			if (!provider) {
 				// Try to find checked card
 				const checked = document.querySelector(
 					'input[name="cf7-smtp-options[auth_method]"]:checked'
 				) as HTMLInputElement;
-				if ( checked ) {
-					if ( checked.value === 'gmail' ) {
+				if (checked) {
+					if (checked.value === 'gmail') {
 						provider = 'gmail';
 					}
-					if ( checked.value === 'outlook' ) {
+					if (checked.value === 'outlook') {
 						provider = 'office365';
 					} // check value mapping
 				}
 			}
 
-			if ( ! provider ) {
+			if (!provider) {
 				alert(
 					__(
 						'Please select a provider (Gmail/Outlook) via the icons above.',
@@ -314,17 +315,17 @@ export function smtpAdmin(): void {
 
 			// Show loading?
 			connectBtn.disabled = true;
-			connectBtn.innerText = __( 'Connecting…', 'cf7-smtp' );
+			connectBtn.innerText = __('Connecting…', 'cf7-smtp');
 
-			apiFetch( {
+			apiFetch({
 				path: '/cf7-smtp/v1/oauth2/authorize/',
 				method: 'POST',
 				data: {
 					nonce: window.smtp_settings.nonce,
 					provider,
 				},
-			} )
-				.then( ( r ) => {
+			})
+				.then((r) => {
 					const response = r as ApiResponse;
 					if (
 						response.status === 'success' &&
@@ -334,58 +335,58 @@ export function smtpAdmin(): void {
 					} else {
 						alert(
 							response.message ||
-								__(
-									'Failed to get authorization URL.',
-									'cf7-smtp'
-								)
+							__(
+								'Failed to get authorization URL.',
+								'cf7-smtp'
+							)
 						);
 						connectBtn.disabled = false;
-						connectBtn.innerText = __( 'Connect', 'cf7-smtp' );
+						connectBtn.innerText = __('Connect', 'cf7-smtp');
 					}
-				} )
-				.catch( ( err ) => {
-					console.error( err );
+				})
+				.catch((err) => {
+					console.error(err);
 					alert(
-						__( 'An error occurred. Please try again.', 'cf7-smtp' )
+						__('An error occurred. Please try again.', 'cf7-smtp')
 					);
 					connectBtn.disabled = false;
-					connectBtn.innerText = __( 'Connect', 'cf7-smtp' );
-				} );
-		} );
+					connectBtn.innerText = __('Connect', 'cf7-smtp');
+				});
+		});
 	}
 
 	const disconnectBtn = document.getElementById(
 		'cf7_smtp_oauth2_disconnect'
 	) as HTMLButtonElement;
-	if ( disconnectBtn ) {
-		disconnectBtn.addEventListener( 'click', ( e ) => {
+	if (disconnectBtn) {
+		disconnectBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			if (
-				! confirm(
-					__( 'Are you sure you want to disconnect?', 'cf7-smtp' )
+				!confirm(
+					__('Are you sure you want to disconnect?', 'cf7-smtp')
 				)
 			) {
 				return;
 			}
 
 			disconnectBtn.disabled = true;
-			disconnectBtn.innerText = __( 'Disconnecting…', 'cf7-smtp' );
+			disconnectBtn.innerText = __('Disconnecting…', 'cf7-smtp');
 
-			apiFetch( {
+			apiFetch({
 				path: '/cf7-smtp/v1/oauth2/disconnect/',
 				method: 'POST',
 				data: {
 					nonce: window.smtp_settings.nonce,
 				},
-			} )
-				.then( ( r ) => {
+			})
+				.then((r) => {
 					const response = r as ApiResponse;
-					if ( response.status === 'success' ) {
+					if (response.status === 'success') {
 						window.location.reload();
 					} else {
 						alert(
 							response.message ||
-								__( 'Failed to disconnect.', 'cf7-smtp' )
+							__('Failed to disconnect.', 'cf7-smtp')
 						);
 						disconnectBtn.disabled = false;
 						disconnectBtn.innerText = __(
@@ -393,61 +394,61 @@ export function smtpAdmin(): void {
 							'cf7-smtp'
 						);
 					}
-				} )
-				.catch( ( err ) => {
-					console.error( err );
-					alert( __( 'An error occurred.', 'cf7-smtp' ) );
+				})
+				.catch((err) => {
+					console.error(err);
+					alert(__('An error occurred.', 'cf7-smtp'));
 					disconnectBtn.disabled = false;
-					disconnectBtn.innerText = __( 'Disconnect', 'cf7-smtp' );
-				} );
-		} );
+					disconnectBtn.innerText = __('Disconnect', 'cf7-smtp');
+				});
+		});
 	}
 
 	/* Initialize the response box and show a welcome message */
-	if ( !! responseBox ) {
+	if (!!responseBox) {
 		cleanOutput(
 			responseBox,
 			'<code>' +
-				__( 'Mail Server initialization completed!', 'cf7-smtp' ) +
-				'</code>'
+			__('Mail Server initialization completed!', 'cf7-smtp') +
+			'</code>'
 		);
 	}
 
 	/**
 	 *  Send a mail with the rest api /cf7-smtp/v1/sendmail endpoint
 	 */
-	if ( !! formElem ) {
-		formElem.addEventListener( 'submit', ( e ) => {
+	if (!!formElem) {
+		formElem.addEventListener('submit', (e) => {
 			e.preventDefault();
 			/* The form inputs data */
-			const formData = new FormData( e.target as HTMLFormElement );
+			const formData = new FormData(e.target as HTMLFormElement);
 
 			const data: MailData = {};
 			data.nonce = window.smtp_settings.nonce;
 
-			for ( const [ key, value ] of formData.entries() ) {
-				data[ key ] = value as string;
+			for (const [key, value] of formData.entries()) {
+				data[key] = value as string;
 			}
 
 			/* clean the previous results*/
-			cleanOutput( responseBox );
+			cleanOutput(responseBox);
 
 			appendOutput(
 				responseBox,
-				`<code>${ __(
+				`<code>${__(
 					"Let's start a new server connection…",
 					'cf7-smtp'
-				) } <span class="mail-init animation-start">✉️</span></code>`
+				)} <span class="mail-init animation-start">✉️</span></code>`
 			);
 
-			apiFetch( {
+			apiFetch({
 				path: '/cf7-smtp/v1/sendmail',
 				method: 'POST',
 				data,
-			} )
-				.then( ( r ) => {
+			})
+				.then((r) => {
 					const response = r as ApiResponse;
-					if ( response.status === 'success' ) {
+					if (response.status === 'success') {
 						appendOutputMultiline(
 							responseBox,
 							response.message || '',
@@ -455,84 +456,84 @@ export function smtpAdmin(): void {
 						);
 					}
 					return response;
-				} )
-				.then( ( mailResp ) => {
+				})
+				.then((mailResp) => {
 					const mailResponse = mailResp as {
 						status: string;
 						message: string;
 						nonce: string;
 					};
-					return fetchAndRetry( mailResponse, 500, 5 );
-				} )
-				.catch( ( /*errMsg*/ ) => {
+					return fetchAndRetry(mailResponse, 500, 5);
+				})
+				.catch(( /*errMsg*/) => {
 					appendOutput(
 						responseBox,
-						`<code>${ __(
+						`<code>${__(
 							'OOOPS something went wrong!',
 							'cf7-smtp'
-						) }</code>`
+						)}</code>`
 					);
-				} );
-		} );
+				});
+		});
 	}
 
 	const flushLogs = document.getElementById(
 		'cf7_smtp_flush_logs'
 	) as HTMLButtonElement;
-	flushLogs?.addEventListener( 'click', () => {
-		apiFetch( {
+	flushLogs?.addEventListener('click', () => {
+		apiFetch({
 			path: '/cf7-smtp/v1/flush-logs',
 			method: 'POST',
 			data: {
 				nonce: window.smtp_settings.nonce,
 			},
-		} )
-			.then( ( r ) => {
+		})
+			.then((r) => {
 				const response = r as ApiResponse;
-				if ( response.status === 'success' ) {
-					alert( response.message );
+				if (response.status === 'success') {
+					alert(response.message);
 				}
 				return r;
-			} )
-			.catch( ( /*errMsg*/ ) => {
+			})
+			.catch(( /*errMsg*/) => {
 				appendOutput(
 					responseBox,
-					`<code>${ __(
+					`<code>${__(
 						'OOOPS something went wrong!',
 						'cf7-smtp'
-					) }</code>`
+					)}</code>`
 				);
-			} );
-	} );
+			});
+	});
 
 	const reportNow = document.getElementById(
 		'cf7_smtp_report_now'
 	) as HTMLButtonElement;
-	reportNow?.addEventListener( 'click', () => {
-		apiFetch( {
+	reportNow?.addEventListener('click', () => {
+		apiFetch({
 			path: '/cf7-smtp/v1/report',
 			method: 'POST',
 			data: {
 				nonce: window.smtp_settings.nonce,
 			},
-		} )
-			.then( ( r ) => {
+		})
+			.then((r) => {
 				const response = r as ApiResponse;
-				if ( response.status === 'success' ) {
-					alert( response.message );
+				if (response.status === 'success') {
+					alert(response.message);
 				}
 				return r;
-			} )
-			.catch( ( /*errMsg*/ ) => {
+			})
+			.catch(( /*errMsg*/) => {
 				appendOutput(
 					responseBox,
-					`<code>${ __(
+					`<code>${__(
 						'OOOPS something went wrong!',
 						'cf7-smtp'
-					) }</code>`
+					)}</code>`
 				);
-			} );
-	} );
+			});
+	});
 
 	// DNS Check Logic
 	const checkDnsBtn = document.getElementById(
@@ -552,21 +553,21 @@ export function smtpAdmin(): void {
 		) as HTMLInputElement;
 		const host = hostInput?.value || '';
 
-		if ( ! email ) {
+		if (!email) {
 			return;
 		}
 
-		if ( checkDnsBtn ) {
+		if (checkDnsBtn) {
 			checkDnsBtn.disabled = true;
 		}
-		if ( dnsResultBox ) {
-			dnsResultBox.innerHTML = `<code>${ __(
+		if (dnsResultBox) {
+			dnsResultBox.innerHTML = `<code>${__(
 				'Checking DNS…',
 				'cf7-smtp'
-			) }</code>`;
+			)}</code>`;
 		}
 
-		apiFetch( {
+		apiFetch({
 			path: '/cf7-smtp/v1/check-dns/',
 			method: 'POST',
 			data: {
@@ -574,113 +575,113 @@ export function smtpAdmin(): void {
 				email,
 				host,
 			},
-		} )
-			.then( ( r ) => {
+		})
+			.then((r) => {
 				const response = r as ApiResponse;
-				if ( checkDnsBtn ) {
+				if (checkDnsBtn) {
 					checkDnsBtn.disabled = false;
 				}
-				if ( response.status === 'success' && response.data ) {
+				if (response.status === 'success' && response.data) {
 					const data = response.data;
 					let boxClass = 'notice ';
-					if ( data.risk === 'high' ) {
+					if (data.risk === 'high') {
 						boxClass += 'notice-error';
-					} else if ( data.risk === 'medium' ) {
+					} else if (data.risk === 'medium') {
 						boxClass += 'notice-warning';
 					} else {
 						boxClass += 'notice-success';
 					}
 
 					let detailsHtml = '';
-					if ( data.details && data.details.length ) {
+					if (data.details && data.details.length) {
 						detailsHtml =
 							'<ul>' +
 							data.details
-								.map( ( d ) => `<li>${ d }</li>` )
-								.join( '' ) +
+								.map((d) => `<li>${d}</li>`)
+								.join('') +
 							'</ul>';
 					}
 
-					if ( dnsResultBox ) {
+					if (dnsResultBox) {
 						dnsResultBox.innerHTML = `
-							<div class="${ boxClass } inline" style="margin-top: 10px; padding: 10px;">
-								<p><strong>${ response.message }</strong></p>
-								${ detailsHtml }
+							<div class="${boxClass} inline" style="margin-top: 10px; padding: 10px;">
+								<p><strong>${response.message}</strong></p>
+								${detailsHtml}
 							</div>
 						`;
 					}
-				} else if ( dnsResultBox ) {
-					dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${ response.message }</p></div>`;
+				} else if (dnsResultBox) {
+					dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${response.message}</p></div>`;
 				}
-			} )
-			.catch( ( err ) => {
-				console.error( err );
-				if ( checkDnsBtn ) {
+			})
+			.catch((err) => {
+				console.error(err);
+				if (checkDnsBtn) {
 					checkDnsBtn.disabled = false;
 				}
-				if ( dnsResultBox ) {
-					dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${ __(
+				if (dnsResultBox) {
+					dnsResultBox.innerHTML = `<div class="notice notice-error inline"><p>${__(
 						'Error checking DNS.',
 						'cf7-smtp'
-					) }</p></div>`;
+					)}</p></div>`;
 				}
-			} );
+			});
 	};
 
 	// Debounce utility
-	const debounce = ( func: () => void, wait: number ) => {
-		let timeout: ReturnType< typeof setTimeout >;
-		return function executedFunction( ...args: any[] ) {
+	const debounce = (func: () => void, wait: number) => {
+		let timeout: ReturnType<typeof setTimeout>;
+		return function executedFunction(...args: any[]) {
 			const later = () => {
-				clearTimeout( timeout );
+				clearTimeout(timeout);
 				func();
 			};
-			clearTimeout( timeout );
-			timeout = setTimeout( later, wait );
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
 		};
 	};
 
 	// Simple email validation regex
-	const isValidEmail = ( email: string ): boolean => {
-		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( email );
+	const isValidEmail = (email: string): boolean => {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 	};
 
-	if ( checkDnsBtn ) {
-		checkDnsBtn.addEventListener( 'click', ( e ) => {
+	if (checkDnsBtn) {
+		checkDnsBtn.addEventListener('click', (e) => {
 			e.preventDefault();
 			triggerDnsCheck();
 			lastCheckedEmail = fromMailInput ? fromMailInput.value : '';
-		} );
+		});
 	}
 
 	let lastCheckedEmail = '';
-	if ( fromMailInput ) {
+	if (fromMailInput) {
 		// Initialize with current value
 		lastCheckedEmail = fromMailInput.value;
 
-		const debouncedCheck = debounce( () => {
+		const debouncedCheck = debounce(() => {
 			const currentVal = fromMailInput.value;
 			if (
 				currentVal !== lastCheckedEmail &&
-				isValidEmail( currentVal )
+				isValidEmail(currentVal)
 			) {
 				lastCheckedEmail = currentVal;
 				triggerDnsCheck();
 			}
-		}, 1000 ); // 1 second debounce
+		}, 1000); // 1 second debounce
 
-		fromMailInput.addEventListener( 'keyup', debouncedCheck );
+		fromMailInput.addEventListener('keyup', debouncedCheck);
 
-		fromMailInput.addEventListener( 'blur', () => {
+		fromMailInput.addEventListener('blur', () => {
 			const currentVal = fromMailInput.value;
 			if (
 				currentVal !== lastCheckedEmail &&
-				isValidEmail( currentVal )
+				isValidEmail(currentVal)
 			) {
 				lastCheckedEmail = currentVal;
 				triggerDnsCheck();
 			}
-		} );
+		});
 	}
 }
 
@@ -688,4 +689,5 @@ export function smtpAdmin(): void {
  * Resize on submit=action in the integration panel from CF7
  */
 
-window.onload = smtpAdmin;
+console.log('this works');
+document.addEventListener('DOMContentLoaded', smtpAdmin);
