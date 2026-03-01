@@ -60,7 +60,7 @@ class Settings_Page extends Base {
 		\add_submenu_page(
 			'wpcf7',
 			CF7_SMTP_NAME,
-			__( 'SMTP', 'cf7-smtp' ),
+			\__( 'SMTP', 'cf7-smtp' ),
 			'manage_options',
 			'cf7-smtp',
 			array( $this, 'display_plugin_admin_page' )
@@ -89,10 +89,10 @@ class Settings_Page extends Base {
 	 * @return array
 	 */
 	public function add_action_links( array $links ) {
-		$plugin_option   = get_option( 'cf7-smtp-options' );
+		$plugin_option   = \get_option( 'cf7-smtp-options' );
 		$service_enabled = $plugin_option['service_enabled'] ?? false;
 		$url             = $service_enabled ? 'admin.php?page=cf7-smtp' : 'admin.php?page=wpcf7-integration&service=cf7-smtp&action=setup';
-		$label           = $service_enabled ? __( 'Setup SMTP', 'cf7-smtp' ) : __( 'Settings', 'cf7-smtp' );
+		$label           = $service_enabled ? \__( 'Setup SMTP', 'cf7-smtp' ) : \__( 'Settings', 'cf7-smtp' );
 		return \array_merge(
 			array(
 				'settings' => sprintf(
@@ -115,7 +115,7 @@ class Settings_Page extends Base {
 		}
 
 		// Verify nonce for OAuth2 callback
-		if ( ! isset( $_GET['state'] ) || ! wp_verify_nonce( sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
+		if ( ! isset( $_GET['state'] ) || ! \wp_verify_nonce( \sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
 			cf7_smtp_log( 'OAuth2 callback: Invalid nonce or missing state parameter' );
 			return;
 		}
@@ -128,7 +128,7 @@ class Settings_Page extends Base {
 		try {
 			$handler = new \cf7_smtp\Core\OAuth2_Handler();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$result = $handler->handle_callback( \sanitize_text_field( wp_unslash( $_GET['code'] ) ), sanitize_text_field( wp_unslash( $_GET['state'] ) ) );
+			$result = $handler->handle_callback( \sanitize_text_field( \wp_unslash( $_GET['code'] ) ), \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) );
 
 			if ( $result['success'] ) {
 				\set_transient( 'cf7_smtp_oauth2_notice', $result['message'], 60 );
