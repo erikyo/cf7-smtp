@@ -6,6 +6,10 @@
  * method but does not ship the interface file. This file provides it so
  * the cf7-smtp plugin can use XOAUTH2 authentication.
  *
+ * The interface MUST be in the PHPMailer\PHPMailer namespace because
+ * PHPMailer's setOAuth() method type-hints against
+ * PHPMailer\PHPMailer\OAuthTokenProvider.
+ *
  * @package   cf7_smtp
  * @author    Erik Golinelli <erik@codekraft.it>
  * @copyright 2022 Erik
@@ -13,15 +17,15 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-namespace cf7_smtp\Core;
+namespace PHPMailer\PHPMailer;
 
-if ( ! interface_exists( 'cf7_smtp\\Core\\OAuthTokenProvider' ) ) {
+if ( ! interface_exists( 'PHPMailer\\PHPMailer\\OAuthTokenProvider' ) ) {
 	interface OAuthTokenProvider {
 		/**
 		 * Generate a base64-encoded OAuth token string for SMTP XOAUTH2.
 		 *
 		 * @return string The base64-encoded OAuth token
 		 */
-		public function get_oauth64(): string;
+		public function getOauth64(): string;
 	}
 }
