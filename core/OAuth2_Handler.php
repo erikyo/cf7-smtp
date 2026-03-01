@@ -258,7 +258,7 @@ class OAuth2_Handler extends Base {
 				try {
 					$resource_owner = $provider->getResourceOwner( $token );
 					$user_email     = $resource_owner->getEmail();
-				} catch ( \Exception $e ) {
+				} catch ( \Throwable $e ) {
 					cf7_smtp_log( 'Could not get user email: ' . $e->getMessage() );
 				}
 			}
@@ -281,7 +281,7 @@ class OAuth2_Handler extends Base {
 				'email'   => $user_email,
 			);
 
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			cf7_smtp_log( 'OAuth2 callback error: ' . $e->getMessage() );
 			return array(
 				'success' => false,

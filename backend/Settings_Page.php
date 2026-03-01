@@ -135,7 +135,7 @@ class Settings_Page extends Base {
 			} else {
 				\set_transient( 'cf7_smtp_oauth2_error', $result['message'], 60 );
 			}
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			cf7_smtp_log( 'OAuth2 callback exception: ' . $e->getMessage() );
 			\set_transient( 'cf7_smtp_oauth2_error', $e->getMessage(), 60 );
 		}
