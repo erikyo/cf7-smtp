@@ -122,11 +122,14 @@ export function mailChartsSMTP(): Charts | undefined {
 		const pieConfig = {
 			type: 'pie' as const,
 			data: {
-				labels: Object.keys(window.smtpReportData.pieData),
+				labels: ['Mail Sent', 'Mail Failed'],
 				datasets: [
 					{
 						label: 'Total count',
-						data: Object.values(window.smtpReportData.pieData),
+						data: [
+							window.smtpReportData.pieData.success,
+							window.smtpReportData.pieData.failed
+						],
 						backgroundColor: [
 							'rgb(54, 162, 235)',
 							'rgb(255, 99, 132)',
@@ -137,8 +140,12 @@ export function mailChartsSMTP(): Charts | undefined {
 			},
 			options: {
 				responsive: true,
+				maintainAspectRatio: false,
 				plugins: {
-					legend: { display: false },
+					legend: {
+						display: true,
+						position: 'right',
+					},
 				},
 			},
 		};

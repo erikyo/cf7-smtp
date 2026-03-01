@@ -78,7 +78,11 @@ class Mailer extends Base {
 			\add_action( 'wpcf7_before_send_mail', array( $this, 'set_cf7_mail_flag' ) );
 		}
 
-		if ( ! empty( $this->options['custom_template'] ) ) {
+		// Check if any form templates are configured or if legacy global setting is enabled
+		$has_form_templates = ! empty( $this->options['form_templates'] ) && is_array( $this->options['form_templates'] );
+		$has_legacy_setting = ! empty( $this->options['custom_template'] );
+		
+		if ( $has_form_templates || $has_legacy_setting ) {
 			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template' ), 10 );
 		}
 
@@ -258,14 +262,31 @@ class Mailer extends Base {
 	 */
 	private function get_template_path( string $template_name, int $id, string $lang ): string {
 		$theme_custom_dir    = 'cf7-smtp/';
+		$theme_templates_dir = 'templates/cf7-smtp/';
 		$plugin_template_dir = CF7_SMTP_PLUGIN_ROOT . 'templates/';
 
-		// Look in theme directories
+		// For custom templates, look in theme directory first
+		if ( $template_name !== 'default' ) {
+			// Check for custom template in theme folder (PHP files) - multiple locations
+			$template = locate_template(
+				array(
+					$theme_custom_dir . "{$template_name}.php",
+					$theme_templates_dir . "{$template_name}.php",
+				)
+			);
+			
+			if ( ! empty( $template ) ) {
+				return apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp' );
+			}
+		}
+
+		// Look for default templates (HTML files) in theme directories
 		if ( $id ) {
 			$template = locate_template(
 				array(
 					"{$template_name}-{$id}.html",
 					$theme_custom_dir . "{$template_name}-{$id}.html",
+					$theme_templates_dir . "{$template_name}-{$id}.html",
 				)
 			);
 		} else {
@@ -273,18 +294,21 @@ class Mailer extends Base {
 				array(
 					"{$template_name}.html",
 					$theme_custom_dir . "{$template_name}.html",
+					$theme_templates_dir . "{$template_name}.html",
 				)
 			);
 		}
 
 		// Fallback to plugin templates
-		if ( ! empty( $template ) && $id ) {
-			$template = $plugin_template_dir . "{$template_name}-{$id}.html";
-		}
+		if ( empty( $template ) ) {
+			if ( $id ) {
+				$template = $plugin_template_dir . "{$template_name}-{$id}.html";
+			}
 
-		/* Get default template_name.php */
-		if ( ! empty( $template ) && file_exists( $plugin_template_dir . "{$template_name}.html" ) ) {
-			$template = $plugin_template_dir . "{$template_name}.html";
+			/* Get default template_name.php */
+			if ( empty( $template ) || ! file_exists( $template ) ) {
+				$template = $plugin_template_dir . "{$template_name}.html";
+			}
 		}
 
 		return apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp' );
@@ -315,7 +339,26 @@ class Mailer extends Base {
 	 * @return array The modified components.
 	 */
 	public function cf7_smtp_email_style( array $components, WPCF7_ContactForm $contact_form, WPCF7_Mail $mail ): array {
-		if ( empty( $this->options['custom_template'] ) || empty( $components['body'] ) ) {
+		if ( empty( $components['body'] ) ) {
+			return $components;
+		}
+
+		// Get form-specific template preference
+		$form_id = $contact_form->id();
+		$template_preference = 'default'; // Default fallback
+		
+		if ( isset( $this->options['form_templates'][ $form_id ] ) ) {
+			$template_preference = $this->options['form_templates'][ $form_id ];
+		} elseif ( ! empty( $this->options['custom_template'] ) ) {
+			// Fallback to old global setting for backward compatibility
+			$template_preference = 'default';
+		} else {
+			// No template preference set, return unchanged
+			return $components;
+		}
+
+		// If 'none' is selected, don't apply any template
+		if ( $template_preference === 'none' ) {
 			return $components;
 		}
 
@@ -327,7 +370,12 @@ class Mailer extends Base {
 		);
 
 		$email_data = apply_filters( 'cf7_smtp_mail_components', $email_data, $contact_form, $mail );
-		$template   = $this->cf7_smtp_get_email_style( 'default', $contact_form->id(), $contact_form->locale() );
+		$template   = $this->cf7_smtp_get_email_style( $template_preference, $contact_form->id(), $contact_form->locale() );
+
+		// If no template found, return unchanged
+		if ( empty( $template ) ) {
+			return $components;
+		}
 
 		$components['body'] = $this->cf7_smtp_form_template( $email_data, $template );
 
@@ -612,11 +660,10 @@ class Mailer extends Base {
 		require_once __DIR__ . '/OAuthProvider.php';
 
 		$oauth_provider = new \cf7_smtp\Core\OAuthProvider(
+			$user_email,
+			$access_token,
 			$oauth2_handler->get_provider_instance(),
-			$this->options['oauth2_client_id'] ?? '',
-			cf7_smtp_decrypt( $this->options['oauth2_client_secret'] ?? '' ),
-			cf7_smtp_decrypt( $status['refresh_token'] ?? '' ),
-			$user_email
+			cf7_smtp_decrypt( $status['refresh_token'] ?? '' )
 		);
 
 		// Set the OAuth provider callback
@@ -790,8 +837,9 @@ class Mailer extends Base {
 			$from_name     = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
 			$reply_to      = intval( $this->get_setting_by_key( 'replyTo' ) );
 
-			// Validate required settings
-			if ( empty( $host ) ) {
+			// Validate required settings (skip if OAuth2 will set the host)
+			$auth_type = $this->get_setting_by_key( 'auth_type' );
+			if ( empty( $host ) && 'oauth2' !== $auth_type ) {
 				throw new Exception( 'SMTP Host is required but not configured.' );
 			}
 
@@ -807,8 +855,14 @@ class Mailer extends Base {
 				$phpmailer->SMTPSecure = $auth;
 			}
 
-			// Check authentication type (basic or oauth2)
-			$auth_type = $this->get_setting_by_key( 'auth_type' );
+			// Check authentication type (basic or oauth2) - $auth_type already set above
+			// Safety: if auth_method is 'smtp' (standard), force auth_type to 'basic'
+			// even if a stale 'oauth2' value is stored from a previous configuration.
+			$auth_method = $this->get_setting_by_key( 'auth_method' );
+			if ( 'smtp' === $auth_method && 'oauth2' === $auth_type ) {
+				$auth_type = 'basic';
+				cf7_smtp_log( 'auth_method is "smtp" but auth_type was "oauth2". Forcing basic authentication.' );
+			}
 
 			if ( 'oauth2' === $auth_type ) {
 				// Try OAuth2 authentication
