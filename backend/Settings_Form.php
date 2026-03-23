@@ -987,60 +987,48 @@ class Settings_Form {
 	 */
 	private function cf7_smtp_get_custom_templates() {
 		$custom_templates = array();
-		
+
 		// Get template directory paths to check
 		$template_dir = get_template_directory();
 		$stylesheet_dir = get_stylesheet_directory();
-		
-		// Debug: Log the directories being checked
-		error_log( 'CF7 SMTP Debug - Template dir: ' . $template_dir );
-		error_log( 'CF7 SMTP Debug - Stylesheet dir: ' . $stylesheet_dir );
-		
+
 		// Check multiple possible locations for custom templates
 		$directories_to_check = array();
-		
+
 		// Check child theme first (if different)
 		if ( $stylesheet_dir !== $template_dir ) {
 			$directories_to_check[] = $stylesheet_dir . '/cf7-smtp';
 			$directories_to_check[] = $stylesheet_dir . '/templates/cf7-smtp';
 		}
-		
+
 		// Check parent theme
 		$directories_to_check[] = $template_dir . '/cf7-smtp';
 		$directories_to_check[] = $template_dir . '/templates/cf7-smtp';
-		
+
 		foreach ( $directories_to_check as $dir ) {
-			error_log( 'CF7 SMTP Debug - Checking directory: ' . $dir );
 			if ( is_dir( $dir ) ) {
-				error_log( 'CF7 SMTP Debug - Directory exists: ' . $dir );
 				// Get all PHP files in the directory
 				$files = glob( $dir . '/*.php' );
-				error_log( 'CF7 SMTP Debug - Files found: ' . print_r( $files, true ) );
-				
+
 				if ( ! empty( $files ) ) {
 					foreach ( $files as $file ) {
 						// Get filename without extension
 						$template_name = basename( $file, '.php' );
-						
+
 						// Skip if template name starts with underscore (private template)
 						if ( strpos( $template_name, '_' ) === 0 ) {
 							continue;
 						}
-						
+
 						// Avoid duplicates - prefer first found (child theme over parent theme)
 						if ( ! isset( $custom_templates[ $template_name ] ) ) {
 							$custom_templates[ $template_name ] = $file;
-							error_log( 'CF7 SMTP Debug - Added template: ' . $template_name . ' => ' . $file );
 						}
 					}
 				}
-			} else {
-				error_log( 'CF7 SMTP Debug - Directory does not exist: ' . $dir );
 			}
 		}
-		
-		error_log( 'CF7 SMTP Debug - Final templates array: ' . print_r( $custom_templates, true ) );
-		
+
 		// Allow developers to filter custom templates
 		return apply_filters( 'cf7_smtp_custom_templates', $custom_templates );
 	}
@@ -1068,14 +1056,14 @@ class Settings_Form {
 
 		// Get available custom templates from theme folder
 		$custom_templates = $this->cf7_smtp_get_custom_templates();
-		
+
 		// Get current template preferences (default to empty array if not set)
 		$template_preferences = isset( $this->options['form_templates'] ) ? $this->options['form_templates'] : array();
 
 		echo '<div class="cf7-smtp-form-templates">';
 		echo '<h4>' . esc_html__( 'Form Template Selection', 'cf7-smtp' ) . '</h4>';
 		echo '<p>' . esc_html__( 'Choose the email template for each Contact Form 7 form:', 'cf7-smtp' ) . '</p>';
-		
+
 		echo '<table class="widefat striped" style="margin-top: 10px;">';
 		echo '<thead>';
 		echo '<tr>';
@@ -1095,12 +1083,12 @@ class Settings_Form {
 			echo '<td>' . esc_html( $form_id ) . '</td>';
 			echo '<td><a href="' . esc_url( admin_url( 'admin.php?page=wpcf7&post=' . $form_id . '&action=edit' ) ) . '" target="_blank">' . esc_html( $form_title ) . '</a></td>';
 			echo '<td>';
-			
+
 			// Template selection dropdown
 			echo '<select name="cf7-smtp-options[form_templates][' . esc_attr( $form_id ) . ']" class="cf7-smtp-template-select">';
-			echo '<option value="none"' . selected( $current_template, 'none', false ) . '>' . esc_html__( 'No Template (Plain Text)', 'cf7-smtp' ) . '</option>';
+			echo '<option value="none"' . selected( $current_template, 'none', false ) . '>' . esc_html__( 'No Template (Keep Contact Form 7 settings)', 'cf7-smtp' ) . '</option>';
 			echo '<option value="default"' . selected( $current_template, 'default', false ) . '>' . esc_html__( 'Default Template', 'cf7-smtp' ) . '</option>';
-			
+
 			// Add custom templates if available
 			if ( ! empty( $custom_templates ) ) {
 				echo '<optgroup label="' . esc_attr__( 'Custom Templates', 'cf7-smtp' ) . '">';
@@ -1109,7 +1097,7 @@ class Settings_Form {
 				}
 				echo '</optgroup>';
 			}
-			
+
 			echo '</select>';
 			echo '</td>';
 			echo '</tr>';
@@ -1117,7 +1105,7 @@ class Settings_Form {
 
 		echo '</tbody>';
 		echo '</table>';
-		
+
 		// Show info about custom templates
 		if ( empty( $custom_templates ) ) {
 			echo '<p style="margin-top: 15px;"><em>' . sprintf(
@@ -1131,7 +1119,7 @@ class Settings_Form {
 				count( $custom_templates )
 			) . '</em></p>';
 		}
-		
+
 		echo '</div>';
 	}
 
