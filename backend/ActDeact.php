@@ -124,7 +124,7 @@ class ActDeact extends Base {
 		$current_website = wp_parse_url( implode( '.', array_slice( explode( ',', get_bloginfo( 'url' ) ), -2, 2, true ) ), PHP_URL_HOST );
 
 		return array(
-			'version'                          => 1,
+			'version'                          => defined( 'CF7_SMTP_VERSION' ) ? CF7_SMTP_VERSION : '1.0.0',
 			'enabled'                          => true,
 			'custom_template'                  => false,
 			'report_every'                     => false,
@@ -179,7 +179,43 @@ class ActDeact extends Base {
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
+			/**
+			 * Legacy v1.0.0 users:
+			 * v1.0.0 did not have 'auth_method'. If it's missing, it means the user
+			 * was previously using the standard SMTP functionality. We force
+			 * 'smtp' as the method to maintain their existing configuration,
+			 * instead of letting it fall back to the new 'wp' (WordPress default).
+			 */
+			if ( ! isset( $options['auth_method'] ) || ( isset( $options['enabled'] ) && true === $options['enabled'] ) ) {
+				$new_options['auth_method'] = 'smtp';
+			}
+
+			/* Always stamp the current plugin version so maybe_upgrade() knows the migration is done */
+			$new_options['version'] = defined( 'CF7_SMTP_VERSION' ) ? CF7_SMTP_VERSION : $default_cf7_smtp_options['version'];
+
 			update_option( 'cf7-smtp-options', $new_options );
+		}
+	}
+
+	/**
+	 * Runs after every page load (hooked to plugins_loaded) and migrates stored
+	 * options to the current schema whenever the plugin has been updated without
+	 * a manual deactivate / activate cycle (e.g. auto-updates via WP dashboard).
+	 *
+	 * The version stored in the option row is compared against CF7_SMTP_VERSION;
+	 * if they differ, update_options() merges the current defaults into the stored
+	 * options and stamps the new version so the migration only runs once.
+	 *
+	 * @since 1.1.0
+	 * @return void
+	 */
+	public static function maybe_upgrade() {
+		$options         = get_option( 'cf7-smtp-options', array() );
+		$stored_version  = $options['version'] ?? 0;
+		$current_version = defined( 'CF7_SMTP_VERSION' ) ? CF7_SMTP_VERSION : '0';
+
+		if ( version_compare( (string) $stored_version, $current_version, '<' ) ) {
+			self::update_options();
 		}
 	}
 

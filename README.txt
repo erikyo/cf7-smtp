@@ -1,6 +1,6 @@
 === SMTP for Contact Form 7 ===
 Contributors: codekraft, gardenboi
-Tags: smtp, mail, wp mail, mail template, contact form 7
+Tags: smtp, mail, wp mail, mail template, contact form 7, oauth2, gmail, office365
 Requires PHP: 7.1
 Requires at least: 5.5
 Tested up to: 6.9
@@ -9,7 +9,7 @@ Requires plugins: Contact Form 7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A free SMTP plugin for Contact Form 7 that allows the smtp server configuration of wp_mail() powered by automated report and custom mail templates.
+A free SMTP plugin for Contact Form 7 that allows the smtp server configuration of wp_mail() powered by automated reports, per-form custom mail templates, and secure OAuth2 authentication.
 
 == Description ==
 
@@ -19,16 +19,24 @@ Anyway you can avoid any problems by using an external SMTP server and sending m
 
 = Additional features =
 
+✅ **OAuth2 Authentication:** Securely connect to Gmail and Microsoft Office 365 without needing to store passwords in your database or enable "less secure apps".
+✅ **Per-Form Custom Templates:** Wrap CF7 emails with beautiful templates. You can now select a specific custom template for *each* form directly from the plugin settings!
+✅ **Global or CF7-Only Mode:** Choose whether to override all WordPress emails with this SMTP configuration or limit it exclusively to Contact Form 7 submissions.
 ✅ **Live testing:** a module for testing e-mail settings with the Rest-Api (that avoid to reload the page for this kind of test). The entire output of the php mailer will be captured, which will be useful in case of configuration errors or to get the wrong parameter when is possible.
-✅ **Customised template:** wrap cf7 emails with a template, so your emails will have a less textual and a little prettier format! The template can be customised for each form and internationalized.
-✅ **Automated Reports:** choose when and what email you want to receive the report and I will send you a summary of sent and failed emails
+✅ **Automated Reports:** choose when and what email you want to receive the report and I will send you a beautifully formatted HTML summary of sent and failed emails. Includes log retention settings to keep your database clean.
+✅ **Advanced Headers & Security:** Easily automatically set "Reply-To" headers, allow insecure options for self-signed certificates, and define custom "From Name" and "From Email" settings.
 
-This plugin is ads free and I don't want to try to sell you any pro version! If you want to contribute, there are many ways to do so, from simple suggestions and bug reports to translating and contributing code. See below how to do it!
+This plugin is ads free and I don't want to try to sell you any pro version!
+If you want to contribute, there are many ways to do so, from simple suggestions and bug reports to translating and contributing code.
+See below how to do it!
 
 == SMTP ==
-SMTP stands for 'Simple Mail Transfer Protocol'. It is a connection-oriented, text-based network protocol of the Internet protocol family and as such is on the seventh layer of the ISO/OSI model, the application layer.
-Like any other network protocol, it contains the rules for proper communication between networked computers. SMTP is specifically responsible for sending and forwarding e-mails from a sender to a recipient.
-Since its release in 1982 as the successor to the 'Mail Box Protocol' in Arpanet, SMTP has become the standard protocol for sending e-mails. However, the SMTP procedure remains largely invisible to the normal consumer, as it is executed in the background by the e-mail programme used.
+SMTP stands for 'Simple Mail Transfer Protocol'.
+It is a connection-oriented, text-based network protocol of the Internet protocol family and as such is on the seventh layer of the ISO/OSI model, the application layer.
+Like any other network protocol, it contains the rules for proper communication between networked computers.
+SMTP is specifically responsible for sending and forwarding e-mails from a sender to a recipient.
+Since its release in 1982 as the successor to the 'Mail Box Protocol' in Arpanet, SMTP has become the standard protocol for sending e-mails.
+However, the SMTP procedure remains largely invisible to the normal consumer, as it is executed in the background by the e-mail programme used.
 Only if the software, the webmail application on the browser or the mobile e-mail application does not automatically determine the SMTP protocol when creating an account, does it have to be set manually to ensure smooth e-mail traffic.
 
 = SMTP presets =
@@ -36,12 +44,12 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 2. Gmail (tls and ssl)
 3. Yahoo (tls and ssl)
 4. Outlook (tls and ssl)
-4. Office365 (tls)
+5. Office365 (tls)
 
-= OAuth2 Setup (Google Gmail) =
+= OAuth2 Setup =
 
+**Google Gmail**
 To use Gmail with OAuth2, you need to create a Google Cloud Project:
-
 1. Go to **Google Cloud Console** (console.cloud.google.com).
 2. Create a new project.
 3. Go to **APIs & Services > Credentials** and click **Create Credentials > OAuth client ID**.
@@ -49,29 +57,40 @@ To use Gmail with OAuth2, you need to create a Google Cloud Project:
 5. **Authorized redirect URIs**: Copy the URL from the plugin settings (e.g., `https://your-site.com/wp-admin/admin.php?page=cf7-smtp&oauth2_callback=1`).
 6. Copy the **Client ID** and **Client Secret** into the plugin settings.
 7. Important: Go to **OAuth consent screen > Test users** and add your email address if the app is in "Testing" mode.
-8. Click **Connect with Gmail** in the plugin settings.
+8. Click **Connect with OAuth2** in the plugin settings.
 
-Would you like to find more presets (that you think are useful to other users)? Open a request in the support form and provide the necessary connection data (auth, server address and port). In the next cf7-smtp version you will find the required configuration among the presets.
+**Microsoft Office 365**
+1. Go to the **Azure Portal** (portal.azure.com).
+2. Navigate to **Azure Active Directory > App registrations > New registration**.
+3. Enter an application name and set the **Redirect URI** (Web) to the exact URL provided in the plugin settings.
+4. Go to **Certificates & secrets** and create a new client secret. Copy the secret's Value.
+5. Go to **API permissions > Add a permission > Microsoft Graph > Delegated permissions** and add `SMTP.Send` and `offline_access`.
+6. Copy the **Application (client) ID** and the **Client Secret** into the plugin settings.
+7. Click **Connect with OAuth2**.
+
+Would you like to find more presets (that you think are useful to other users)?
+Open a request in the support form and provide the necessary connection data (auth, server address and port).
+In the next cf7-smtp version you will find the required configuration among the presets.
 
 = Security =
-it's warmly advised to store at least the password into config.php as a constant. And in addition, it's also very easy! It needs only to add
+It's warmly advised to use OAuth2 for supported providers (Gmail, Office365) so no passwords are saved. If using basic SMTP authentication, it is highly recommended to store at least the password into wp-config.php as a constant.
+And in addition, it's also very easy! It needs only to add
 
-``define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );
-``
+`define( 'CF7_SMTP_USER_PASS', 'mySecr3tp4ssWord' );`
 
-into your `config.php` just before
+into your `wp-config.php` just before
 
-``/* That's all, stop editing! Happy publishing. */
-``
+`/* That's all, stop editing! Happy publishing. */`
 
 All passwords will be stored encrypted, but still it is not good practice to put it into database!
 
 = Quick setup =
-as with the user password other constants can also be defined. Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
+as with the user password other constants can also be defined.
+Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
 
 But, to quickly set up the plugin there is one constant that wraps all the others, so in case you manage multiple websites this will be very convenient!
 
-``define(
+`define(
     'CF7_SMTP_SETTINGS',
     array(
       'host'      => string,
@@ -83,26 +102,29 @@ But, to quickly set up the plugin there is one constant that wraps all the other
       'insecure'  => true|false,
       'from_mail' => email,
       'from_name' => string,
-    ));
-``
+      'smtp_mode' => 'cf7'|'override',
+  ));
+`
 
 = Template =
-Wouldn't it be better to have a small container to make our mail a little prettier? Well we have it!
-Furthermore, if you prefer to use your own template for mail, simply create it by following these steps:
-1. Create a folder named "cf7-smtp/" in your template folder.
-2. Copy what you find [here](https://github.com/erikyo/cf7-smtp/blob/main/templates/default.html) into it
-3. Name it `default.html` (or `default-{{CONTACT-FORM-ID}}-{{LANGUAGE}}.html` depends on your needs)
-4. (Optional) You can, customize logo, website link and other template parts. checkout the filter documentation on GitHub/wiki
+Wouldn't it be better to have a small container to make our mail a little prettier?
+Well we have it! You can now assign specific templates to each of your forms via the plugin settings dashboard.
+To use your own custom templates for emails, simply create them by following these steps:
+1. Create a folder named `cf7-smtp/` or `templates/cf7-smtp/` in your theme (or child theme) folder.
+2. Create a `.php` or `.html` template file inside it.
+3. Go to the plugin settings under **Style > Form Email Templates**, and select your newly found custom template from the dropdown menu for the desired form.
+4. (Optional) You can customize the logo, website link, and other template parts. Checkout the filter documentation on GitHub/wiki.
 
-==Support==
+== Support ==
 Community support: via the [support forums](https://wordpress.org/support/plugin/cf7-smtp/) on wordpress.org
 Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/cf7-smtp)
 
 = Contribute =
-We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+We love your input!
+We want to make contributing to this project as easy and transparent as possible, whether it's:
 
 * Reporting a bug
-* Testing the plugin with different user agent and report fingerprinting failures
+* Testing the plugin
 * Discussing the current state, features, improvements
 * Submitting a fix or a new feature
 
@@ -134,6 +156,14 @@ By contributing, you agree that your contributions will be licensed under its GP
 4. Activate the plugin in the Plugin dashboard
 
 == Changelog ==
+
+= 1.1.0 =
+* **New:** Added OAuth2 authentication support for Microsoft Office 365.
+* **New:** Per-form template selection! You can now assign specific custom templates to individual Contact Form 7 forms from the settings.
+* **New:** Custom templates are now supported inside your theme or child-theme folder (`your-theme/cf7-smtp/`).
+* **New:** SMTP Mode selection - choose whether to override all WordPress emails or just CF7.
+* **Enhancement:** Revamped automated reports with a beautiful HTML template.
+* **Enhancement:** Added log retention day settings and manual flush logs capability.
 
 = 1.0.0 =
 * Cleaner code, updated dependencies

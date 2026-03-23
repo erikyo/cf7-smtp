@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2026-03-01T14:26:27.964Z\n"
+"POT-Creation-Date: 2026-03-15T23:58:32.965Z\n"
 "PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: codekraft <erik@codekraft.it>\n"
 "Language-Team: codekraft <erik@codekraft.it>\n"
@@ -280,53 +280,53 @@ msgstr ""
 msgid "No email sent (yet)"
 msgstr ""
 
-#: backend/Settings_Form.php:1054
+#: backend/Settings_Form.php:1042
 msgid "Contact Form 7 is not installed or activated."
 msgstr ""
 
-#: backend/Settings_Form.php:1065
+#: backend/Settings_Form.php:1053
 msgid "No Contact Form 7 forms found. Please create a form first."
 msgstr ""
 
-#: backend/Settings_Form.php:1076
+#: backend/Settings_Form.php:1064
 msgid "Form Template Selection"
 msgstr ""
 
-#: backend/Settings_Form.php:1077
+#: backend/Settings_Form.php:1065
 msgid "Choose the email template for each Contact Form 7 form:"
 msgstr ""
 
-#: backend/Settings_Form.php:1082
+#: backend/Settings_Form.php:1070
 msgid "ID"
 msgstr ""
 
-#: backend/Settings_Form.php:1083
+#: backend/Settings_Form.php:1071
 msgid "Form Title"
 msgstr ""
 
-#: backend/Settings_Form.php:1084
+#: backend/Settings_Form.php:1072
 msgid "Email Template"
 msgstr ""
 
-#: backend/Settings_Form.php:1101
+#: backend/Settings_Form.php:1089
 msgid "No Template (Plain Text)"
 msgstr ""
 
-#: backend/Settings_Form.php:1102
+#: backend/Settings_Form.php:1090
 msgid "Default Template"
 msgstr ""
 
-#: backend/Settings_Form.php:1106
+#: backend/Settings_Form.php:1094
 msgid "Custom Templates"
 msgstr ""
 
-#: backend/Settings_Form.php:1124
+#: backend/Settings_Form.php:1112
 msgid ""
 "No custom templates found. To add custom templates, create template files "
 "in your theme folder: %s or %s"
 msgstr ""
 
-#: backend/Settings_Form.php:1130
+#: backend/Settings_Form.php:1118
 msgid "Found %d custom template(s) in your theme folder."
 msgstr ""
 

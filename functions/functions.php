@@ -108,29 +108,34 @@ function cf7_smtp_obfuscate_secret( ?string $user_pass ): string {
 /**
  * Used to obfuscate email addresses in the debug output
  *
- * @param string $email The email address to obfuscate
+ * @param mixed $email The email address to obfuscate
  *
  * @return string a string with ***@***.*** placeholders if the email is not empty, otherwise returns the value as is
  */
-function cf7_smtp_obfuscate_email( string $email ): string {
-	return ! empty( $email ) && filter_var( $email, FILTER_VALIDATE_EMAIL ) ? '***@***.***' : $email;
+function cf7_smtp_obfuscate_email( $email ): string {
+	$email_str = (string) $email;
+	return ! empty( $email_str ) && filter_var( $email_str, FILTER_VALIDATE_EMAIL ) ? '***@***.***' : $email_str;
 }
 
 /**
- * Obfuscates sensitive data in the options array
+ * Obfuscates sensitive data in the options array.
+ * Uses isset() and casting so this is safe against option sets from older
+ * plugin versions that are missing keys added in newer releases.
  *
- * @param array $old_options The options array to obfuscate
+ * @param mixed $old_options The options array to obfuscate
  *
  * @return array The obfuscated options array
  */
-function cf7_smtp_obfuscate_options( array $old_options ): array {
-	$options                         = $old_options;
-	$options['user_pass']            = cf7_smtp_obfuscate_secret( $old_options['user_pass'] );
-	$options['oauth2_client_secret'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_client_secret'] );
-	$options['oauth2_access_token']  = cf7_smtp_obfuscate_secret( $old_options['oauth2_access_token'] );
-	$options['oauth2_refresh_token'] = cf7_smtp_obfuscate_secret( $old_options['oauth2_refresh_token'] );
-	$options['report_to']            = cf7_smtp_obfuscate_email( $old_options['report_to'] );
-	$options['oauth2_user_email']    = cf7_smtp_obfuscate_email( $old_options['oauth2_user_email'] );
-	$options['user_name']            = cf7_smtp_obfuscate_email( $old_options['user_name'] );
+function cf7_smtp_obfuscate_options( $old_options ): array {
+	$options = is_array( $old_options ) ? $old_options : array();
+
+	$options['user_pass']            = cf7_smtp_obfuscate_secret( (string) ( $options['user_pass'] ?? '' ) );
+	$options['oauth2_client_secret'] = cf7_smtp_obfuscate_secret( (string) ( $options['oauth2_client_secret'] ?? '' ) );
+	$options['oauth2_access_token']  = cf7_smtp_obfuscate_secret( (string) ( $options['oauth2_access_token'] ?? '' ) );
+	$options['oauth2_refresh_token'] = cf7_smtp_obfuscate_secret( (string) ( $options['oauth2_refresh_token'] ?? '' ) );
+	$options['report_to']            = cf7_smtp_obfuscate_email( (string) ( $options['report_to'] ?? '' ) );
+	$options['oauth2_user_email']    = cf7_smtp_obfuscate_email( (string) ( $options['oauth2_user_email'] ?? '' ) );
+	$options['user_name']            = cf7_smtp_obfuscate_email( (string) ( $options['user_name'] ?? '' ) );
+
 	return $options;
 }
