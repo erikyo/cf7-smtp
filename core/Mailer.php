@@ -362,9 +362,13 @@ class Mailer extends Base {
 			return $components;
 		}
 
-		// Apply the nl2br to convert newlines to HTML line breaks
+		// Check if the source email from CF7 is set to HTML
+		$mail_properties = $contact_form->prop( 'mail' );
+		$is_html = ! empty( $mail_properties['use_html'] );
+
+		// Apply the nl2br ONLY if it's NOT already HTML to convert newlines to HTML line breaks
 		$email_data = array(
-			'body'     => nl2br( $components['body'] ),
+			'body'     => $is_html ? $components['body'] : nl2br( $components['body'] ),
 			'subject'  => $components['subject'],
 			'language' => $contact_form->locale(),
 		);
