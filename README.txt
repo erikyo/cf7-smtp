@@ -124,7 +124,7 @@ We love your input!
 We want to make contributing to this project as easy and transparent as possible, whether it's:
 
 * Reporting a bug
-* Testing the plugin with different user agent and report fingerprinting failures
+* Testing the plugin
 * Discussing the current state, features, improvements
 * Submitting a fix or a new feature
 
