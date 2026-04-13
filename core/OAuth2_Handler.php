@@ -185,8 +185,13 @@ class OAuth2_Handler extends Base {
 
 		$config = $this->get_provider_config( $provider_key );
 
+		$scope = $config['scopes'];
+		if ( \is_array( $scope ) ) {
+			$scope = \implode( ' ', $scope );
+		}
+
 		$options = array(
-			'scope' => $config['scopes'],
+			'scope' => $scope,
 		);
 
 		if ( 'gmail' === $provider_key ) {
