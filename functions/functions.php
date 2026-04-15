@@ -33,16 +33,24 @@ function cf7_smtp_update_settings( array $options ): bool {
 }
 
 /**
- * It encrypts a string using the WordPress salt as the key
+ * It encrypts a string using a secure key
  *
  * @param string|int $value The value to encrypt.
  * @param string     $cipher The cipher method to use.
  *
  * @return string The encrypted value.
  */
-function cf7_smtp_crypt( $value, string $cipher = 'aes-256-cbc' ) {
+function cf7_smtp_crypt( $value, string $cipher = 'aes-256-gcm' ) {
 	if ( extension_loaded( 'openssl' ) ) {
-		return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+		if ( 'aes-256-gcm' === $cipher ) {
+			$key = substr( hash( 'sha256', wp_salt( 'auth' ), true ), 0, 32 );
+			$iv_len = openssl_cipher_iv_length( $cipher );
+			$iv = openssl_random_pseudo_bytes( $iv_len );
+			$tag = '';
+			$ciphertext_raw = openssl_encrypt( (string) $value, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag );
+			return base64_encode( $iv . $tag . $ciphertext_raw );
+		}
+		return openssl_encrypt( (string) $value, $cipher, wp_salt( 'nonce' ), 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
 	}
 	return $value;
 }
@@ -55,9 +63,29 @@ function cf7_smtp_crypt( $value, string $cipher = 'aes-256-cbc' ) {
  *
  * @return string The decrypted value.
  */
-function cf7_smtp_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
+function cf7_smtp_decrypt( string $value, string $cipher = 'aes-256-gcm' ): string {
 	if ( extension_loaded( 'openssl' ) ) {
-		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+		if ( 'aes-256-gcm' === $cipher ) {
+			$decoded = base64_decode( $value, true );
+			if ( false !== $decoded ) {
+				$iv_len = openssl_cipher_iv_length( $cipher );
+				$tag_len = 16;
+				if ( strlen( $decoded ) > $iv_len + $tag_len ) {
+					$iv = substr( $decoded, 0, $iv_len );
+					$tag = substr( $decoded, $iv_len, $tag_len );
+					$ciphertext_raw = substr( $decoded, $iv_len + $tag_len );
+					$key = substr( hash( 'sha256', wp_salt( 'auth' ), true ), 0, 32 );
+					$decrypted = openssl_decrypt( $ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv, $tag );
+					if ( false !== $decrypted ) {
+						return $decrypted;
+					}
+				}
+			}
+			$legacy_decrypted = openssl_decrypt( $value, 'aes-256-cbc', wp_salt( 'nonce' ), 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+			return false !== $legacy_decrypted ? $legacy_decrypted : (string) $value;
+		}
+		$decrypted = openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+		return false !== $decrypted ? $decrypted : (string) $value;
 	}
 	return $value;
 }
