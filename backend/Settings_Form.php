@@ -467,7 +467,7 @@ class Settings_Form {
 			<p class="description">%3$s</p>',
 			\esc_attr( $admin_callback ),
 			\esc_attr( $rest_callback ),
-			\esc_html__( 'Copy the Redirect URI and add it to your OAuth provider settings. This API-based endpoint is designed for maximum compatibility and reliability.', 'cf7-smtp' ),
+			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' ),
 			\esc_html( $initial_callback )
 		);
 	}
