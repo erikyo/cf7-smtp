@@ -57,7 +57,7 @@ class OAuth2_Handler extends Base {
 				'scopes'                       => array( 'https://outlook.office.com/SMTP.Send', 'offline_access' ),
 				'auth_url'                     => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
 				'token_url'                    => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-				'redirect_uri'                 => admin_url( 'admin.php?page=cf7-smtp&oauth2_callback=1' ),
+				'redirect_uri'                 => rest_url( 'cf7-smtp/v1/oauth2/callback' ),
 			),
 		);
 	}

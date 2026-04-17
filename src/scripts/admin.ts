@@ -249,6 +249,19 @@ export function smtpAdmin(): void {
 					providerRow.style.display = 'none';
 				}
 			}
+
+			const redirectUriEl = document.getElementById(
+				'cf7_smtp_oauth2_redirect_uri'
+			) as HTMLElement | null;
+			if (redirectUriEl) {
+				const redirectUri =
+					method === 'gmail'
+						? redirectUriEl.dataset.gmailRedirectUri
+						: redirectUriEl.dataset.office365RedirectUri;
+				if (redirectUri) {
+					redirectUriEl.textContent = redirectUri;
+				}
+			}
 		}
 	};
 
