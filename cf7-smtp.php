@@ -8,7 +8,7 @@
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
  * Version:         1.1.0
  * Author:          codekraft
- * Contributors:    gardenboi
+ * Contributors:    gardenboi, MemoryShadow
  * Author URI:      https://modul-r.codekraft.it/
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+
