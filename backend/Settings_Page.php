@@ -114,10 +114,32 @@ class Settings_Page extends Base {
 			return;
 		}
 
-		// Verify nonce for OAuth2 callback
+		// Verify nonce for OAuth2 callback.
 		if ( ! isset( $_GET['state'] ) || ! \wp_verify_nonce( \sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
 			cf7_smtp_log( 'OAuth2 callback: Invalid nonce or missing state parameter' );
 			return;
+		}
+
+		// Handle OAuth2 error responses (e.g. user cancelled the Microsoft consent screen).
+		// This check MUST come after state verification to prevent forged error notices.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- state/nonce already verified above
+		if ( isset( $_GET['error'] ) ) {
+			$error_code = \sanitize_text_field( \wp_unslash( $_GET['error'] ) );
+			$error_desc = isset( $_GET['error_description'] )
+				? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) )
+				: '';
+
+			$message = \sprintf(
+				/* translators: 1: OAuth2 error code  2: human-readable error description */
+				__( 'OAuth2 authorization failed: %1$s. %2$s', 'cf7-smtp' ),
+				$error_code,
+				$error_desc
+			);
+			cf7_smtp_log( 'OAuth2 callback error: ' . $error_code . ' - ' . $error_desc );
+			\set_transient( 'cf7_smtp_oauth2_error', $message, 60 );
+
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
 		}
 
 		if ( ! isset( $_GET['code'] ) ) {

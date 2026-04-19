@@ -467,9 +467,13 @@ class Api extends Base {
 			'oauth2_callback' => 1,
 		);
 
-		$params = array( 'code', 'state', 'session_state' );
+		// Include error params so the admin handler can display user-friendly failure notices
+		// (e.g. error=access_denied when the user cancels the Microsoft consent screen).
+		$params = array( 'code', 'state', 'session_state', 'error', 'error_description' );
 		foreach ( $params as $param ) {
-			if ( isset( $request[ $param ] ) ) {
+			// Guard against array-type inputs (e.g. ?code[]=foo) that would cause a
+			// sanitize_text_field() warning and potentially a 500 error.
+			if ( isset( $request[ $param ] ) && is_scalar( $request[ $param ] ) ) {
 				$query_args[ $param ] = sanitize_text_field( $request[ $param ] );
 			}
 		}
