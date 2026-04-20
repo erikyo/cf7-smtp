@@ -115,19 +115,21 @@ class Settings_Page extends Base {
 		}
 
 		$handler = new \cf7_smtp\Core\OAuth2_Handler();
-		$state   = isset( $_GET['state'] ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
+		$state   = ( isset( $_GET['state'] ) && \is_scalar( $_GET['state'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
 
 		// Verify state for OAuth2 callback using transient-based validation.
 		if ( empty( $state ) || ! $handler->validate_state( $state, false ) ) {
 			cf7_smtp_log( 'OAuth2 callback: Invalid state parameter or missing state' );
-			return;
+			\set_transient( 'cf7_smtp_oauth2_error', \__( 'Invalid or expired OAuth2 state. Please try again.', 'cf7-smtp' ), 60 );
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
 		}
 
 		// Handle OAuth2 error responses (e.g. user cancelled the Microsoft consent screen).
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- state/transient already verified above
 		if ( isset( $_GET['error'] ) || isset( $_GET['error_description'] ) ) {
-			$error_code = isset( $_GET['error'] ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : 'unknown_error';
-			$error_desc = isset( $_GET['error_description'] )
+			$error_code = ( isset( $_GET['error'] ) && \is_scalar( $_GET['error'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : 'unknown_error';
+			$error_desc = ( isset( $_GET['error_description'] ) && \is_scalar( $_GET['error_description'] ) )
 				? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) )
 				: '';
 
@@ -144,14 +146,17 @@ class Settings_Page extends Base {
 			exit;
 		}
 
-		if ( ! isset( $_GET['code'] ) ) {
-			cf7_smtp_log( 'OAuth2 callback: Missing authorization code' );
-			return;
+		$code = ( isset( $_GET['code'] ) && \is_scalar( $_GET['code'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['code'] ) ) : '';
+		if ( empty( $code ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Missing or invalid authorization code' );
+			\set_transient( 'cf7_smtp_oauth2_error', \__( 'Missing or invalid authorization code. Please try again.', 'cf7-smtp' ), 60 );
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
 		}
 
 		try {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$result = $handler->handle_callback( \sanitize_text_field( \wp_unslash( $_GET['code'] ) ), $state );
+			$result = $handler->handle_callback( $code, $state );
 
 			if ( $result['success'] ) {
 				\set_transient( 'cf7_smtp_oauth2_notice', $result['message'], 60 );

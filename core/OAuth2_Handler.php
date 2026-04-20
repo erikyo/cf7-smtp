@@ -308,7 +308,7 @@ class OAuth2_Handler extends Base {
 		$user_id      = get_current_user_id();
 		$stored_state = get_transient( 'cf7_smtp_oauth2_state_' . $user_id );
 
-		if ( empty( $stored_state ) || $state !== $stored_state ) {
+		if ( empty( $stored_state ) || ! hash_equals( $stored_state, $state ) ) {
 			return false;
 		}
 
