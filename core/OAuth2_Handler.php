@@ -219,16 +219,15 @@ class OAuth2_Handler extends Base {
 	 * @return array{success: bool, message: string, email?: string}
 	 */
 	public function handle_callback( string $code, string $state ): array {
-		// Read user-scoped transients (set by get_authorization_url for the same user).
-		$user_id      = get_current_user_id();
-		$stored_state = get_transient( 'cf7_smtp_oauth2_state_' . $user_id );
-		if ( empty( $stored_state ) || $state !== $stored_state ) {
+		// Verify state using the centralized validation method (consuming the state).
+		if ( ! $this->validate_state( $state, true ) ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Invalid state parameter. Please try again.', 'cf7-smtp' ),
 			);
 		}
 
+		$user_id      = get_current_user_id();
 		$provider_key = get_transient( 'cf7_smtp_oauth2_provider_' . $user_id );
 		if ( empty( $provider_key ) ) {
 			return array(
@@ -237,8 +236,7 @@ class OAuth2_Handler extends Base {
 			);
 		}
 
-		// Clean up user-scoped transients immediately after reading.
-		delete_transient( 'cf7_smtp_oauth2_state_' . $user_id );
+		// Clean up provider transient after reading.
 		delete_transient( 'cf7_smtp_oauth2_provider_' . $user_id );
 
 		$provider = $this->create_provider( $provider_key );
@@ -296,6 +294,29 @@ class OAuth2_Handler extends Base {
 				),
 			);
 		}//end try
+	}
+
+	/**
+	 * Validate the OAuth2 state parameter against the stored transient.
+	 *
+	 * @param string $state   The state to validate.
+	 * @param bool   $consume Whether to delete the stored state after validation.
+	 *
+	 * @return bool True if the state is valid.
+	 */
+	public function validate_state( string $state, bool $consume = false ): bool {
+		$user_id      = get_current_user_id();
+		$stored_state = get_transient( 'cf7_smtp_oauth2_state_' . $user_id );
+
+		if ( empty( $stored_state ) || $state !== $stored_state ) {
+			return false;
+		}
+
+		if ( $consume ) {
+			delete_transient( 'cf7_smtp_oauth2_state_' . $user_id );
+		}
+
+		return true;
 	}
 
 	/**

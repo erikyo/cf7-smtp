@@ -114,17 +114,19 @@ class Settings_Page extends Base {
 			return;
 		}
 
-		// Verify nonce for OAuth2 callback.
-		if ( ! isset( $_GET['state'] ) || ! \wp_verify_nonce( \sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
-			cf7_smtp_log( 'OAuth2 callback: Invalid nonce or missing state parameter' );
+		$handler = new \cf7_smtp\Core\OAuth2_Handler();
+		$state   = isset( $_GET['state'] ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
+
+		// Verify state for OAuth2 callback using transient-based validation.
+		if ( empty( $state ) || ! $handler->validate_state( $state, false ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Invalid state parameter or missing state' );
 			return;
 		}
 
 		// Handle OAuth2 error responses (e.g. user cancelled the Microsoft consent screen).
-		// This check MUST come after state verification to prevent forged error notices.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- state/nonce already verified above
-		if ( isset( $_GET['error'] ) ) {
-			$error_code = \sanitize_text_field( \wp_unslash( $_GET['error'] ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- state/transient already verified above
+		if ( isset( $_GET['error'] ) || isset( $_GET['error_description'] ) ) {
+			$error_code = isset( $_GET['error'] ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : 'unknown_error';
 			$error_desc = isset( $_GET['error_description'] )
 				? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) )
 				: '';
@@ -148,9 +150,8 @@ class Settings_Page extends Base {
 		}
 
 		try {
-			$handler = new \cf7_smtp\Core\OAuth2_Handler();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$result = $handler->handle_callback( \sanitize_text_field( \wp_unslash( $_GET['code'] ) ), \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) );
+			$result = $handler->handle_callback( \sanitize_text_field( \wp_unslash( $_GET['code'] ) ), $state );
 
 			if ( $result['success'] ) {
 				\set_transient( 'cf7_smtp_oauth2_notice', $result['message'], 60 );
