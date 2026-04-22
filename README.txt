@@ -1,5 +1,5 @@
 === SMTP for Contact Form 7 ===
-Contributors: codekraft, gardenboi
+Contributors: codekraft, gardenboi, MemoryShadow
 Tags: smtp, mail, wp mail, mail template, contact form 7, oauth2, gmail, office365
 Requires PHP: 7.1
 Requires at least: 5.5

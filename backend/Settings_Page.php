@@ -109,26 +109,54 @@ class Settings_Page extends Base {
 	 * Check for OAuth2 callback and handle token exchange.
 	 */
 	public function check_oauth2_callback() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth2 state param used for verification
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- External OAuth callback, state is verified via transients.
 		if ( ! isset( $_GET['page'] ) || 'cf7-smtp' !== $_GET['page'] || ! isset( $_GET['oauth2_callback'] ) ) {
 			return;
 		}
 
-		// Verify nonce for OAuth2 callback
-		if ( ! isset( $_GET['state'] ) || ! \wp_verify_nonce( \sanitize_key( $_GET['state'] ), 'cf7-smtp-oauth2' ) ) {
-			cf7_smtp_log( 'OAuth2 callback: Invalid nonce or missing state parameter' );
-			return;
+		$handler = new \cf7_smtp\Core\OAuth2_Handler();
+
+		// Extract all relevant parameters from the callback.
+		$state      = ( isset( $_GET['state'] ) && \is_scalar( $_GET['state'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
+		$code       = ( isset( $_GET['code'] ) && \is_scalar( $_GET['code'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['code'] ) ) : '';
+		$error      = ( isset( $_GET['error'] ) && \is_scalar( $_GET['error'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : '';
+		$error_desc = ( isset( $_GET['error_description'] ) && \is_scalar( $_GET['error_description'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		// Verify state for OAuth2 callback using transient-based validation.
+		if ( empty( $state ) || ! $handler->validate_state( $state, false ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Invalid state parameter or missing state' );
+			\set_transient( 'cf7_smtp_oauth2_error', \__( 'Invalid or expired OAuth2 state. Please try again.', 'cf7-smtp' ), 60 );
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
 		}
 
-		if ( ! isset( $_GET['code'] ) ) {
-			cf7_smtp_log( 'OAuth2 callback: Missing authorization code' );
-			return;
+		// Handle OAuth2 error responses (e.g. user cancelled the Microsoft consent screen).
+		if ( ! empty( $error ) || ! empty( $error_desc ) ) {
+			$error_code = ! empty( $error ) ? $error : 'unknown_error';
+			$message    = \sprintf(
+				/* translators: 1: OAuth2 error code  2: human-readable error description */
+				__( 'OAuth2 authorization failed: %1$s. %2$s', 'cf7-smtp' ),
+				$error_code,
+				$error_desc
+			);
+			cf7_smtp_log( 'OAuth2 callback error: ' . $error_code . ' - ' . $error_desc );
+			\set_transient( 'cf7_smtp_oauth2_error', $message, 60 );
+
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
+		}
+
+		if ( empty( $code ) ) {
+			cf7_smtp_log( 'OAuth2 callback: Missing or invalid authorization code' );
+			\set_transient( 'cf7_smtp_oauth2_error', \__( 'Missing or invalid authorization code. Please try again.', 'cf7-smtp' ), 60 );
+			\wp_safe_redirect( \admin_url( 'admin.php?page=cf7-smtp' ) );
+			exit;
 		}
 
 		try {
-			$handler = new \cf7_smtp\Core\OAuth2_Handler();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$result = $handler->handle_callback( \sanitize_text_field( \wp_unslash( $_GET['code'] ) ), \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) );
+			$result = $handler->handle_callback( $code, $state );
 
 			if ( $result['success'] ) {
 				\set_transient( 'cf7_smtp_oauth2_notice', $result['message'], 60 );

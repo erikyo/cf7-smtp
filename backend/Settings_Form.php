@@ -447,21 +447,28 @@ class Settings_Form {
 	 * Prints the OAuth2 Redirect URI (read-only) for the user to copy.
 	 */
 	public function cf7_smtp_print_oauth2_redirect_uri_callback() {
-		$redirect_uri = \admin_url( 'admin.php' );
-		// Ensure the redirect URI matches exactly what the OAuth2 provider expects
-		$redirect_uri = \add_query_arg(
+		$admin_callback = \add_query_arg(
 			array(
 				'page'            => 'cf7-smtp',
 				'oauth2_callback' => 1,
 			),
-			$redirect_uri
+			\admin_url( 'admin.php' )
 		);
+		$rest_callback  = \rest_url( 'cf7-smtp/v1/oauth2/callback' );
+
+		$current_provider = ! empty( $this->options['oauth2_provider'] ) ? $this->options['oauth2_provider'] : 'gmail';
+		$initial_callback = 'office365' === $current_provider ? $rest_callback : $admin_callback;
 
 		\printf(
-			'<code style="user-select: all; background: #f0f0f1; padding: 5px 10px; display: block; margin-bottom: 5px;">%s</code>
-			<p class="description">%s</p>',
-			\esc_html( $redirect_uri ),
-			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' )
+			'<code id="cf7_smtp_oauth2_redirect_uri"
+				   data-gmail-redirect-uri="%1$s"
+				   data-office365-redirect-uri="%2$s"
+				   style="user-select: all; background: #f0f0f1; padding: 5px 10px; display: block; margin-bottom: 5px;">%4$s</code>
+			<p class="description">%3$s</p>',
+			\esc_attr( $admin_callback ),
+			\esc_attr( $rest_callback ),
+			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' ),
+			\esc_html( $initial_callback )
 		);
 	}
 
