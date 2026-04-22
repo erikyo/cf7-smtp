@@ -81,7 +81,7 @@ class Mailer extends Base {
 		// Check if any form templates are configured or if legacy global setting is enabled
 		$has_form_templates = ! empty( $this->options['form_templates'] ) && is_array( $this->options['form_templates'] );
 		$has_legacy_setting = ! empty( $this->options['custom_template'] );
-		
+
 		if ( $has_form_templates || $has_legacy_setting ) {
 			\add_action( 'phpmailer_init', array( $this, 'cf7_smtp_apply_template' ), 10 );
 		}
@@ -266,7 +266,7 @@ class Mailer extends Base {
 		$plugin_template_dir = CF7_SMTP_PLUGIN_ROOT . 'templates/';
 
 		// For custom templates, look in theme directory first
-		if ( $template_name !== 'default' ) {
+		if ( 'default' !== $template_name ) {
 			// Check for custom template in theme folder (PHP files) - multiple locations
 			$template = locate_template(
 				array(
@@ -274,7 +274,7 @@ class Mailer extends Base {
 					$theme_templates_dir . "{$template_name}.php",
 				)
 			);
-			
+
 			if ( ! empty( $template ) ) {
 				return apply_filters( 'cf7_smtp_mail_template', $template, $template_name, $id, $lang, 'cf7-smtp' );
 			}
@@ -344,9 +344,10 @@ class Mailer extends Base {
 		}
 
 		// Get form-specific template preference
-		$form_id = $contact_form->id();
-		$template_preference = 'default'; // Default fallback
-		
+		$form_id             = $contact_form->id();
+		$template_preference = 'default';
+		// Default fallback
+
 		if ( isset( $this->options['form_templates'][ $form_id ] ) ) {
 			$template_preference = $this->options['form_templates'][ $form_id ];
 		} elseif ( ! empty( $this->options['custom_template'] ) ) {
@@ -358,13 +359,13 @@ class Mailer extends Base {
 		}
 
 		// If 'none' is selected, don't apply any template
-		if ( $template_preference === 'none' ) {
+		if ( 'none' === $template_preference ) {
 			return $components;
 		}
 
 		// Check if the source email from CF7 is set to HTML
 		$mail_properties = $contact_form->prop( 'mail' );
-		$is_html = ! empty( $mail_properties['use_html'] );
+		$is_html         = ! empty( $mail_properties['use_html'] );
 
 		// Apply the nl2br ONLY if it's NOT already HTML to convert newlines to HTML line breaks
 		$email_data = array(

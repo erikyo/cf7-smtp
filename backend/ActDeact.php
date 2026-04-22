@@ -194,7 +194,7 @@ class ActDeact extends Base {
 			$new_options['version'] = defined( 'CF7_SMTP_VERSION' ) ? CF7_SMTP_VERSION : $default_cf7_smtp_options['version'];
 
 			update_option( 'cf7-smtp-options', $new_options );
-		}
+		}//end if
 	}
 
 	/**
