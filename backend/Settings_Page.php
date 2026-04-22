@@ -109,13 +109,19 @@ class Settings_Page extends Base {
 	 * Check for OAuth2 callback and handle token exchange.
 	 */
 	public function check_oauth2_callback() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth2 state param used for verification
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- External OAuth callback, state is verified via transients.
 		if ( ! isset( $_GET['page'] ) || 'cf7-smtp' !== $_GET['page'] || ! isset( $_GET['oauth2_callback'] ) ) {
 			return;
 		}
 
 		$handler = new \cf7_smtp\Core\OAuth2_Handler();
-		$state   = ( isset( $_GET['state'] ) && \is_scalar( $_GET['state'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
+
+		// Extract all relevant parameters from the callback.
+		$state      = ( isset( $_GET['state'] ) && \is_scalar( $_GET['state'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['state'] ) ) : '';
+		$code       = ( isset( $_GET['code'] ) && \is_scalar( $_GET['code'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['code'] ) ) : '';
+		$error      = ( isset( $_GET['error'] ) && \is_scalar( $_GET['error'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : '';
+		$error_desc = ( isset( $_GET['error_description'] ) && \is_scalar( $_GET['error_description'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Verify state for OAuth2 callback using transient-based validation.
 		if ( empty( $state ) || ! $handler->validate_state( $state, false ) ) {
@@ -126,14 +132,9 @@ class Settings_Page extends Base {
 		}
 
 		// Handle OAuth2 error responses (e.g. user cancelled the Microsoft consent screen).
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- state/transient already verified above
-		if ( isset( $_GET['error'] ) || isset( $_GET['error_description'] ) ) {
-			$error_code = ( isset( $_GET['error'] ) && \is_scalar( $_GET['error'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['error'] ) ) : 'unknown_error';
-			$error_desc = ( isset( $_GET['error_description'] ) && \is_scalar( $_GET['error_description'] ) )
-				? \sanitize_text_field( \wp_unslash( $_GET['error_description'] ) )
-				: '';
-
-			$message = \sprintf(
+		if ( ! empty( $error ) || ! empty( $error_desc ) ) {
+			$error_code = ! empty( $error ) ? $error : 'unknown_error';
+			$message    = \sprintf(
 				/* translators: 1: OAuth2 error code  2: human-readable error description */
 				__( 'OAuth2 authorization failed: %1$s. %2$s', 'cf7-smtp' ),
 				$error_code,
@@ -146,7 +147,6 @@ class Settings_Page extends Base {
 			exit;
 		}
 
-		$code = ( isset( $_GET['code'] ) && \is_scalar( $_GET['code'] ) ) ? \sanitize_text_field( \wp_unslash( $_GET['code'] ) ) : '';
 		if ( empty( $code ) ) {
 			cf7_smtp_log( 'OAuth2 callback: Missing or invalid authorization code' );
 			\set_transient( 'cf7_smtp_oauth2_error', \__( 'Missing or invalid authorization code. Please try again.', 'cf7-smtp' ), 60 );
