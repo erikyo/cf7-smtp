@@ -61,7 +61,10 @@ class Service extends GlobalWPCF7_Service {
 		 */
 		$this->options = get_option( 'cf7-smtp-options' );
 
-		if ( isset( $_POST['cf7_smtp_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
+		if ( isset( $_POST['cf7_smtp_submit'] ) && is_scalar( $_POST['cf7_smtp_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
 			$this->options['enabled'] = 'Enable' === sanitize_text_field( wp_unslash( $_POST['cf7_smtp_submit'] ) );
 			update_option( 'cf7-smtp-options', $this->options );
 			// Add a notice that the settings have been saved.
