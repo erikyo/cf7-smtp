@@ -1,0 +1,25 @@
+name: WordPress Coding Standards
+
+on: pull_request
+
+jobs:
+  phpcs:
+    name: Check Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-dev --no-progress
+
+      - name: WPCS check
+        uses: 10up/wpcs-action@stable
+        with:
+          standard: 'WordPress'
+          use_local_config: true
+          extra_args: '--report-json=./phpcs.json'
+
+      - name: Update summary
+        run: |
+          npx --yes github:10up/phpcs-json-to-md --path ./phpcs.json --output ./phpcs.md
+          cat phpcs.md >> $GITHUB_STEP_SUMMARY

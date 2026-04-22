@@ -75,7 +75,7 @@ class OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider {
 	 * @return string The base64-encoded OAuth token
 	 * @throws \PHPMailer\PHPMailer\Exception If no valid access token is available.
 	 */
-	public function getOauth64(): string {
+	public function get_oauth64(): string {
 		$token = $this->access_token;
 
 		// If we don't have a pre-fetched token, try to refresh via the provider.
@@ -87,9 +87,9 @@ class OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider {
 						'refresh_token' => $this->refresh_token,
 					)
 				);
-				$token = $new_token->getToken();
+				$token     = $new_token->getToken();
 			} catch ( \Exception $e ) {
-				throw new \PHPMailer\PHPMailer\Exception( 'OAuth token retrieval failed: ' . $e->getMessage() );
+				throw new \PHPMailer\PHPMailer\Exception( 'OAuth token retrieval failed: ' . esc_textarea( $e->getMessage() ) );
 			}
 		}
 

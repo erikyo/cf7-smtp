@@ -1,0 +1,35 @@
+name: Build js
+
+on: pull_request
+
+jobs:
+  build:
+    name: Build plugin
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [lts/*, latest]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build --if-present
+
+  eslint:
+    name: runner / eslint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - run: npm i
+      - uses: EPMatt/reviewdog-action-tsc@v1.9.0
+        with:
+          reporter: github-pr-review
+          workdir: src
