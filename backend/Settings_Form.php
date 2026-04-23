@@ -1299,6 +1299,11 @@ class Settings_Form {
 		/* Reply to */
 		$new_input['replyTo'] = ! empty( $input['replyTo'] );
 
+		/* Reply to Email */
+		if ( isset( $input['reply_to_email'] ) ) {
+			$new_input['reply_to_email'] = \sanitize_email( $input['reply_to_email'] );
+		}
+
 		/* From email string */
 		if ( isset( $input['from_mail'] ) ) {
 			$new_input['from_mail'] = \sanitize_email( $input['from_mail'] );
