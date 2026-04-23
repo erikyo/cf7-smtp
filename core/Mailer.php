@@ -46,6 +46,20 @@ class Mailer extends Base {
 	private static bool $is_cf7_mail = false;
 
 	/**
+	 * The current CF7 Form ID.
+	 *
+	 * @var int
+	 */
+	private static int $current_form_id = 0;
+
+	/**
+	 * The current CF7 Form Page ID.
+	 *
+	 * @var int
+	 */
+	private static int $current_page_id = 0;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -75,7 +89,7 @@ class Mailer extends Base {
 	public function initialize() {
 		if ( ! empty( $this->options['enabled'] || ! empty( get_transient( 'cf7_smtp_testing' ) ) ) ) {
 			\add_action( 'phpmailer_init', array( $this, 'smtp_overrides' ), 99999 );
-			\add_action( 'wpcf7_before_send_mail', array( $this, 'set_cf7_mail_flag' ) );
+			\add_action( 'wpcf7_before_send_mail', array( $this, 'set_cf7_mail_flag' ), 10, 3 );
 		}
 
 		// Check if any form templates are configured or if legacy global setting is enabled
@@ -96,10 +110,36 @@ class Mailer extends Base {
 	/**
 	 * Set the flag to true if the email is from CF7.
 	 *
+	 * @param WPCF7_ContactForm|null $contact_form The contact form instance.
+	 * @param bool                   $abort        Whether to abort the email send.
+	 * @param \WPCF7_Submission|null $submission   The submission instance.
+	 * 
 	 * @return void
 	 */
-	public function set_cf7_mail_flag() {
+	public function set_cf7_mail_flag( $contact_form = null, &$abort = false, $submission = null ) {
 		self::$is_cf7_mail = true;
+
+		if ( $contact_form instanceof WPCF7_ContactForm ) {
+			self::$current_form_id = $contact_form->id();
+		} elseif ( function_exists( 'wpcf7_get_current_contact_form' ) ) {
+			$cf = \wpcf7_get_current_contact_form();
+			if ( $cf ) {
+				self::$current_form_id = $cf->id();
+			}
+		}
+
+		if ( $submission instanceof \WPCF7_Submission ) {
+			self::$current_page_id = (int) $submission->get_meta( 'container_post_id' );
+		} elseif ( class_exists( 'WPCF7_Submission' ) ) {
+			$sub = \WPCF7_Submission::get_instance();
+			if ( $sub ) {
+				self::$current_page_id = (int) $sub->get_meta( 'container_post_id' );
+			}
+		}
+
+		if ( ! self::$current_page_id && function_exists( 'get_the_ID' ) ) {
+			self::$current_page_id = get_the_ID() ?: 0;
+		}
 	}
 
 	/**
