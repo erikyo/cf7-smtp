@@ -762,14 +762,22 @@ class Settings_Form {
 	 */
 	public function cf7_smtp_print_reply_to_callback() {
 		$reply_to = $this->cf7_smtp_find_setting( 'replyTo' );
+		$reply_to_email = $this->cf7_smtp_find_setting( 'reply_to_email' );
 		\printf(
 			'<span class="smtp-options-wrapper checkbox-wrapper flex">
 				<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />
 				<p class="description">%s</p>
-			</span>',
+			</span>
+			<div class="smtp-options-wrapper flex" style="margin-top: 10px;">
+				<input type="email" id="cf7_smtp_reply_to_email" name="cf7-smtp-options[reply_to_email]" value="%s" %s placeholder="reply@example.com" class="regular-text" />
+				<p class="description">%s</p>
+			</div>',
 			empty( $reply_to['value'] ) ? '' : 'checked="true"',
 			\esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' ),
-			\esc_html__( 'Check this if you want the "Reply-To" header to be set automatically. This allows users to reply to a different address than the one used to send the email.', 'cf7-smtp' )
+			\esc_html__( 'Check this if you want the "Reply-To" header to be set automatically. This allows users to reply to a different address than the one used to send the email.', 'cf7-smtp' ),
+			\esc_attr( empty( $reply_to_email['value'] ) ? '' : \esc_html( $reply_to_email['value'] ) ),
+			\esc_html( empty( $reply_to_email['defined'] ) ? '' : 'disabled' ),
+			\esc_html__( 'The email address to be used in the Reply-To header. If empty, the From email will be used.', 'cf7-smtp' )
 		);
 	}
 
