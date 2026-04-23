@@ -113,7 +113,7 @@ class Mailer extends Base {
 	 * @param WPCF7_ContactForm|null $contact_form The contact form instance.
 	 * @param bool                   $abort        Whether to abort the email send.
 	 * @param \WPCF7_Submission|null $submission   The submission instance.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function set_cf7_mail_flag( $contact_form = null, &$abort = false, $submission = null ) {
@@ -877,16 +877,16 @@ class Mailer extends Base {
 			$phpmailer->isSMTP();
 
 			// Get settings
-			$auth          = $this->get_setting_by_key( 'auth' );
-			$username      = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
-			$password      = $this->get_smtp_password();
-			$host          = sanitize_text_field( $this->get_setting_by_key( 'host' ) );
-			$port          = intval( $this->get_setting_by_key( 'port' ) );
-			$insecure      = intval( $this->get_setting_by_key( 'insecure' ) );
-			$raw_from_mail = $this->get_setting_by_key( 'from_mail' );
-			$from_mail     = is_email( $raw_from_mail ) ? sanitize_email( $raw_from_mail ) : '';
-			$from_name     = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
-			$reply_to      = intval( $this->get_setting_by_key( 'replyTo' ) );
+			$auth           = $this->get_setting_by_key( 'auth' );
+			$username       = sanitize_text_field( $this->get_setting_by_key( 'user_name' ) );
+			$password       = $this->get_smtp_password();
+			$host           = sanitize_text_field( $this->get_setting_by_key( 'host' ) );
+			$port           = intval( $this->get_setting_by_key( 'port' ) );
+			$insecure       = intval( $this->get_setting_by_key( 'insecure' ) );
+			$raw_from_mail  = $this->get_setting_by_key( 'from_mail' );
+			$from_mail      = is_email( $raw_from_mail ) ? sanitize_email( $raw_from_mail ) : '';
+			$from_name      = sanitize_text_field( $this->get_setting_by_key( 'from_name' ) );
+			$reply_to_email = $this->get_setting_by_key( 'reply_to_email' );
 
 			// Validate required settings (skip if OAuth2 will set the host)
 			$auth_type = $this->get_setting_by_key( 'auth_type' );
@@ -945,7 +945,7 @@ class Mailer extends Base {
 			$this->configure_from_address( $phpmailer, $from_mail, $from_name );
 
 			// Configure Reply-To
-			if ( ! empty( $reply_to ) ) {
+			if ( ! empty( $reply_to_email ) ) {
 				$this->configure_reply_to( $phpmailer, $from_mail, $from_name );
 			}
 
