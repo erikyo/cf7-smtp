@@ -829,10 +829,16 @@ class Mailer extends Base {
 	 * @param string              $from_name From name.
 	 */
 	private function configure_reply_to( PHPMailer\PHPMailer $phpmailer, string $from_mail, string $from_name ) {
+		// Fetch the reply_to_email setting
+		$reply_to_email = $this->get_setting_by_key( 'reply_to_email' );
+
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$reply_to_mail = ! empty( $from_mail ) && is_email( $from_mail ) ? $from_mail : $phpmailer->From;
+		$reply_to_mail = ! empty( $reply_to_email ) && is_email( $reply_to_email ) ? $reply_to_email : ( ! empty( $from_mail ) && is_email( $from_mail ) ? $from_mail : $phpmailer->From );
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
+
+		// Apply the developer filter
+		$reply_to_mail = apply_filters( 'cf7_smtp_custom_reply_to', $reply_to_mail, self::$current_form_id, self::$current_page_id );
 
 		try {
 			if ( is_email( $reply_to_mail ) ) {
