@@ -58,6 +58,7 @@
 
 	<rule ref="WordPress.NamingConventions">
 		<exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
 	</rule>
 
 	<rule ref="WordPress.Files.FileName">

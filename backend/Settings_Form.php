@@ -478,7 +478,7 @@ class Settings_Form {
 	public function cf7_smtp_print_oauth2_client_id_callback() {
 		$client_id = $this->cf7_smtp_find_setting( 'oauth2_client_id' );
 		\printf(
-			'<input type="text" id="cf7_smtp_oauth2_client_id" name="cf7-smtp-options[oauth2_client_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
+			'<input type="text" autocomplete="off" id="cf7_smtp_oauth2_client_id" name="cf7-smtp-options[oauth2_client_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
 			<p class="description">%s</p>',
 			\esc_attr( $client_id['value'] ?? '' ),
 			\esc_html( empty( $client_id['defined'] ) ? '' : 'disabled' ),
@@ -494,7 +494,7 @@ class Settings_Form {
 		$has_value     = ! empty( $client_secret['value'] );
 		\printf(
 			'<div class="cf7-smtp-password-wrap">
-				<input type="password" id="cf7_smtp_oauth2_client_secret" name="cf7-smtp-options[oauth2_client_secret]" class="regular-text cf7-smtp-oauth2-field" %s placeholder="%s" />
+				<input type="password" autocomplete="off" id="cf7_smtp_oauth2_client_secret" name="cf7-smtp-options[oauth2_client_secret]" class="regular-text cf7-smtp-oauth2-field" %s placeholder="%s" />
 				%s
 			</div>
 			<p class="description">%s</p>',
