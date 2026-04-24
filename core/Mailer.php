@@ -641,11 +641,8 @@ class Mailer extends Base {
 	 */
 	private function configure_smtp_auth( PHPMailer\PHPMailer $phpmailer, string $username, string $password ) {
 		if ( ! empty( $username ) && ! empty( $password ) ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->SMTPAuth = true;
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Username = $username;
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Password = $password;
 		}
 	}
@@ -685,20 +682,20 @@ class Mailer extends Base {
 		$provider_config = $provider_key ? $oauth2_handler->get_provider_config( $provider_key ) : null;
 
 		if ( ! empty( $provider_config['host'] ) ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 			$phpmailer->Host = $provider_config['host'];
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 			$phpmailer->Port = $provider_config['port'] ?? 587;
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 			$phpmailer->SMTPSecure = $provider_config['encryption'] ?? 'tls';
 
 			cf7_smtp_log( 'OAuth2: Overriding SMTP host to ' . $provider_config['host'] . ':' . ( $provider_config['port'] ?? 587 ) . ' (' . ( $provider_config['encryption'] ?? 'tls' ) . ')' );
 		}
 
 		// Configure PHPMailer for XOAUTH2
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$phpmailer->SMTPAuth = true;
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$phpmailer->AuthType = 'XOAUTH2';
 
 		// Load the OAuthProvider class (not autoloaded as it's a global class).
@@ -727,7 +724,7 @@ class Mailer extends Base {
 	 */
 	private function configure_smtp_port( PHPMailer\PHPMailer $phpmailer, int $port, string $auth ) {
 		if ( ! empty( $port ) && $port > 0 && $port <= 65535 ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 			$phpmailer->Port = $port;
 			return;
 		}
@@ -738,7 +735,7 @@ class Mailer extends Base {
 			'tls' => 587,
 		);
 
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$phpmailer->Port = $default_ports[ $auth ] ?? 25;
 	}
 
@@ -748,9 +745,9 @@ class Mailer extends Base {
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
 	 */
 	private function configure_insecure_connection( PHPMailer\PHPMailer $phpmailer ) {
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$phpmailer->SMTPAutoTLS = false;
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$phpmailer->SMTPOptions = array(
 			'ssl' => array(
 				'verify_peer'       => false,
@@ -769,6 +766,8 @@ class Mailer extends Base {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+
 		$phpmailer->Debugoutput = function ( $str, $level ) {
 			$this->cf7_smtp_log .= "$level: $str\n";
 		};
@@ -832,9 +831,8 @@ class Mailer extends Base {
 		// Fetch the reply_to_email setting
 		$reply_to_email = $this->get_setting_by_key( 'reply_to_email' );
 
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$reply_to_mail = ! empty( $reply_to_email ) && is_email( $reply_to_email ) ? $reply_to_email : ( ! empty( $from_mail ) && is_email( $from_mail ) ? $from_mail : $phpmailer->From );
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 		$reply_to_name = ! empty( $from_name ) ? $from_name : $phpmailer->FromName;
 
 		// Apply the developer filter
@@ -894,7 +892,6 @@ class Mailer extends Base {
 				throw new Exception( 'SMTP Host is required but not configured.' );
 			}
 
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Host = $host;
 
 			// Configure port
@@ -902,7 +899,7 @@ class Mailer extends Base {
 
 			// Configure encryption
 			if ( ! empty( $auth ) && in_array( $auth, array( 'tls', 'ssl' ), true ) ) {
-				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 				$phpmailer->SMTPSecure = $auth;
 			}
 
@@ -933,7 +930,6 @@ class Mailer extends Base {
 			}
 
 			// Set timeout
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->Timeout = 30;
 
 			// Enable debug output if testing
@@ -950,7 +946,6 @@ class Mailer extends Base {
 			}
 
 			// Set XMailer header
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' );
 
 			cf7_smtp_log( 'Final PHPMailer config: AuthType=' . $phpmailer->AuthType . ', SMTPAuth=' . ( $phpmailer->SMTPAuth ? 'true' : 'false' ) );
