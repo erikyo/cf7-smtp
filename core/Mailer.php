@@ -735,7 +735,6 @@ class Mailer extends Base {
 			'tls' => 587,
 		);
 
-
 		$phpmailer->Port = $default_ports[ $auth ] ?? 25;
 	}
 
@@ -763,10 +762,7 @@ class Mailer extends Base {
 	 * @param PHPMailer\PHPMailer $phpmailer The PHPMailer instance.
 	 */
 	private function configure_smtp_debug( PHPMailer\PHPMailer $phpmailer ) {
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$phpmailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
+		$phpmailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
 
 		$phpmailer->Debugoutput = function ( $str, $level ) {
 			$this->cf7_smtp_log .= "$level: $str\n";
