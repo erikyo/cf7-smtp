@@ -1,15 +1,15 @@
 === SMTP for Contact Form 7 ===
 Contributors: codekraft, gardenboi, MemoryShadow
-Tags: smtp, mail, wp mail, mail template, contact form 7, oauth2, gmail, office365
+Tags: smtp, mail, wp mail, contact form 7, oauth2
 Requires PHP: 7.1
 Requires at least: 5.5
-Tested up to: 6.9
-Stable tag: 1.1.0
+Tested up to: 7.0
+Stable tag: 1.1.1
 Requires plugins: Contact Form 7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A free SMTP plugin for Contact Form 7 that allows the smtp server configuration of wp_mail() powered by automated reports, per-form custom mail templates, and secure OAuth2 authentication.
+Secure your Contact Form 7 emails with this free SMTP plugin. It configures wp_mail() and features OAuth2, custom templates, and automated reports.
 
 == Description ==
 
@@ -50,14 +50,16 @@ Only if the software, the webmail application on the browser or the mobile e-mai
 
 **Google Gmail**
 To use Gmail with OAuth2, you need to create a Google Cloud Project:
-1. Go to **Google Cloud Console** (console.cloud.google.com).
-2. Create a new project.
-3. Go to **APIs & Services > Credentials** and click **Create Credentials > OAuth client ID**.
-4. Application type: **Web application**.
-5. **Authorized redirect URIs**: Copy the URL from the plugin settings (e.g., `https://your-site.com/wp-admin/admin.php?page=cf7-smtp&oauth2_callback=1`).
-6. Copy the **Client ID** and **Client Secret** into the plugin settings.
-7. Important: Go to **OAuth consent screen > Test users** and add your email address if the app is in "Testing" mode.
-8. Click **Connect with OAuth2** in the plugin settings.
+1. **Create Project:** Go to [Google Cloud Console](https://console.cloud.google.com/) and create a new project.
+2. **Enable Gmail API (Required):** Go to **APIs & Services > Library**, search for **Gmail API**, and click **Enable**.
+3. **Configure Consent Screen:** Go to **OAuth consent screen** and create an **External** app.
+    * **Scopes:** Click *Add or Remove Scopes*, search for the Gmail API, and check the boxes for `.../auth/userinfo.email` and `.../auth/gmail.compose` (or `https://mail.google.com/`).
+    * **Publishing Status:** Click **Publish App** to push it to production (otherwise, your connection token will expire every 7 days).
+4. **Create Credentials:** Go to **Credentials > Create Credentials > OAuth client ID**.
+    * Application type: **Web application**.
+    * **Authorized redirect URIs**: Copy and paste the exact callback URL provided in your plugin settings.
+5. **Connect:** Copy the generated **Client ID** and **Client Secret** into the plugin settings and click **Connect**.
+6. **Grant Permissions (Critical):** During the Google login popup, click *Advanced > Go to App* if prompted with an "unverified app" warning. You **must explicitly check the boxes** that ask for permission to compose/send emails before clicking Continue.
 
 **Microsoft Office 365**
 1. Go to the **Azure Portal** (portal.azure.com).
@@ -164,6 +166,7 @@ By contributing, you agree that your contributions will be licensed under its GP
 * **New:** SMTP Mode selection - choose whether to override all WordPress emails or just CF7.
 * **Enhancement:** Revamped automated reports with a beautiful HTML template.
 * **Enhancement:** Added log retention day settings and manual flush logs capability.
+* thanks to @islp for reporting the issues related to "from" field and dashboard widget visibility
 
 = 1.0.0 =
 * Cleaner code, updated dependencies

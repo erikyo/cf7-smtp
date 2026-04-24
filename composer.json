@@ -1,7 +1,7 @@
 {
     "name": "wpbp/wordpress-plugin-boilerplate-powered",
     "description": "Wordpress Plugin Boilerplate with steroids!",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "GPL-3.0-or-later",
     "type": "wordpress-plugin",
     "authors": [
@@ -30,9 +30,8 @@
         "ext-libxml": "*"
     },
     "scripts": {
-        "dump-autoload": "composer dumpautoload -o",
         "install": "composer install --no-suggest --optimize-autoloader",
-        "install-no-deps": "composer install --no-dev --no-interaction --no-progress --no-suggest --optimize-autoloader",
+        "build": "composer install --no-dev --no-interaction --no-progress --no-suggest --optimize-autoloader",
         "PHPCS": "vendor/bin/phpcs --standard=phpcs.xml -s --report=full,summary,source",
         "PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=phpcs.xml  -s --report=full"
     },
