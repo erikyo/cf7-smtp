@@ -271,7 +271,7 @@ class Settings_Form {
 
 		/* Reply to */
 		\add_settings_field(
-			'replyTo',
+			'reply_to_email',
 			\__( 'Add Reply To', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_reply_to_callback' ),
 			'smtp-settings-advanced',
@@ -757,19 +757,18 @@ class Settings_Form {
 	}
 
 	/**
-	 * It prints a checkbox with the id of cf7_smtp_replyTo and the name of cf7-smtp-options[replyTo] and if the option is
-	 * set, it will be checked
+	 * It prints a text input field for the reply_to_email option
 	 */
 	public function cf7_smtp_print_reply_to_callback() {
-		$reply_to = $this->cf7_smtp_find_setting( 'replyTo' );
+		$reply_to_email = $this->cf7_smtp_find_setting( 'reply_to_email' );
 		\printf(
-			'<span class="smtp-options-wrapper checkbox-wrapper flex">
-				<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />
-				<p class="description">%s</p>
-			</span>',
-			empty( $reply_to['value'] ) ? '' : 'checked="true"',
-			\esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' ),
-			\esc_html__( 'Check this if you want the "Reply-To" header to be set automatically. This allows users to reply to a different address than the one used to send the email.', 'cf7-smtp' )
+			'<div class="smtp-options-wrapper flex">
+				<input type="email" id="cf7_smtp_reply_to_email" name="cf7-smtp-options[reply_to_email]" value="%s" %s placeholder="reply@example.com" class="regular-text" />
+			</div>
+			<p class="description">%s</p>',
+			\esc_attr( empty( $reply_to_email['value'] ) ? '' : \esc_html( $reply_to_email['value'] ) ),
+			\esc_html( empty( $reply_to_email['defined'] ) ? '' : 'disabled' ),
+			\esc_html__( 'The email address to be used in the Reply-To header. Leave empty to use the \'From\' email. Note: Developers can use the cf7_smtp_custom_reply_to filter to dynamically change this value based on the specific form ID or page ID.', 'cf7-smtp' )
 		);
 	}
 
@@ -1288,8 +1287,15 @@ class Settings_Form {
 		/* Reply to */
 		$new_input['insecure'] = ! empty( $input['insecure'] );
 
-		/* Reply to */
-		$new_input['replyTo'] = ! empty( $input['replyTo'] );
+		/* Remove legacy replyTo boolean if it exists to keep DB clean */
+		if ( isset( $new_input['replyTo'] ) ) {
+			unset( $new_input['replyTo'] );
+		}
+
+		/* Reply to Email */
+		if ( isset( $input['reply_to_email'] ) ) {
+			$new_input['reply_to_email'] = \sanitize_email( $input['reply_to_email'] );
+		}
 
 		/* From email string */
 		if ( isset( $input['from_mail'] ) ) {

@@ -133,7 +133,7 @@ class ActDeact extends Base {
 			'host'                             => $current_website,
 			'port'                             => '25',
 			'auth'                             => '',
-			'replyTo'                          => false,
+			'reply_to_email'                   => '',
 			'insecure'                         => false,
 			'user_name'                        => '',
 			'user_pass'                        => '',
@@ -178,6 +178,11 @@ class ActDeact extends Base {
 
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
+
+			/* Migrate replyTo legacy boolean to reply_to_email string */
+			if ( ! empty( $options['replyTo'] ) && empty( $options['reply_to_email'] ) ) {
+				$new_options['reply_to_email'] = get_option( 'admin_email' );
+			}
 
 			/**
 			 * Legacy v1.0.0 users:
