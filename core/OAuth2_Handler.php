@@ -115,6 +115,7 @@ class OAuth2_Handler extends Base {
 					'redirectUri'  => $config['redirect_uri'],
 					'accessType'   => 'offline',
 					'prompt'       => 'consent',
+					'scopes'       => $config['scopes'],
 				)
 			);
 		}
@@ -129,6 +130,7 @@ class OAuth2_Handler extends Base {
 				'urlAccessToken'          => $config['token_url'],
 				'urlResourceOwnerDetails' => '',
 				'scopes'                  => $config['scopes'],
+				'scopeSeparator'          => ' ', // <-- CRITICAL FOR MICROSOFT
 			)
 		);
 	}
@@ -185,13 +187,8 @@ class OAuth2_Handler extends Base {
 
 		$config = $this->get_provider_config( $provider_key );
 
-		$scope = $config['scopes'];
-		if ( \is_array( $scope ) ) {
-			$scope = \implode( ' ', $scope );
-		}
-
 		$options = array(
-			'scope' => $scope,
+			'scope' => $config['scopes'],
 		);
 
 		if ( 'gmail' === $provider_key ) {
