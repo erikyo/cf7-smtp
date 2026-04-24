@@ -159,6 +159,20 @@ By contributing, you agree that your contributions will be licensed under its GP
 
 == Changelog ==
 
+= 1.1.1 =
+- Security: Implemented AES-256-GCM encryption for sensitive data with enhanced key and IV handling.
+- Security: Hardened OAuth2 flow with strict state validation to prevent replay attacks and improved sanitization of GET parameters.
+- Security: Added autocomplete="off" to OAuth2 Client ID and Secret fields and implemented nonce validation for import/export actions.
+- New: Introduced custom OAuth2 Scopes support and configurable scope separators.
+- New: Added a dedicated Reply-To email input field, replacing the legacy checkbox logic for better flexibility.
+- Enhancement: Integrated SMTP Transaction Logging to capture raw debug details for easier troubleshooting.
+- Enhancement: Added tracking for CF7 form IDs and Page IDs during email submissions.
+- Enhancement: Added a notification system to handle specific error responses from Microsoft OAuth services.
+- Enhancement: Added a secondary OAuth redirect URI without parameters to satisfy strict Microsoft requirements.
+- Refactor: Significant code cleanup to align with WordPress Coding Standards and PHPMailer method naming conventions.
+- Note: Legacy "Reply-To" settings are automatically migrated to the new reply_to_email configuration attribute.
+- Special thanks to @MemoryShadow for significant contributions for the MS Outloook 365 setup, security hardening and OAuth2 stability.
+
 = 1.1.0 =
 * **New:** Added OAuth2 authentication support for Microsoft Office 365.
 * **New:** Per-form template selection! You can now assign specific custom templates to individual Contact Form 7 forms from the settings.
