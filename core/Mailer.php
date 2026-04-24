@@ -204,6 +204,11 @@ class Mailer extends Base {
 			cf7_smtp_log( 'CF7 SMTP Error: ' . $msg );
 		}
 
+		// Append the raw PHPMailer debug output
+		if ( ! empty( $this->cf7_smtp_log ) ) {
+			$error_msgs[] = "RAW SMTP Transaction Log:\n" . $this->cf7_smtp_log;
+		}
+
 		cf7_smtp_log( 'WP Mail Failed! Error Messages:' );
 		cf7_smtp_log( $error_msgs );
 		cf7_smtp_log( 'Error Data:' );
@@ -914,6 +919,13 @@ class Mailer extends Base {
 					// Fall back to basic authentication if OAuth2 fails
 					cf7_smtp_log( 'OAuth2 configuration failed. Falling back to basic authentication.' );
 					$this->configure_smtp_auth( $phpmailer, $username, $password );
+				} else {
+					// Protect the OAuth2 email from being overwritten later
+					$oauth2_handler  = new OAuth2_Handler();
+					$connected_email = $oauth2_handler->get_connected_email();
+					if ( ! empty( $connected_email ) ) {
+						$from_mail = $connected_email;
+					}
 				}
 			} else {
 				// Use basic authentication
