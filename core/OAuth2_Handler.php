@@ -130,7 +130,8 @@ class OAuth2_Handler extends Base {
 				'urlAccessToken'          => $config['token_url'],
 				'urlResourceOwnerDetails' => '',
 				'scopes'                  => $config['scopes'],
-				'scopeSeparator'          => ' ', // <-- CRITICAL FOR MICROSOFT
+				'scopeSeparator'          => ' ',
+			// <-- CRITICAL FOR MICROSOFT
 			)
 		);
 	}
