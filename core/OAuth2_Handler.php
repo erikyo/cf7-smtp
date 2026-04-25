@@ -57,7 +57,7 @@ class OAuth2_Handler extends Base {
 				'scopes'                       => array( 'https://outlook.office.com/SMTP.Send', 'offline_access' ),
 				'auth_url'                     => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
 				'token_url'                    => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-				'redirect_uri'                 => admin_url( 'admin.php?page=cf7-smtp&oauth2_callback=1' ),
+				'redirect_uri'                 => rest_url( 'cf7-smtp/v1/oauth2/callback' ),
 			),
 		);
 	}
@@ -115,6 +115,7 @@ class OAuth2_Handler extends Base {
 					'redirectUri'  => $config['redirect_uri'],
 					'accessType'   => 'offline',
 					'prompt'       => 'consent',
+					'scopes'       => $config['scopes'],
 				)
 			);
 		}
@@ -129,6 +130,8 @@ class OAuth2_Handler extends Base {
 				'urlAccessToken'          => $config['token_url'],
 				'urlResourceOwnerDetails' => '',
 				'scopes'                  => $config['scopes'],
+				'scopeSeparator'          => ' ',
+			// <-- CRITICAL FOR MICROSOFT
 			)
 		);
 	}
@@ -194,15 +197,18 @@ class OAuth2_Handler extends Base {
 			$options['prompt']      = 'consent';
 		}
 
-		// Use WP nonce as state for security and to satisfy Settings_Page verification
+		// Use WP nonce as state for security and to satisfy Settings_Page verification.
 		$options['state'] = wp_create_nonce( 'cf7-smtp-oauth2' );
 
 		$auth_url = $provider->getAuthorizationUrl( $options );
 		$state    = $provider->getState();
 
-		// Store state for verification.
-		set_transient( 'cf7_smtp_oauth2_state', $state, 10 * MINUTE_IN_SECONDS );
-		set_transient( 'cf7_smtp_oauth2_provider', $provider_key, 10 * MINUTE_IN_SECONDS );
+		// Scope transients to the current user to prevent state collisions when
+		// multiple admins initiate OAuth2 flows simultaneously (defence-in-depth;
+		// wp_verify_nonce already provides user-bound CSRF protection).
+		$user_id = get_current_user_id();
+		set_transient( 'cf7_smtp_oauth2_state_' . $user_id, $state, 10 * MINUTE_IN_SECONDS );
+		set_transient( 'cf7_smtp_oauth2_provider_' . $user_id, $provider_key, 10 * MINUTE_IN_SECONDS );
 
 		return $auth_url;
 	}
@@ -216,16 +222,16 @@ class OAuth2_Handler extends Base {
 	 * @return array{success: bool, message: string, email?: string}
 	 */
 	public function handle_callback( string $code, string $state ): array {
-		// Verify state.
-		$stored_state = get_transient( 'cf7_smtp_oauth2_state' );
-		if ( empty( $stored_state ) || $state !== $stored_state ) {
+		// Verify state using the centralized validation method (consuming the state).
+		if ( ! $this->validate_state( $state, true ) ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Invalid state parameter. Please try again.', 'cf7-smtp' ),
 			);
 		}
 
-		$provider_key = get_transient( 'cf7_smtp_oauth2_provider' );
+		$user_id      = get_current_user_id();
+		$provider_key = get_transient( 'cf7_smtp_oauth2_provider_' . $user_id );
 		if ( empty( $provider_key ) ) {
 			return array(
 				'success' => false,
@@ -233,9 +239,8 @@ class OAuth2_Handler extends Base {
 			);
 		}
 
-		// Clean up transients.
-		delete_transient( 'cf7_smtp_oauth2_state' );
-		delete_transient( 'cf7_smtp_oauth2_provider' );
+		// Clean up provider transient after reading.
+		delete_transient( 'cf7_smtp_oauth2_provider_' . $user_id );
 
 		$provider = $this->create_provider( $provider_key );
 		if ( ! $provider ) {
@@ -292,6 +297,29 @@ class OAuth2_Handler extends Base {
 				),
 			);
 		}//end try
+	}
+
+	/**
+	 * Validate the OAuth2 state parameter against the stored transient.
+	 *
+	 * @param string $state   The state to validate.
+	 * @param bool   $consume Whether to delete the stored state after validation.
+	 *
+	 * @return bool True if the state is valid.
+	 */
+	public function validate_state( string $state, bool $consume = false ): bool {
+		$user_id      = get_current_user_id();
+		$stored_state = get_transient( 'cf7_smtp_oauth2_state_' . $user_id );
+
+		if ( empty( $stored_state ) || ! hash_equals( $stored_state, $state ) ) {
+			return false;
+		}
+
+		if ( $consume ) {
+			delete_transient( 'cf7_smtp_oauth2_state_' . $user_id );
+		}
+
+		return true;
 	}
 
 	/**

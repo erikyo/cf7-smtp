@@ -174,6 +174,16 @@ class Api extends Base {
 
 		\register_rest_route(
 			'cf7-smtp/v1',
+			'/oauth2/callback',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => '__return_true',
+				'callback'            => array( $this, 'oauth2_callback_redirect' ),
+			)
+		);
+
+		\register_rest_route(
+			'cf7-smtp/v1',
 			'/check-dns/',
 			array(
 				'methods'             => 'POST',
@@ -442,6 +452,35 @@ class Api extends Base {
 				'message' => 'Logs flushed',
 			)
 		);
+	}
+
+	/**
+	 * OAuth2 callback redirect endpoint.
+	 * Receives the code and state from the provider and redirects to the admin page.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return void
+	 */
+	public function oauth2_callback_redirect( $request ) {
+		$query_args = array(
+			'page'            => 'cf7-smtp',
+			'oauth2_callback' => 1,
+		);
+
+		// Include error params so the admin handler can display user-friendly failure notices
+		// (e.g. error=access_denied when the user cancels the Microsoft consent screen).
+		$params = array( 'code', 'state', 'session_state', 'error', 'error_description' );
+		foreach ( $params as $param ) {
+			// Guard against array-type inputs (e.g. ?code[]=foo) that would cause a
+			// sanitize_text_field() warning and potentially a 500 error.
+			if ( isset( $request[ $param ] ) && is_scalar( $request[ $param ] ) ) {
+				$query_args[ $param ] = sanitize_text_field( $request[ $param ] );
+			}
+		}
+
+		$redirect_url = add_query_arg( $query_args, admin_url( 'admin.php' ) );
+		wp_safe_redirect( $redirect_url );
+		exit;
 	}
 
 	/**

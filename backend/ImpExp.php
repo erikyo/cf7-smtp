@@ -40,16 +40,17 @@ class ImpExp extends Base {
 	 * @return void
 	 */
 	public function settings_export() {
-		if (
-			empty( $_POST['c_action'] ) || 'export_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) )
-		) {
+		// Verify the action and type safety.
+		if ( empty( $_POST['c_action'] ) || ! \is_scalar( $_POST['c_action'] ) || 'export_settings' !== $_POST['c_action'] ) {
 			return;
 		}
 
-		if ( isset( $_POST['c_export_nonce'] ) && ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_export_nonce'] ) ), 'c_export_nonce' ) ) {
+		// Strict Nonce Verification.
+		if ( ! isset( $_POST['c_export_nonce'] ) || ! \is_scalar( $_POST['c_export_nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_export_nonce'] ) ), 'c_export_nonce' ) ) {
 			return;
 		}
 
+		// Capability check.
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -76,17 +77,17 @@ class ImpExp extends Base {
 	 * @return void
 	 */
 	public function settings_import() {
-		if (
-			empty( $_POST['c_action'] ) ||
-			'import_settings' !== \sanitize_text_field( \wp_unslash( $_POST['c_action'] ) )
-		) {
+		// Verify the action and type safety.
+		if ( empty( $_POST['c_action'] ) || ! \is_scalar( $_POST['c_action'] ) || 'import_settings' !== $_POST['c_action'] ) {
 			return;
 		}
 
-		if ( ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_import_nonce'] ) ), 'c_import_nonce' ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		// Strict Nonce Verification.
+		if ( ! isset( $_POST['c_import_nonce'] ) || ! \is_scalar( $_POST['c_import_nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['c_import_nonce'] ) ), 'c_import_nonce' ) ) {
 			return;
 		}
 
+		// Capability check.
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}

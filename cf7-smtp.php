@@ -6,9 +6,9 @@
  * Plugin Name:     SMTP for Contact Form 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
- * Version:         1.1.0
+ * Version:         1.1.1
  * Author:          codekraft
- * Contributors:    gardenboi
+ * Contributors:    gardenboi, MemoryShadow
  * Author URI:      https://modul-r.codekraft.it/
  * Text Domain:     cf7-smtp
  * License:         GPL 2.0+
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
 define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
-define( 'CF7_SMTP_VERSION', '1.1.0' );
+define( 'CF7_SMTP_VERSION', '1.1.1' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

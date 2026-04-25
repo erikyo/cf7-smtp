@@ -271,7 +271,7 @@ class Settings_Form {
 
 		/* Reply to */
 		\add_settings_field(
-			'replyTo',
+			'reply_to_email',
 			\__( 'Add Reply To', 'cf7-smtp' ),
 			array( $this, 'cf7_smtp_print_reply_to_callback' ),
 			'smtp-settings-advanced',
@@ -447,21 +447,28 @@ class Settings_Form {
 	 * Prints the OAuth2 Redirect URI (read-only) for the user to copy.
 	 */
 	public function cf7_smtp_print_oauth2_redirect_uri_callback() {
-		$redirect_uri = \admin_url( 'admin.php' );
-		// Ensure the redirect URI matches exactly what the OAuth2 provider expects
-		$redirect_uri = \add_query_arg(
+		$admin_callback = \add_query_arg(
 			array(
 				'page'            => 'cf7-smtp',
 				'oauth2_callback' => 1,
 			),
-			$redirect_uri
+			\admin_url( 'admin.php' )
 		);
+		$rest_callback  = \rest_url( 'cf7-smtp/v1/oauth2/callback' );
+
+		$current_provider = ! empty( $this->options['oauth2_provider'] ) ? $this->options['oauth2_provider'] : 'gmail';
+		$initial_callback = 'office365' === $current_provider ? $rest_callback : $admin_callback;
 
 		\printf(
-			'<code style="user-select: all; background: #f0f0f1; padding: 5px 10px; display: block; margin-bottom: 5px;">%s</code>
-			<p class="description">%s</p>',
-			\esc_html( $redirect_uri ),
-			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' )
+			'<code id="cf7_smtp_oauth2_redirect_uri"
+				   data-gmail-redirect-uri="%1$s"
+				   data-office365-redirect-uri="%2$s"
+				   style="user-select: all; background: #f0f0f1; padding: 5px 10px; display: block; margin-bottom: 5px;">%4$s</code>
+			<p class="description">%3$s</p>',
+			\esc_attr( $admin_callback ),
+			\esc_attr( $rest_callback ),
+			\esc_html__( 'Copy this URL and add it to your "Authorized Redirect URIs" in your Google Cloud Console or OAuth2 Provider settings.', 'cf7-smtp' ),
+			\esc_html( $initial_callback )
 		);
 	}
 
@@ -471,7 +478,7 @@ class Settings_Form {
 	public function cf7_smtp_print_oauth2_client_id_callback() {
 		$client_id = $this->cf7_smtp_find_setting( 'oauth2_client_id' );
 		\printf(
-			'<input type="text" id="cf7_smtp_oauth2_client_id" name="cf7-smtp-options[oauth2_client_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
+			'<input type="text" autocomplete="off" id="cf7_smtp_oauth2_client_id" name="cf7-smtp-options[oauth2_client_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
 			<p class="description">%s</p>',
 			\esc_attr( $client_id['value'] ?? '' ),
 			\esc_html( empty( $client_id['defined'] ) ? '' : 'disabled' ),
@@ -487,7 +494,7 @@ class Settings_Form {
 		$has_value     = ! empty( $client_secret['value'] );
 		\printf(
 			'<div class="cf7-smtp-password-wrap">
-				<input type="password" id="cf7_smtp_oauth2_client_secret" name="cf7-smtp-options[oauth2_client_secret]" class="regular-text cf7-smtp-oauth2-field" %s placeholder="%s" />
+				<input type="password" autocomplete="off" id="cf7_smtp_oauth2_client_secret" name="cf7-smtp-options[oauth2_client_secret]" class="regular-text cf7-smtp-oauth2-field" %s placeholder="%s" />
 				%s
 			</div>
 			<p class="description">%s</p>',
@@ -750,19 +757,18 @@ class Settings_Form {
 	}
 
 	/**
-	 * It prints a checkbox with the id of cf7_smtp_replyTo and the name of cf7-smtp-options[replyTo] and if the option is
-	 * set, it will be checked
+	 * It prints a text input field for the reply_to_email option
 	 */
 	public function cf7_smtp_print_reply_to_callback() {
-		$reply_to = $this->cf7_smtp_find_setting( 'replyTo' );
+		$reply_to_email = $this->cf7_smtp_find_setting( 'reply_to_email' );
 		\printf(
-			'<span class="smtp-options-wrapper checkbox-wrapper flex">
-				<input type="checkbox" id="cf7_smtp_replyTo" name="cf7-smtp-options[replyTo]" %s %s />
-				<p class="description">%s</p>
-			</span>',
-			empty( $reply_to['value'] ) ? '' : 'checked="true"',
-			\esc_html( empty( $reply_to['defined'] ) ? '' : 'disabled' ),
-			\esc_html__( 'Check this if you want the "Reply-To" header to be set automatically. This allows users to reply to a different address than the one used to send the email.', 'cf7-smtp' )
+			'<div class="smtp-options-wrapper flex">
+				<input type="email" id="cf7_smtp_reply_to_email" name="cf7-smtp-options[reply_to_email]" value="%s" %s placeholder="reply@example.com" class="regular-text" />
+			</div>
+			<p class="description">%s</p>',
+			\esc_attr( empty( $reply_to_email['value'] ) ? '' : \esc_html( $reply_to_email['value'] ) ),
+			\esc_html( empty( $reply_to_email['defined'] ) ? '' : 'disabled' ),
+			\esc_html__( 'The email address to be used in the Reply-To header. Leave empty to use the \'From\' email. Note: Developers can use the cf7_smtp_custom_reply_to filter to dynamically change this value based on the specific form ID or page ID.', 'cf7-smtp' )
 		);
 	}
 
@@ -837,9 +843,6 @@ class Settings_Form {
 		$user_pass = $this->cf7_smtp_find_setting( 'user_pass' );
 		$has_value = ! empty( $user_pass['value'] );
 
-		// Only show placeholder if not defined by constant
-		$placeholder = $has_value ? \esc_attr__( '••••••••', 'cf7-smtp' ) : '';
-
 		\printf(
 			'<div class="cf7-smtp-password-wrap">
 				<input type="password" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="regular-text"%s placeholder="%s" />
@@ -847,7 +850,7 @@ class Settings_Form {
 			</div>
 			<p class="description">%s</p>',
 			\esc_html( empty( $user_pass['defined'] ) ? '' : ' disabled' ),
-			$placeholder,
+			$has_value ? \esc_attr__( '••••••••', 'cf7-smtp' ) : '',
 			$has_value && empty( $user_pass['defined'] ) ? \sprintf( '<label><input type="checkbox" name="cf7-smtp-options[remove_user_pass]" value="1"> %s</label>', \esc_html__( 'Remove password', 'cf7-smtp' ) ) : '',
 			\esc_html__( 'If using Gmail or Outlook (Exchange), consider using OAuth2 above instead of saving your password directly. Using OAuth2 removes the need to allow "less secure apps" or generate "app passwords" in your email account.', 'cf7-smtp' )
 		);
@@ -880,7 +883,7 @@ class Settings_Form {
 			'<p class="description">%s<strong>%s</strong> %s</p>',
 			\esc_html__( 'Using', 'cf7-smtp' ),
 			\esc_html__( '\'Contact Form 7 Settings\'', 'cf7-smtp' ),
-			\esc_html__( 'this plugin will override ONLY the emails generated by Contact Form 7 Forms submit. Other options will use this Smtp to deliver all Wordpress generated emails.', 'cf7-smtp' )
+			\esc_html__( 'this plugin will override ONLY the emails generated by Contact Form 7 Forms submit. Other options will use this Smtp to deliver all WordPress generated emails.', 'cf7-smtp' )
 		);
 	}
 
@@ -989,7 +992,7 @@ class Settings_Form {
 		$custom_templates = array();
 
 		// Get template directory paths to check
-		$template_dir = get_template_directory();
+		$template_dir   = get_template_directory();
 		$stylesheet_dir = get_stylesheet_directory();
 
 		// Check multiple possible locations for custom templates
@@ -1026,8 +1029,8 @@ class Settings_Form {
 						}
 					}
 				}
-			}
-		}
+			}//end if
+		}//end foreach
 
 		// Allow developers to filter custom templates
 		return apply_filters( 'cf7_smtp_custom_templates', $custom_templates );
@@ -1075,8 +1078,8 @@ class Settings_Form {
 		echo '<tbody>';
 
 		foreach ( $forms as $form ) {
-			$form_id = $form->id();
-			$form_title = $form->title();
+			$form_id          = $form->id();
+			$form_title       = $form->title();
 			$current_template = isset( $template_preferences[ $form_id ] ) ? $template_preferences[ $form_id ] : 'default';
 
 			echo '<tr>';
@@ -1101,7 +1104,7 @@ class Settings_Form {
 			echo '</select>';
 			echo '</td>';
 			echo '</tr>';
-		}
+		}//end foreach
 
 		echo '</tbody>';
 		echo '</table>';
@@ -1109,12 +1112,14 @@ class Settings_Form {
 		// Show info about custom templates
 		if ( empty( $custom_templates ) ) {
 			echo '<p style="margin-top: 15px;"><em>' . sprintf(
-				esc_html__( 'No custom templates found. To add custom templates, create template files in your theme folder: %s or %s', 'cf7-smtp' ),
+				// Translators: %1$s and %2$s are code snippets
+				esc_html__( 'No custom templates found. To add custom templates, create template files in your theme folder: %1$s or %2$s', 'cf7-smtp' ),
 				'<code>your-theme/cf7-smtp/</code>',
 				'<code>your-theme/templates/cf7-smtp/</code>'
 			) . '</em></p>';
 		} else {
 			echo '<p style="margin-top: 15px;"><em>' . sprintf(
+				// Translators: %d is the number of custom templates
 				esc_html__( 'Found %d custom template(s) in your theme folder.', 'cf7-smtp' ),
 				count( $custom_templates )
 			) . '</em></p>';
@@ -1192,7 +1197,7 @@ class Settings_Form {
 		}
 
 		/* Delete Passwords & Secrets explicit flags */
-		if ( isset( $input['remove_user_pass'] ) && $input['remove_user_pass'] === '1' ) {
+		if ( isset( $input['remove_user_pass'] ) && '1' === $input['remove_user_pass'] ) {
 			$new_input['user_pass'] = '';
 		} elseif ( isset( $input['user_pass'] ) && ! empty( $input['user_pass'] ) ) {
 			$placeholder = \esc_attr__( '••••••••', 'cf7-smtp' );
@@ -1201,13 +1206,14 @@ class Settings_Form {
 				$existing               = $this->options['user_pass'] ?? '';
 				$new_input['user_pass'] = $existing;
 			} else {
-				$new_input['user_pass'] = \cf7_smtp_crypt( \sanitize_text_field( $input['user_pass'] ) ); // It encrypts the user pass.
+				$new_input['user_pass'] = \cf7_smtp_crypt( \sanitize_text_field( $input['user_pass'] ) );
+				// It encrypts the user pass.
 			}
 		} else {
 			$new_input['user_pass'] = $this->options['user_pass'] ?? '';
 		}
 
-		if ( isset( $input['remove_oauth2_client_secret'] ) && $input['remove_oauth2_client_secret'] === '1' ) {
+		if ( isset( $input['remove_oauth2_client_secret'] ) && '1' === $input['remove_oauth2_client_secret'] ) {
 			$new_input['oauth2_client_secret'] = '';
 		} elseif ( isset( $input['oauth2_client_secret'] ) && ! empty( $input['oauth2_client_secret'] ) ) {
 			$placeholder = \esc_attr__( '••••••••', 'cf7-smtp' );
@@ -1223,7 +1229,7 @@ class Settings_Form {
 		}
 
 		/* get the existing options */
-		$opts = new ActDeact();
+		$opts      = new ActDeact();
 		$new_input = \array_merge( $opts::default_options(), $this->options, $new_input );
 
 		/* SMTP auth method */
@@ -1281,8 +1287,15 @@ class Settings_Form {
 		/* Reply to */
 		$new_input['insecure'] = ! empty( $input['insecure'] );
 
-		/* Reply to */
-		$new_input['replyTo'] = ! empty( $input['replyTo'] );
+		/* Remove legacy replyTo boolean if it exists to keep DB clean */
+		if ( isset( $new_input['replyTo'] ) ) {
+			unset( $new_input['replyTo'] );
+		}
+
+		/* Reply to Email */
+		if ( isset( $input['reply_to_email'] ) ) {
+			$new_input['reply_to_email'] = \sanitize_email( $input['reply_to_email'] );
+		}
 
 		/* From email string */
 		if ( isset( $input['from_mail'] ) ) {
@@ -1318,8 +1331,7 @@ class Settings_Form {
 					$new_input['report_every'] = '';
 					\wp_clear_scheduled_hook( 'cf7_smtp_send_report' );
 				}
-			}
-
+			}//end if
 		}//end if
 
 		/* SMTP log retain days */
@@ -1336,8 +1348,7 @@ class Settings_Form {
 			}
 		}
 
-		/* OAuth2 Provider - Redundant input, logic overwritten below anyway, but kept for JS hidden input sync
-		   if we need it, though normally hidden by JS anyway. */
+		// OAuth2 Provider - Redundant input, logic overwritten below anyway, but kept for JS hidden input sync if we need it, though normally hidden by JS anyway.
 		if ( isset( $input['oauth2_provider'] ) ) {
 			$valid_providers = array( '', 'gmail', 'office365' );
 			if ( \in_array( $input['oauth2_provider'], $valid_providers, true ) ) {
@@ -1372,7 +1383,7 @@ class Settings_Form {
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
 			if ( ( $this->options['auth_method'] ?? '' ) !== 'gmail' ) {
-				$new_input['oauth2_client_id'] = '';
+				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 			}
 		} elseif ( 'outlook' === $new_input['auth_method'] ) {
@@ -1383,36 +1394,36 @@ class Settings_Form {
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
 			if ( ( $this->options['auth_method'] ?? '' ) !== 'outlook' ) {
-				$new_input['oauth2_client_id'] = '';
+				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 			}
 		} elseif ( 'smtp' === $new_input['auth_method'] ) {
 			// Regular SMTP uses basic authentication
 			$new_input['auth_type'] = 'basic';
 			// Remove orphaned OAuth settings if switching to regular SMTP
-			$new_input['oauth2_client_id'] = '';
+			$new_input['oauth2_client_id']     = '';
 			$new_input['oauth2_client_secret'] = '';
-			$new_input['oauth2_provider'] = '';
-			$new_input['oauth2_access_token'] = '';
+			$new_input['oauth2_provider']      = '';
+			$new_input['oauth2_access_token']  = '';
 			$new_input['oauth2_refresh_token'] = '';
-			$new_input['oauth2_expires'] = '';
-			$new_input['oauth2_user_email'] = '';
-			$new_input['oauth2_connected_at'] = '';
+			$new_input['oauth2_expires']       = '';
+			$new_input['oauth2_user_email']    = '';
+			$new_input['oauth2_connected_at']  = '';
 		} elseif ( 'wp' === $new_input['auth_method'] ) {
 			// Remove everything if switching to WP Mail
-			$new_input['host'] = '';
-			$new_input['port'] = '';
-			$new_input['user_name'] = '';
-			$new_input['user_pass'] = '';
-			$new_input['oauth2_client_id'] = '';
+			$new_input['host']                 = '';
+			$new_input['port']                 = '';
+			$new_input['user_name']            = '';
+			$new_input['user_pass']            = '';
+			$new_input['oauth2_client_id']     = '';
 			$new_input['oauth2_client_secret'] = '';
-			$new_input['oauth2_provider'] = '';
-			$new_input['oauth2_access_token'] = '';
+			$new_input['oauth2_provider']      = '';
+			$new_input['oauth2_access_token']  = '';
 			$new_input['oauth2_refresh_token'] = '';
-			$new_input['oauth2_expires'] = '';
-			$new_input['oauth2_user_email'] = '';
-			$new_input['oauth2_connected_at'] = '';
-		}
+			$new_input['oauth2_expires']       = '';
+			$new_input['oauth2_user_email']    = '';
+			$new_input['oauth2_connected_at']  = '';
+		}//end if
 		// For 'smtp' auth_method, ensure auth_type is not oauth2 if basic is intended,
 		// or let it be if user chose oauth2 for custom smtp
 

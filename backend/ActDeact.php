@@ -133,7 +133,7 @@ class ActDeact extends Base {
 			'host'                             => $current_website,
 			'port'                             => '25',
 			'auth'                             => '',
-			'replyTo'                          => false,
+			'reply_to_email'                   => '',
 			'insecure'                         => false,
 			'user_name'                        => '',
 			'user_pass'                        => '',
@@ -179,6 +179,11 @@ class ActDeact extends Base {
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( $default_cf7_smtp_options, $options );
 
+			/* Migrate replyTo legacy boolean to reply_to_email string */
+			if ( ! empty( $options['replyTo'] ) && empty( $options['reply_to_email'] ) ) {
+				$new_options['reply_to_email'] = get_option( 'admin_email' );
+			}
+
 			/**
 			 * Legacy v1.0.0 users:
 			 * v1.0.0 did not have 'auth_method'. If it's missing, it means the user
@@ -194,7 +199,7 @@ class ActDeact extends Base {
 			$new_options['version'] = defined( 'CF7_SMTP_VERSION' ) ? CF7_SMTP_VERSION : $default_cf7_smtp_options['version'];
 
 			update_option( 'cf7-smtp-options', $new_options );
-		}
+		}//end if
 	}
 
 	/**
