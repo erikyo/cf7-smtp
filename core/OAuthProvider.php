@@ -98,6 +98,7 @@ class OAuthProvider implements \PHPMailer\PHPMailer\OAuthTokenProvider {
 		}
 
 		// Build the XOAUTH2 authentication string per RFC 7628
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		return base64_encode(
 			'user=' . trim( $this->email )
 			. "\001auth=Bearer " . trim( $token, " \t\n\r\0\x0B" )

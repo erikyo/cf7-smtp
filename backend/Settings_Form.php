@@ -1409,10 +1409,10 @@ class Settings_Form {
 			$new_input['oauth2_provider'] = 'gmail';
 
 			// Remove orphaned Settings
-			$new_input['user_name'] = '';
-			$new_input['user_pass'] = '';
+			$new_input['user_name']        = '';
+			$new_input['user_pass']        = '';
 			$new_input['oauth2_tenant_id'] = '';
-			if ( $new_input['auth_method'] !== 'gmail' ) {
+			if ( 'gmail' !== $new_input['auth_method'] ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 			}
@@ -1423,7 +1423,7 @@ class Settings_Form {
 			// Remove orphaned Settings
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
-			if ( $new_input['auth_method'] !== 'outlook' ) {
+			if ( 'outlook' !== $new_input['auth_method'] ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 				$new_input['oauth2_tenant_id']     = '';
