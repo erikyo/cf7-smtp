@@ -38,39 +38,27 @@ define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 
-if ( ! defined( 'CF7_SMTP_HOST' ) ) {
-	define( 'CF7_SMTP_HOST', null );
-}
-if ( ! defined( 'CF7_SMTP_PORT' ) ) {
-	define( 'CF7_SMTP_PORT', null );
-}
-if ( ! defined( 'CF7_SMTP_AUTH' ) ) {
-	define( 'CF7_SMTP_AUTH', null );
-}
 if ( ! defined( 'CF7_SMTP_USER_NAME' ) ) {
 	define( 'CF7_SMTP_USER_NAME', null );
 }
 if ( ! defined( 'CF7_SMTP_USER_PASS' ) ) {
 	define( 'CF7_SMTP_USER_PASS', null );
 }
-if ( ! defined( 'CF7_SMTP_FROM_MAIL' ) ) {
-	define( 'CF7_SMTP_FROM_MAIL', null );
+if ( ! defined( 'CF7_SMTP_OAUTH2_CLIENT_ID' ) ) {
+	define( 'CF7_SMTP_OAUTH2_CLIENT_ID', null );
 }
-if ( ! defined( 'CF7_SMTP_FROM_NAME' ) ) {
-	define( 'CF7_SMTP_FROM_NAME', null );
+if ( ! defined( 'CF7_SMTP_OAUTH2_CLIENT_SECRET' ) ) {
+	define( 'CF7_SMTP_OAUTH2_CLIENT_SECRET', null );
 }
 
 if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
-			'host'      => CF7_SMTP_HOST,
-			'port'      => CF7_SMTP_PORT,
-			'auth'      => CF7_SMTP_AUTH,
-			'user_name' => CF7_SMTP_USER_NAME,
-			'user_pass' => CF7_SMTP_USER_PASS,
-			'from_mail' => CF7_SMTP_FROM_MAIL,
-			'from_name' => CF7_SMTP_FROM_NAME,
+			'user_name'            => CF7_SMTP_USER_NAME,
+			'user_pass'            => CF7_SMTP_USER_PASS,
+			'oauth2_client_id'     => CF7_SMTP_OAUTH2_CLIENT_ID,
+			'oauth2_client_secret' => CF7_SMTP_OAUTH2_CLIENT_SECRET,
 		)
 	);
 }

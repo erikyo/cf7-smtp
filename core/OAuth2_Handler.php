@@ -100,8 +100,14 @@ class OAuth2_Handler extends Base {
 		}
 
 		$oauth2_data   = $this->get_oauth2_data();
-		$client_id     = $oauth2_data['client_id'] ?? '';
-		$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+
+		if ( ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
+			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
+		} else {
+			$client_id     = $oauth2_data['client_id'] ?? '';
+			$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+		}
 
 		if ( empty( $client_id ) || empty( $client_secret ) ) {
 			return null;
@@ -520,10 +526,18 @@ class OAuth2_Handler extends Base {
 			return null;
 		}
 
+		if ( ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
+			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
+		} else {
+			$client_id     = $oauth2_data['client_id'] ?? '';
+			$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+		}
+
 		return array(
 			'provider'      => $provider_key,
-			'client_id'     => $oauth2_data['client_id'] ?? '',
-			'client_secret' => cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' ),
+			'client_id'     => $client_id,
+			'client_secret' => $client_secret,
 			'refresh_token' => cf7_smtp_decrypt( $oauth2_data['refresh_token'] ?? '' ),
 			'user_email'    => $oauth2_data['user_email'] ?? '',
 			'host'          => $config['host'],
