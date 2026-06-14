@@ -120,6 +120,12 @@ class OAuth2_Handler extends Base {
 			);
 		}
 
+		$tenant_id = ! empty( $this->options['oauth2_tenant_id'] ) ? $this->options['oauth2_tenant_id'] : 'common';
+		if ( 'office365' === $provider_key ) {
+			$config['auth_url']  = str_replace( '/common/', '/' . $tenant_id . '/', $config['auth_url'] );
+			$config['token_url'] = str_replace( '/common/', '/' . $tenant_id . '/', $config['token_url'] );
+		}
+
 		// For Office 365 and other providers, use GenericProvider
 		return new \League\OAuth2\Client\Provider\GenericProvider(
 			array(
