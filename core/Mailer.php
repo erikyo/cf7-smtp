@@ -863,8 +863,6 @@ class Mailer extends Base {
 				return;
 			}
 
-			$phpmailer->isSMTP();
-
 			// Check if we should only send CF7 emails via SMTP
 			$smtp_mode = $this->get_setting_by_key( 'smtp_mode' );
 			if ( 'cf7_only' === $smtp_mode && ! self::$is_cf7_mail ) {
@@ -955,8 +953,6 @@ class Mailer extends Base {
 
 			// Set XMailer header
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' );
-
-			cf7_smtp_log( 'Final PHPMailer config: AuthType=' . $phpmailer->AuthType . ', SMTPAuth=' . ( $phpmailer->SMTPAuth ? 'true' : 'false' ) );
 		} catch ( Exception $e ) {
 			cf7_smtp_log( 'Failed to configure SMTP: ' . $e->getMessage() );
 		}//end try

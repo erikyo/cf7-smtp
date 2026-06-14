@@ -257,7 +257,7 @@ class OAuth2_Handler extends Base {
 			$refresh_token = $token->getRefreshToken();
 			$expires       = $token->getExpires();
 
-			// Get user email for Gmail.
+			// Get user email based on provider.
 			$user_email = '';
 			if ( 'gmail' === $provider_key ) {
 				try {
@@ -266,6 +266,28 @@ class OAuth2_Handler extends Base {
 				} catch ( \Throwable $e ) {
 					cf7_smtp_log( 'Could not get user email: ' . $e->getMessage() );
 				}
+			} elseif ( 'office365' === $provider_key ) {
+				// Office 365: parse identity assertions directly from the JWT token structure
+				$jwt_parts = explode( '.', $access_token );
+				if ( 3 === count( $jwt_parts ) ) {
+					$payload = json_decode(
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+						base64_decode( strtr( $jwt_parts[1], '-_', '+/' ) ),
+						true
+					);
+					if ( is_array( $payload ) ) {
+						$user_email = $payload['upn'] ?? $payload['unique_name'] ?? $payload['preferred_username'] ?? '';
+						$user_email = sanitize_email( $user_email );
+					}
+				}
+			}//end if
+
+			// Fail explicitly if identity could not be verified
+			if ( empty( $user_email ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Could not retrieve a valid email address associated with this provider configuration.', 'cf7-smtp' ),
+				);
 			}
 
 			// Store tokens.
