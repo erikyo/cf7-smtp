@@ -87,24 +87,16 @@ into your `wp-config.php` just before
 All passwords will be stored encrypted, but still it is not good practice to put it into database!
 
 = Quick setup =
-as with the user password other constants can also be defined.
-Available constant are CF7_SMTP_HOST, CF7_SMTP_PORT, CF7_SMTP_AUTH, CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_FROM_MAIL, CF7_SMTP_FROM_NAME
-
-But, to quickly set up the plugin there is one constant that wraps all the others, so in case you manage multiple websites this will be very convenient!
+As with the user password other security constants can also be defined.
+Available constants are CF7_SMTP_USER_NAME, CF7_SMTP_USER_PASS, CF7_SMTP_OAUTH2_CLIENT_ID, CF7_SMTP_OAUTH2_CLIENT_SECRET.
 
 `define(
     'CF7_SMTP_SETTINGS',
     array(
-      'host'      => string,
-      'port'      => number,
-      'auth'      => ''|'tls'|'ssl',
       'user_name' => string,
       'user_pass' => string,
-      'replyTo'   => true|false,
-      'insecure'  => true|false,
-      'from_mail' => email,
-      'from_name' => string,
-      'smtp_mode' => 'cf7'|'override',
+      'oauth2_client_id' => string,
+      'oauth2_client_secret' => string,
   ));
 `
 
@@ -158,6 +150,14 @@ By contributing, you agree that your contributions will be licensed under its GP
 4. Activate the plugin in the Plugin dashboard
 
 == Changelog ==
+
+= 1.1.2 =
+- New: Added an optional "Tenant ID" setting for the Office 365 provider to support single-tenant Azure applications, preventing AADSTS50194 endpoint errors.
+- Fix: Resolved a critical issue with the Office 365 OAuth2 flow where the user email was not stored, causing XOAUTH2 mail delivery to fail. The plugin now properly extracts identity claims directly from the JWT access token.
+- Fix: Fixed a bug where non-CF7 WordPress emails were completely dropped when the "SMTP Mode" was set to "Contact Form 7 Only". Normal emails will now correctly bypass the SMTP transport.
+- Fix: Resolved an issue in the settings validation where newly entered OAuth2 credentials were unintentionally wiped if the user saved them while simultaneously changing the authentication method.
+- Fix: Patched a silent failure in the OAuth2 REST API endpoint that previously returned a success status with a null URL instead of a proper error message when client credentials were unreadable or missing.
+- Refactor: Cleaned up wp-config.php constant definitions. Removed unnecessary hardcoded constants for non-sensitive settings (Host, Port, From Mail, etc.) and introduced dedicated security constants for CF7_SMTP_OAUTH2_CLIENT_ID and CF7_SMTP_OAUTH2_CLIENT_SECRET.
 
 = 1.1.1 =
 - Security: Implemented AES-256-GCM encryption for sensitive data with enhanced key and IV handling.
