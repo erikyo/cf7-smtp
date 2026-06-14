@@ -1412,7 +1412,7 @@ class Settings_Form {
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
 			$new_input['oauth2_tenant_id'] = '';
-			if ( ( $this->options['auth_method'] ?? '' ) !== 'gmail' ) {
+			if ( $new_input['auth_method'] !== 'gmail' ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 			}
@@ -1423,7 +1423,7 @@ class Settings_Form {
 			// Remove orphaned Settings
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
-			if ( ( $this->options['auth_method'] ?? '' ) !== 'outlook' ) {
+			if ( $new_input['auth_method'] !== 'outlook' ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 				$new_input['oauth2_tenant_id']     = '';
