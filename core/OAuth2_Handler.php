@@ -99,9 +99,9 @@ class OAuth2_Handler extends Base {
 			return null;
 		}
 
-		$oauth2_data   = $this->get_oauth2_data();
+		$oauth2_data = $this->get_oauth2_data();
 
-		if ( ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
 			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
 			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
 		} else {
@@ -526,7 +526,7 @@ class OAuth2_Handler extends Base {
 			return null;
 		}
 
-		if ( ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
 			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
 			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
 		} else {

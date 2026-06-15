@@ -466,7 +466,7 @@ class Mailer extends Base {
 	public function get_setting_by_key( string $key, $options = false ): string {
 		$options = ! empty( $options ) ? $options : $this->options;
 
-		if ( defined( 'CF7_SMTP_SETTINGS' ) && isset( CF7_SMTP_SETTINGS[ $key ] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
 			return CF7_SMTP_SETTINGS[ $key ];
 		}
 
@@ -626,7 +626,7 @@ class Mailer extends Base {
 	 * @return string The decrypted password.
 	 */
 	private function get_smtp_password(): string {
-		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS['user_pass'] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
 			return CF7_SMTP_SETTINGS['user_pass'];
 		}
 
