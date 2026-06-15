@@ -6,7 +6,7 @@
  * Plugin Name:     SMTP for Contact Form 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
- * Version:         1.1.1
+ * Version:         1.1.2
  * Author:          codekraft
  * Contributors:    gardenboi, MemoryShadow
  * Author URI:      https://modul-r.codekraft.it/
@@ -32,12 +32,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
 define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
-define( 'CF7_SMTP_VERSION', '1.1.1' );
+define( 'CF7_SMTP_VERSION', '1.1.2' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-
+/**
+ * Define the constants for the plugin
+ */
 if ( ! defined( 'CF7_SMTP_USER_NAME' ) ) {
 	define( 'CF7_SMTP_USER_NAME', null );
 }
@@ -51,6 +53,9 @@ if ( ! defined( 'CF7_SMTP_OAUTH2_CLIENT_SECRET' ) ) {
 	define( 'CF7_SMTP_OAUTH2_CLIENT_SECRET', null );
 }
 
+/**
+ * Define the settings as array for easier management
+ */
 if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
@@ -63,6 +68,9 @@ if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 	);
 }
 
+/**
+ * Check if the PHP version is supported and show an error if not
+ */
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(
 		'admin_init',
