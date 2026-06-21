@@ -15,7 +15,7 @@
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:     cf7-smtp
  * Domain Path:     /languages
- * Requires PHP:    7.1
+ * Requires PHP:    7.4
  * Requires Plugins: contact-form-7
  *
  * @package   cf7_smtp
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
-define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
+define( 'CF7_SMTP_MIN_PHP_VERSION', '7.4' );
 define( 'CF7_SMTP_VERSION', '1.1.2' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
