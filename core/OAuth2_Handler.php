@@ -128,6 +128,22 @@ class OAuth2_Handler extends Base {
 
 		$tenant_id = ! empty( $this->options['oauth2_tenant_id'] ) ? $this->options['oauth2_tenant_id'] : 'common';
 		if ( 'office365' === $provider_key ) {
+			$tenant_id = trim( (string) ( $this->options['oauth2_tenant_id'] ?? '' ) );
+
+			if ( '' === $tenant_id ) {
+				$tenant_id = 'common';
+			}
+
+			$is_valid_tenant_id = preg_match(
+				'/^(common|organizations|consumers|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?)$/',
+				$tenant_id
+			);
+
+			if ( ! $is_valid_tenant_id ) {
+				cf7_smtp_log( 'Invalid Office365 tenant ID configured.' );
+				return null;
+			}
+
 			$config['auth_url']  = str_replace( '/common/', '/' . $tenant_id . '/', $config['auth_url'] );
 			$config['token_url'] = str_replace( '/common/', '/' . $tenant_id . '/', $config['token_url'] );
 		}
