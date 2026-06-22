@@ -869,7 +869,7 @@ class Settings_Form {
 
 		\printf(
 			'<div class="cf7-smtp-password-wrap">
-				<input type="password" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="regular-text"%s placeholder="%s" />
+				<input type="password" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="regular-text"%s placeholder="%s" autocomplete="new-password" />
 				%s
 			</div>
 			<p class="description">%s</p>',
@@ -1000,7 +1000,7 @@ class Settings_Form {
 	public function cf7_smtp_print_flush_logs_callback() {
 
 		\printf(
-			'<button type="button" class="button button-secondary cf7_smtp_flush_logs">%s</button>
+			'<button type="button" id="cf7_smtp_flush_logs" class="button button-secondary cf7_smtp_flush_logs">%s</button>
 			<div class="message"></div>',
 			\esc_html__( 'Empty table', 'cf7-smtp' )
 		);
@@ -1185,7 +1185,7 @@ class Settings_Form {
 		$options['email_from_email'] = ! empty( $options['email_from_email'] ) ? $options['email_from_email'] : $admin_email;
 
 		\printf(
-			'<button type="button" class="button button-secondary cf7_smtp_send_report_now">%s</button>
+			'<button type="button" id="cf7_smtp_report_now" class="button button-secondary cf7_smtp_send_report_now">%s</button>
 			<div class="message"></div>',
 			\esc_html__( 'Send me a report about sent emails', 'cf7-smtp' )
 		);
@@ -1331,6 +1331,16 @@ class Settings_Form {
 
 		/* SMTP custom_template */
 		$new_input['custom_template'] = ! empty( $input['custom_template'] );
+
+		/* Form templates */
+		if ( isset( $input['form_templates'] ) && is_array( $input['form_templates'] ) ) {
+			$new_input['form_templates'] = array_map( 'sanitize_text_field', $input['form_templates'] );
+		}
+
+		/* SMTP mode */
+		if ( isset( $input['smtp_mode'] ) ) {
+			$new_input['smtp_mode'] = \sanitize_text_field( $input['smtp_mode'] );
+		}
 
 		/* Report cron string */
 		if ( isset( $input['report_every'] ) ) {
