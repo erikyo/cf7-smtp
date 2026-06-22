@@ -158,6 +158,8 @@ By contributing, you agree that your contributions will be licensed under its GP
 - Fix: Resolved an issue in the settings validation where newly entered OAuth2 credentials were unintentionally wiped if the user saved them while simultaneously changing the authentication method.
 - Fix: Patched a silent failure in the OAuth2 REST API endpoint that previously returned a success status with a null URL instead of a proper error message when client credentials were unreadable or missing.
 - Refactor: Cleaned up wp-config.php constant definitions. Removed unnecessary hardcoded constants for non-sensitive settings (Host, Port, From Mail, etc.) and introduced dedicated security constants for CF7_SMTP_OAUTH2_CLIENT_ID and CF7_SMTP_OAUTH2_CLIENT_SECRET.
+- Changed: Legacy `wp-config.php` constants for SMTP host, port, authentication, from email, and from name are no longer supported; only username, password, and OAuth credentials remain configurable through `CF7_SMTP_SETTINGS` for improved security.
+- Changed: The minimum PHP version requirement has been raised to 7.4.x.
 - Note: Special thanks to @ammannit for reporting the issues that were instrumental in identifying and resolving the Microsoft Office 365 login flow.
 
 = 1.1.1 =
