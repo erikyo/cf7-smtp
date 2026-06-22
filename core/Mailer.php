@@ -865,8 +865,8 @@ class Mailer extends Base {
 
 			// Check if we should only send CF7 emails via SMTP
 			$smtp_mode = $this->get_setting_by_key( 'smtp_mode' );
-			if ( in_array( $smtp_mode, array( 'cf7', 'cf7_only' ), true ) && ! self::$is_cf7_mail ) {
-				// If not a CF7 email and mode is CF7 only, return (skip SMTP config)
+			if ( 'cf7' === $smtp_mode && ! self::$is_cf7_mail && ! get_transient( 'cf7_smtp_testing' ) ) {
+				// If not a CF7 email, mode is CF7 only, and not testing, return (skip SMTP config)
 				return;
 			}
 
