@@ -99,9 +99,15 @@ class OAuth2_Handler extends Base {
 			return null;
 		}
 
-		$oauth2_data   = $this->get_oauth2_data();
-		$client_id     = $oauth2_data['client_id'] ?? '';
-		$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+		$oauth2_data = $this->get_oauth2_data();
+
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
+			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
+		} else {
+			$client_id     = $oauth2_data['client_id'] ?? '';
+			$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+		}
 
 		if ( empty( $client_id ) || empty( $client_secret ) ) {
 			return null;
@@ -118,6 +124,28 @@ class OAuth2_Handler extends Base {
 					'scopes'       => $config['scopes'],
 				)
 			);
+		}
+
+		$tenant_id = ! empty( $this->options['oauth2_tenant_id'] ) ? $this->options['oauth2_tenant_id'] : 'common';
+		if ( 'office365' === $provider_key ) {
+			$tenant_id = trim( (string) ( $this->options['oauth2_tenant_id'] ?? '' ) );
+
+			if ( '' === $tenant_id ) {
+				$tenant_id = 'common';
+			}
+
+			$is_valid_tenant_id = preg_match(
+				'/^(common|organizations|consumers|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?)$/',
+				$tenant_id
+			);
+
+			if ( ! $is_valid_tenant_id ) {
+				cf7_smtp_log( 'Invalid Office365 tenant ID configured.' );
+				return null;
+			}
+
+			$config['auth_url']  = str_replace( '/common/', '/' . $tenant_id . '/', $config['auth_url'] );
+			$config['token_url'] = str_replace( '/common/', '/' . $tenant_id . '/', $config['token_url'] );
 		}
 
 		// For Office 365 and other providers, use GenericProvider
@@ -257,7 +285,7 @@ class OAuth2_Handler extends Base {
 			$refresh_token = $token->getRefreshToken();
 			$expires       = $token->getExpires();
 
-			// Get user email for Gmail.
+			// Get user email based on provider.
 			$user_email = '';
 			if ( 'gmail' === $provider_key ) {
 				try {
@@ -266,6 +294,28 @@ class OAuth2_Handler extends Base {
 				} catch ( \Throwable $e ) {
 					cf7_smtp_log( 'Could not get user email: ' . $e->getMessage() );
 				}
+			} elseif ( 'office365' === $provider_key ) {
+				// Office 365: parse identity assertions directly from the JWT token structure
+				$jwt_parts = explode( '.', $access_token );
+				if ( 3 === count( $jwt_parts ) ) {
+					$payload = json_decode(
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+						base64_decode( strtr( $jwt_parts[1], '-_', '+/' ) ),
+						true
+					);
+					if ( is_array( $payload ) ) {
+						$user_email = $payload['upn'] ?? $payload['unique_name'] ?? $payload['preferred_username'] ?? '';
+						$user_email = sanitize_email( $user_email );
+					}
+				}
+			}//end if
+
+			// Fail explicitly if identity could not be verified
+			if ( empty( $user_email ) ) {
+				return array(
+					'success' => false,
+					'message' => __( 'Could not retrieve a valid email address associated with this provider configuration.', 'cf7-smtp' ),
+				);
 			}
 
 			// Store tokens.
@@ -492,10 +542,18 @@ class OAuth2_Handler extends Base {
 			return null;
 		}
 
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_id'] ) && ! empty( CF7_SMTP_SETTINGS['oauth2_client_secret'] ) ) {
+			$client_id     = CF7_SMTP_SETTINGS['oauth2_client_id'];
+			$client_secret = CF7_SMTP_SETTINGS['oauth2_client_secret'];
+		} else {
+			$client_id     = $oauth2_data['client_id'] ?? '';
+			$client_secret = cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' );
+		}
+
 		return array(
 			'provider'      => $provider_key,
-			'client_id'     => $oauth2_data['client_id'] ?? '',
-			'client_secret' => cf7_smtp_decrypt( $oauth2_data['client_secret'] ?? '' ),
+			'client_id'     => $client_id,
+			'client_secret' => $client_secret,
 			'refresh_token' => cf7_smtp_decrypt( $oauth2_data['refresh_token'] ?? '' ),
 			'user_email'    => $oauth2_data['user_email'] ?? '',
 			'host'          => $config['host'],

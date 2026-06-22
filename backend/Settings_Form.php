@@ -242,6 +242,16 @@ class Settings_Form {
 			array( 'class' => 'cf7-smtp-oauth-row' )
 		);
 
+		/* OAuth2 Tenant ID */
+		\add_settings_field(
+			'oauth2_tenant_id',
+			\__( 'Tenant ID', 'cf7-smtp' ),
+			array( $this, 'cf7_smtp_print_oauth2_tenant_id_callback' ),
+			'smtp-settings',
+			'smtp_oauth2',
+			array( 'class' => 'cf7-smtp-oauth-row' )
+		);
+
 		/* OAuth2 Connect Button */
 		\add_settings_field(
 			'oauth2_connect',
@@ -502,6 +512,20 @@ class Settings_Form {
 			$has_value ? \esc_attr__( '••••••••', 'cf7-smtp' ) : '',
 			$has_value && empty( $client_secret['defined'] ) ? \sprintf( '<label><input type="checkbox" name="cf7-smtp-options[remove_oauth2_client_secret]" value="1"> %s</label>', \esc_html__( 'Remove secret', 'cf7-smtp' ) ) : '',
 			\esc_html__( 'Enter the Client Secret from your OAuth2 provider. This will be encrypted before storing.', 'cf7-smtp' )
+		);
+	}
+
+	/**
+	 * Prints the OAuth2 Tenant ID field.
+	 */
+	public function cf7_smtp_print_oauth2_tenant_id_callback() {
+		$tenant_id = $this->cf7_smtp_find_setting( 'oauth2_tenant_id' );
+		\printf(
+			'<input type="text" autocomplete="off" id="cf7_smtp_oauth2_tenant_id" name="cf7-smtp-options[oauth2_tenant_id]" value="%s" class="regular-text cf7-smtp-oauth2-field" %s />
+			<p class="description">%s</p>',
+			\esc_attr( $tenant_id['value'] ?? '' ),
+			\esc_html( empty( $tenant_id['defined'] ) ? '' : 'disabled' ),
+			\esc_html__( 'Enter the Tenant ID from your Office 365 / Azure AD app. Can be left blank for multi-tenant applications (defaults to \'common\').', 'cf7-smtp' )
 		);
 	}
 
@@ -845,7 +869,7 @@ class Settings_Form {
 
 		\printf(
 			'<div class="cf7-smtp-password-wrap">
-				<input type="password" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="regular-text"%s placeholder="%s" />
+				<input type="password" id="cf7_smtp_user_pass" name="cf7-smtp-options[user_pass]" class="regular-text"%s placeholder="%s" autocomplete="new-password" />
 				%s
 			</div>
 			<p class="description">%s</p>',
@@ -976,7 +1000,7 @@ class Settings_Form {
 	public function cf7_smtp_print_flush_logs_callback() {
 
 		\printf(
-			'<button type="button" class="button button-secondary cf7_smtp_flush_logs">%s</button>
+			'<button type="button" id="cf7_smtp_flush_logs" class="button button-secondary cf7_smtp_flush_logs">%s</button>
 			<div class="message"></div>',
 			\esc_html__( 'Empty table', 'cf7-smtp' )
 		);
@@ -1161,7 +1185,7 @@ class Settings_Form {
 		$options['email_from_email'] = ! empty( $options['email_from_email'] ) ? $options['email_from_email'] : $admin_email;
 
 		\printf(
-			'<button type="button" class="button button-secondary cf7_smtp_send_report_now">%s</button>
+			'<button type="button" id="cf7_smtp_report_now" class="button button-secondary cf7_smtp_send_report_now">%s</button>
 			<div class="message"></div>',
 			\esc_html__( 'Send me a report about sent emails', 'cf7-smtp' )
 		);
@@ -1308,6 +1332,16 @@ class Settings_Form {
 		/* SMTP custom_template */
 		$new_input['custom_template'] = ! empty( $input['custom_template'] );
 
+		/* Form templates */
+		if ( isset( $input['form_templates'] ) && is_array( $input['form_templates'] ) ) {
+			$new_input['form_templates'] = array_map( 'sanitize_text_field', $input['form_templates'] );
+		}
+
+		/* SMTP mode */
+		if ( isset( $input['smtp_mode'] ) ) {
+			$new_input['smtp_mode'] = \sanitize_text_field( $input['smtp_mode'] );
+		}
+
 		/* Report cron string */
 		if ( isset( $input['report_every'] ) ) {
 			if ( \array_key_exists( $input['report_every'], \wp_get_schedules() ) ) {
@@ -1374,15 +1408,21 @@ class Settings_Form {
 			}
 		}
 
+		/* OAuth2 Tenant ID */
+		if ( isset( $input['oauth2_tenant_id'] ) ) {
+			$new_input['oauth2_tenant_id'] = \sanitize_text_field( $input['oauth2_tenant_id'] );
+		}
+
 		/* Sync auth_type and oauth2_provider based on auth_method - Force override at the end */
 		if ( 'gmail' === $new_input['auth_method'] ) {
 			$new_input['auth_type']       = 'oauth2';
 			$new_input['oauth2_provider'] = 'gmail';
 
 			// Remove orphaned Settings
-			$new_input['user_name'] = '';
-			$new_input['user_pass'] = '';
-			if ( ( $this->options['auth_method'] ?? '' ) !== 'gmail' ) {
+			$new_input['user_name']        = '';
+			$new_input['user_pass']        = '';
+			$new_input['oauth2_tenant_id'] = '';
+			if ( 'gmail' !== $new_input['auth_method'] ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
 			}
@@ -1393,9 +1433,10 @@ class Settings_Form {
 			// Remove orphaned Settings
 			$new_input['user_name'] = '';
 			$new_input['user_pass'] = '';
-			if ( ( $this->options['auth_method'] ?? '' ) !== 'outlook' ) {
+			if ( 'outlook' !== $new_input['auth_method'] ) {
 				$new_input['oauth2_client_id']     = '';
 				$new_input['oauth2_client_secret'] = '';
+				$new_input['oauth2_tenant_id']     = '';
 			}
 		} elseif ( 'smtp' === $new_input['auth_method'] ) {
 			// Regular SMTP uses basic authentication
@@ -1403,6 +1444,7 @@ class Settings_Form {
 			// Remove orphaned OAuth settings if switching to regular SMTP
 			$new_input['oauth2_client_id']     = '';
 			$new_input['oauth2_client_secret'] = '';
+			$new_input['oauth2_tenant_id']     = '';
 			$new_input['oauth2_provider']      = '';
 			$new_input['oauth2_access_token']  = '';
 			$new_input['oauth2_refresh_token'] = '';
@@ -1417,6 +1459,7 @@ class Settings_Form {
 			$new_input['user_pass']            = '';
 			$new_input['oauth2_client_id']     = '';
 			$new_input['oauth2_client_secret'] = '';
+			$new_input['oauth2_tenant_id']     = '';
 			$new_input['oauth2_provider']      = '';
 			$new_input['oauth2_access_token']  = '';
 			$new_input['oauth2_refresh_token'] = '';

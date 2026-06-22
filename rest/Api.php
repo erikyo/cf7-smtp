@@ -521,6 +521,15 @@ class Api extends Base {
 			);
 		}
 
+		if ( empty( $result ) ) {
+			return \rest_ensure_response(
+				array(
+					'status'  => 'error',
+					'message' => __( 'OAuth2 client credentials are missing or could not be decrypted.', 'cf7-smtp' ),
+				)
+			);
+		}
+
 		return \rest_ensure_response(
 			array(
 				'status'            => 'success',

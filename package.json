@@ -1,6 +1,6 @@
 {
     "name": "cf7-smtp",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "",
     "author": "Erik Golinelli <erik@codekraft.it>",
     "files": [
@@ -26,7 +26,7 @@
         "start": "wp-scripts start",
         "build": "wp-scripts build",
         "plugin-zip": "wp-scripts plugin-zip",
-        "preplugin-zip": "composer install --no-dev && composer dump-autoload --optimize && wp-scripts build && npm run make-pot",
+        "preplugin-zip": "composer build && composer dump-autoload --optimize && wp-scripts build && npm run make-pot",
         "lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
         "lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
         "packages-update": "wp-scripts packages-update",

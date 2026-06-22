@@ -466,7 +466,7 @@ class Mailer extends Base {
 	public function get_setting_by_key( string $key, $options = false ): string {
 		$options = ! empty( $options ) ? $options : $this->options;
 
-		if ( defined( 'CF7_SMTP_SETTINGS' ) && isset( CF7_SMTP_SETTINGS[ $key ] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS[ $key ] ) ) {
 			return CF7_SMTP_SETTINGS[ $key ];
 		}
 
@@ -626,7 +626,7 @@ class Mailer extends Base {
 	 * @return string The decrypted password.
 	 */
 	private function get_smtp_password(): string {
-		if ( ! empty( CF7_SMTP_SETTINGS ) && isset( CF7_SMTP_SETTINGS['user_pass'] ) ) {
+		if ( defined( 'CF7_SMTP_SETTINGS' ) && ! empty( CF7_SMTP_SETTINGS['user_pass'] ) ) {
 			return CF7_SMTP_SETTINGS['user_pass'];
 		}
 
@@ -863,12 +863,10 @@ class Mailer extends Base {
 				return;
 			}
 
-			$phpmailer->isSMTP();
-
 			// Check if we should only send CF7 emails via SMTP
 			$smtp_mode = $this->get_setting_by_key( 'smtp_mode' );
-			if ( 'cf7_only' === $smtp_mode && ! self::$is_cf7_mail ) {
-				// If not a CF7 email and mode is CF7 only, return (skip SMTP config)
+			if ( 'cf7' === $smtp_mode && ! self::$is_cf7_mail && ! get_transient( 'cf7_smtp_testing' ) ) {
+				// If not a CF7 email, mode is CF7 only, and not testing, return (skip SMTP config)
 				return;
 			}
 
@@ -955,8 +953,6 @@ class Mailer extends Base {
 
 			// Set XMailer header
 			$phpmailer->XMailer = 'WordPress/' . get_bloginfo( 'version' );
-
-			cf7_smtp_log( 'Final PHPMailer config: AuthType=' . $phpmailer->AuthType . ', SMTPAuth=' . ( $phpmailer->SMTPAuth ? 'true' : 'false' ) );
 		} catch ( Exception $e ) {
 			cf7_smtp_log( 'Failed to configure SMTP: ' . $e->getMessage() );
 		}//end try

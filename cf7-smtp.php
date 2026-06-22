@@ -6,7 +6,7 @@
  * Plugin Name:     SMTP for Contact Form 7
  * Plugin URI:      https://wordpress.org/plugins/cf7-smtp
  * Description:     A trustworthy SMTP plugin for Contact Form 7. Simple and useful.
- * Version:         1.1.1
+ * Version:         1.1.2
  * Author:          codekraft
  * Contributors:    gardenboi, MemoryShadow
  * Author URI:      https://modul-r.codekraft.it/
@@ -15,7 +15,7 @@
  * License URI:     http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:     cf7-smtp
  * Domain Path:     /languages
- * Requires PHP:    7.1
+ * Requires PHP:    7.4
  * Requires Plugins: contact-form-7
  *
  * @package   cf7_smtp
@@ -31,50 +31,46 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CF7_SMTP_NAME', 'Contact Form 7 - SMTP' );
-define( 'CF7_SMTP_MIN_PHP_VERSION', '7.1' );
-define( 'CF7_SMTP_VERSION', '1.1.1' );
+define( 'CF7_SMTP_MIN_PHP_VERSION', '7.4' );
+define( 'CF7_SMTP_VERSION', '1.1.2' );
 
 define( 'CF7_SMTP_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
 define( 'CF7_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-
-if ( ! defined( 'CF7_SMTP_HOST' ) ) {
-	define( 'CF7_SMTP_HOST', null );
-}
-if ( ! defined( 'CF7_SMTP_PORT' ) ) {
-	define( 'CF7_SMTP_PORT', null );
-}
-if ( ! defined( 'CF7_SMTP_AUTH' ) ) {
-	define( 'CF7_SMTP_AUTH', null );
-}
+/**
+ * Define the constants for the plugin
+ */
 if ( ! defined( 'CF7_SMTP_USER_NAME' ) ) {
 	define( 'CF7_SMTP_USER_NAME', null );
 }
 if ( ! defined( 'CF7_SMTP_USER_PASS' ) ) {
 	define( 'CF7_SMTP_USER_PASS', null );
 }
-if ( ! defined( 'CF7_SMTP_FROM_MAIL' ) ) {
-	define( 'CF7_SMTP_FROM_MAIL', null );
+if ( ! defined( 'CF7_SMTP_OAUTH2_CLIENT_ID' ) ) {
+	define( 'CF7_SMTP_OAUTH2_CLIENT_ID', null );
 }
-if ( ! defined( 'CF7_SMTP_FROM_NAME' ) ) {
-	define( 'CF7_SMTP_FROM_NAME', null );
+if ( ! defined( 'CF7_SMTP_OAUTH2_CLIENT_SECRET' ) ) {
+	define( 'CF7_SMTP_OAUTH2_CLIENT_SECRET', null );
 }
 
+/**
+ * Define the settings as array for easier management
+ */
 if ( ! defined( 'CF7_SMTP_SETTINGS' ) ) {
 	define(
 		'CF7_SMTP_SETTINGS',
 		array(
-			'host'      => CF7_SMTP_HOST,
-			'port'      => CF7_SMTP_PORT,
-			'auth'      => CF7_SMTP_AUTH,
-			'user_name' => CF7_SMTP_USER_NAME,
-			'user_pass' => CF7_SMTP_USER_PASS,
-			'from_mail' => CF7_SMTP_FROM_MAIL,
-			'from_name' => CF7_SMTP_FROM_NAME,
+			'user_name'            => CF7_SMTP_USER_NAME,
+			'user_pass'            => CF7_SMTP_USER_PASS,
+			'oauth2_client_id'     => CF7_SMTP_OAUTH2_CLIENT_ID,
+			'oauth2_client_secret' => CF7_SMTP_OAUTH2_CLIENT_SECRET,
 		)
 	);
 }
 
+/**
+ * Check if the PHP version is supported and show an error if not
+ */
 if ( version_compare( PHP_VERSION, CF7_SMTP_MIN_PHP_VERSION, '<=' ) ) {
 	add_action(
 		'admin_init',
